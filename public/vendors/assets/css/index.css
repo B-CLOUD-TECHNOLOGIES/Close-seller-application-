@@ -1,0 +1,454 @@
+:root {
+    --purple: #701d9d;
+    --orange: #fb7e00;
+    --light-purple: #f0e6f7;
+    --light-orange: #fff4ed;
+    --text-dark: #1a1a1a;
+    --text-medium: #666666;
+    --text-light: #999999;
+    --border-color: #e1e5e9;
+    --success-color: #28a745;
+    --warning-color: #ffc107;
+    --info-color: #17a2b8;
+    --background: #ffffff;
+    --card-shadow: 0 2px 20px rgba(112, 29, 157, 0.08);
+    --hover-shadow: 0 4px 25px rgba(112, 29, 157, 0.15);
+      --general-font-family: "Poppins", sans-serif;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: var(--general-font-family);
+    background: linear-gradient(135deg, var(--light-purple) 0%, var(--light-orange) 100%);
+    min-height: 100vh;
+    padding-bottom: 100px;
+}
+
+/* Header */
+.header {
+    background: var(--background);
+    padding: 20px;
+    box-shadow: var(--card-shadow);
+    margin-bottom: 20px;
+}
+
+.header h1 {
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--text-dark);
+    margin: 0;
+}
+
+.header .settings-btn {
+    background: var(--light-purple);
+    border: none;
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    color: var(--purple);
+    transition: all 0.2s ease;
+}
+
+.header .settings-btn:hover {
+    background: var(--purple);
+    color: white;
+    transform: rotate(90deg);
+}
+
+/* Stats Cards */
+.stats-row {
+    margin-bottom: 30px;
+}
+
+.stat-card {
+    background: var(--background);
+    border-radius: 16px;
+    padding: 20px;
+    box-shadow: var(--card-shadow);
+    transition: all 0.2s ease;
+    border: none;
+    height: 100%;
+}
+
+.stat-card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--hover-shadow);
+}
+
+.stat-value {
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--text-dark);
+    margin-bottom: 5px;
+}
+
+.stat-label {
+    font-size: 14px;
+    color: var(--text-medium);
+    font-weight: 500;
+}
+
+.stat-change {
+    font-size: 12px;
+    font-weight: 600;
+    margin-top: 8px;
+}
+
+.stat-change.positive {
+    color: var(--success-color);
+}
+
+.stat-change.warning {
+    color: var(--warning-color);
+}
+
+.stat-icon {
+    width: 12px;
+    height: 12px;
+    margin-right: 4px;
+}
+
+/* Quick Actions */
+.quick-actions {
+    margin-bottom: 30px;
+}
+
+.section-title {
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--text-dark);
+    margin-bottom: 16px;
+}
+
+.action-btn {
+    width: 100%;
+    padding: 16px;
+    border-radius: 12px;
+    border: none;
+    font-weight: 600;
+    font-size: 16px;
+    transition: all 0.2s ease;
+    margin-bottom: 12px;
+}
+
+.btn-primary-custom {
+    background: linear-gradient(135deg, var(--purple) 0%, var(--orange) 100%);
+    color: white;
+}
+
+.btn-primary-custom:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(112, 29, 157, 0.3);
+}
+
+.btn-outline-custom {
+    background: var(--background);
+    color: var(--purple);
+    border: 2px solid var(--border-color);
+}
+
+.btn-outline-custom:hover {
+    background: var(--light-purple);
+    border-color: var(--purple);
+    color: var(--purple);
+    transform: translateY(-2px);
+}
+
+/* Recent Orders */
+.recent-orders {
+    background: var(--background);
+    border-radius: 16px;
+    padding: 24px;
+    box-shadow: var(--card-shadow);
+    margin-bottom: 30px;
+}
+
+.order-item {
+    display: flex;
+    align-items: center;
+    padding: 16px 0;
+    border-bottom: 1px solid var(--border-color);
+    transition: all 0.2s ease;
+}
+
+.order-item:last-child {
+    border-bottom: none;
+}
+
+.order-item:hover {
+    background: var(--light-purple);
+    margin: 0 -16px;
+    padding: 16px;
+    border-radius: 8px;
+}
+
+.customer-avatar {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    margin-right: 16px;
+    object-fit: cover;
+}
+
+.customer-info h6 {
+    font-weight: 600;
+    color: var(--text-dark);
+    margin-bottom: 4px;
+    font-size: 14px;
+}
+
+.order-id {
+    font-size: 12px;
+    color: var(--text-light);
+}
+
+.order-amount {
+    font-weight: 700;
+    color: var(--text-dark);
+    font-size: 16px;
+}
+
+.order-status {
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.status-pending {
+    background: var(--light-orange);
+    color: var(--orange);
+}
+
+.status-shipped {
+    background: rgba(40, 167, 69, 0.1);
+    color: var(--success-color);
+}
+
+/* Product Preview */
+.product-preview {
+    background: var(--background);
+    border-radius: 16px;
+    padding: 24px;
+    box-shadow: var(--card-shadow);
+    margin-bottom: 100px;
+}
+
+.product-item {
+    display: flex;
+    align-items: center;
+    padding: 16px 0;
+}
+
+.product-image {
+    width: 60px;
+    height: 60px;
+    border-radius: 12px;
+    margin-right: 16px;
+    object-fit: cover;
+}
+
+.product-info h6 {
+    font-weight: 600;
+    color: var(--text-dark);
+    margin-bottom: 4px;
+    font-size: 14px;
+}
+
+.product-sales {
+    font-size: 12px;
+    color: var(--text-medium);
+}
+
+  /* Bottom Navigation */
+/* .bottom-nav {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: var(--background);
+    padding: 12px 0 20px;
+    box-shadow: 0 -2px 20px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+}
+
+.nav-item {
+    text-align: center;
+    color: var(--text-light);
+    text-decoration: none;
+    transition: all 0.2s ease;
+}
+
+.nav-item.active {
+    color: var(--purple);
+}
+
+.nav-item:hover {
+    color: var(--purple);
+    text-decoration: none;
+}
+
+.nav-icon {
+    font-size: 20px;
+    margin-bottom: 4px;
+}
+
+.nav-label {
+    font-size: 11px;
+    font-weight: 500;
+}
+
+.nav-badge {
+    position: absolute;
+    top: -2px;
+    right: 20px;
+    background: var(--orange);
+    color: white;
+    border-radius: 10px;
+    padding: 2px 6px;
+    font-size: 10px;
+    font-weight: 600;
+}
+
+.notification-dot {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    width: 8px;
+    height: 8px;
+    background: var(--orange);
+    border-radius: 50%;
+    border: 2px solid var(--background);
+}
+
+
+.nav-item.add-btn {
+    position: relative;
+    transform: translateY(-8px);
+}
+
+.nav-item.add-btn .nav-icon {
+    background: linear-gradient(135deg, var(--purple) 0%, var(--orange) 100%);
+    color: white;
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 8px;
+    box-shadow: 0 4px 20px rgba(112, 29, 157, 0.3);
+    font-size: 24px;
+    transition: all 0.3s ease;
+    border: 3px solid var(--background);
+}
+
+.nav-item.add-btn:hover .nav-icon {
+    transform: scale(1.1) rotate(90deg);
+    box-shadow: 0 6px 25px rgba(112, 29, 157, 0.4);
+}
+
+.nav-item.add-btn .nav-label {
+    font-weight: 600;
+    color: var(--purple);
+    font-size: 10px;
+}
+
+.nav-item.add-btn:hover {
+    color: var(--purple);
+}
+
+
+.bottom-nav .row {
+    align-items: flex-end;
+}
+
+.bottom-nav .col {
+    flex: 1;
+    max-width: 20%;
+} */
+
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .header {
+        padding: 16px;
+    }
+
+    .header h1 {
+        font-size: 24px;
+    }
+
+    .stat-value {
+        font-size: 24px;
+    }
+
+    .recent-orders,
+    .product-preview {
+        padding: 20px 16px;
+    }
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+    width: 6px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--light-purple);
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--purple);
+    border-radius: 3px;
+}
+
+/* Loading animation */
+.loading {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+    border-top-color: white;
+    animation: spin 1s ease-in-out infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+/* Notification dot */
+.notification-dot {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    width: 8px;
+    height: 8px;
+    background: var(--orange);
+    border-radius: 50%;
+    border: 2px solid var(--background);
+}
+
+/* Page animations */
+.fade-in {
+    animation: fadeIn 0.6s ease-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}

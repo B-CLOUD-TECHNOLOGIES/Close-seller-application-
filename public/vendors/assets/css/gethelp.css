@@ -1,0 +1,119 @@
+@import url("notification-index.css");
+
+.header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 90%;
+  margin: 2rem auto 1rem;
+  padding: 1rem 1.5rem;
+  background: var(--background);
+  border-radius: 20px;
+  box-shadow: var(--card-shadow);
+  position: sticky;
+  top: 1rem;
+  z-index: 100;
+}
+
+.header h3 {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--purple);
+}
+
+.header a {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  background: var(--light-purple);
+  border-radius: 14px;
+  transition: all 0.3s ease;
+}
+
+.header a:hover {
+  background: var(--purple);
+}
+
+/* Help Options */
+main {
+  width: 90%;
+  margin: 2rem auto;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+main div a {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem 1.5rem;
+  background: var(--background);
+  border-radius: 16px;
+  box-shadow: var(--card-shadow);
+  font-weight: 600;
+  font-size: 15px;
+  color: var(--text-dark);
+  text-decoration: none;
+  transition: all 0.3s ease;
+}
+
+main div a:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--hover-shadow);
+  background: linear-gradient(45deg, var(--light-purple), #f8f9ff);
+}
+
+main div a svg {
+  flex-shrink: 0;
+}
+
+/* Dropdown Styling */
+.dropdown-container {
+  position: relative;
+  background: var(--background);
+  border-radius: 16px;
+  box-shadow: var(--card-shadow);
+  padding: 1rem 1.5rem;
+  cursor: pointer;
+}
+
+.dropdown-button {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-weight: 600;
+  color: var(--text-dark);
+}
+
+.dropdown-options {
+  display: none;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-top: 1rem;
+}
+
+.dropdown-container.open .dropdown-options {
+  display: flex;
+}
+
+.dropdown-option {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.5rem;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.dropdown-option:hover {
+  background: var(--light-purple);
+}
+
+.dropdown-option svg {
+  width: 22px;
+  height: 22px;
+}

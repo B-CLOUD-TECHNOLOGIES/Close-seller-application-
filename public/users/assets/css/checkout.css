@@ -1,0 +1,98 @@
+    .checkout-section h6 {
+        font-weight: 600;
+        margin-bottom: 12px;
+    }
+
+    .form-control,
+    select.form-select {
+        background-color: #fff;
+        /* same as Bootstrap input */
+        border-radius: 12px;
+        padding: 14px;
+        font-size: 14px;
+        transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    /* Orange focus outline */
+    .form-control:focus,
+    .form-select:focus {
+        border-color: var(--orange) !important;
+        box-shadow: 0 0 0 0.2rem rgba(249, 115, 22, 0.25) !important;
+    }
+
+    .shipping-option {
+        border: 2px solid #e5e5e5;
+        border-radius: 12px;
+        padding: 12px 16px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 12px;
+        cursor: pointer;
+        transition: border-color 0.2s, background 0.2s;
+    }
+
+    .shipping-option.active {
+        border-color: var(--orange);
+        background: #fff7ed;
+    }
+
+    .shipping-option input {
+        accent-color: var(--orange);
+        margin-right: 8px;
+    }
+
+    .shipping-left {
+        display: flex;
+        align-items: center;
+    }
+
+    .shipping-left div {
+        line-height: 1.2;
+    }
+
+    .shipping-left strong {
+        display: block;
+    }
+
+    .pay-btn {
+        background: var(--primary-color);
+        border: none;
+        border-radius: 12px;
+        padding: 14px;
+        font-size: 16px;
+        font-weight: 600;
+        color: #fff;
+        width: 100%;
+    }
+
+    .payment-option {
+        border: 2px solid #e5e5e5;
+        border-radius: 12px;
+        padding: 12px 16px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 12px;
+        cursor: pointer;
+        background: #f9fafb;
+        transition: border-color 0.2s, background 0.2s;
+    }
+
+    .payment-option.active {
+        border-color: var(--orange);
+        /* orange */
+        background: #fff7ed;
+    }
+
+    .payment-option input {
+        accent-color: var(--orange);
+        /* orange radio button */
+        margin-right: 8px;
+    }
+
+    .payment-left {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }

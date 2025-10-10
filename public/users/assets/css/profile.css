@@ -1,0 +1,65 @@
+.back-link {
+  font-size: 1.3rem;
+  color: #333;
+}
+
+.profile-img {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  border: 3px solid #fb7e00;
+}
+
+.profile-name {
+  font-weight: 600;
+  color: #6f42c1;
+}
+
+.edit-btn {
+  background: #fb7e00;
+  color: #fff;
+  border: none;
+  border-radius: 12px;
+  padding: 5px 15px;
+  font-size: .9rem;
+}
+
+.menu-item {
+  border: none;
+  padding: 14px 12px;
+  border-radius: 16px;
+}
+
+.icon-box {
+  width: 40px;
+  height: 40px;
+  border-radius: 14px;
+  background: #6f42c1;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 12px;
+}
+
+.menu-title {
+  font-weight: 500;
+}
+
+.menu-sub {
+  color: #6c757d;
+}
+
+.arrow {
+  color: #aaa;
+}
+
+.logout-btn {
+  background: linear-gradient(90deg, #fb7e00);
+  border: none;
+  border-radius: 12px;
+  padding: 12px;
+  font-weight: 600;
+  color: #fff;
+  width: 100%;
+}

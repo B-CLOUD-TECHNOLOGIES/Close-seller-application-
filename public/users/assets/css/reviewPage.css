@@ -1,0 +1,24 @@
+body {
+  font-family: 'Poppins', sans-serif;
+}
+.text-purple {
+  color: purple;
+}
+.card {
+  border-radius: 12px;
+}
+img {
+  width: 60px;
+  height: 60px;
+  object-fit: cover;
+}
+.star {
+  font-size: 20px;
+  cursor: pointer;
+  color: #ccc; /* default gray */
+  margin-right: 4px;
+}
+
+.star.selected {
+  color: orange; /* selected stars are orange */
+}
