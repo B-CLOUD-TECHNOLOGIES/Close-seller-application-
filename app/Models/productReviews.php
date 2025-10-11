@@ -4,11 +4,10 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class PasswordOtp extends Model
+class productReviews extends Model
 {
     //
 
     protected $guarded = [];
-
-    protected $table = "password_otps";
+    protected $table = "product_reviews";
 }

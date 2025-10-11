@@ -8,4 +8,6 @@ class vendorVerification extends Model
 {
     //
     protected $guarded = [];
+
+    protected $table = "vendor_verifications";
 }

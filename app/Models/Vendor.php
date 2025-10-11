@@ -12,7 +12,10 @@ class Vendor extends Authenticatable
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, Notifiable;
 
+
     protected $guarded = [];
+
+    protected $table = 'vendors';
 
     protected $hidden = [
         'password',

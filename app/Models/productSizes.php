@@ -4,11 +4,9 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class PasswordOtp extends Model
+class productSizes extends Model
 {
     //
-
     protected $guarded = [];
-
-    protected $table = "password_otps";
+    protected $table = "product_sizes";
 }
