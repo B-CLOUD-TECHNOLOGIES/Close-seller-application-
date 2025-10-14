@@ -20,7 +20,7 @@
                 </div>
                 <div class="col">
                     <div class="add-border">
-                        <a href="add-product.html" class="nav-item add-btn d-block">
+                        <a href="{{ route('vendor.add.products') }}" class="nav-item add-btn d-block">
                             <div class="nav-icon">
                                 <i class="fas fa-plus"></i>
                             </div>

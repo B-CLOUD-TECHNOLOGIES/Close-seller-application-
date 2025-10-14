@@ -15,4 +15,32 @@ class products extends Model
     protected $casts = [
         'tags' => 'array',
     ];
+
+
+    public function getColor()
+    {
+        return $this->hasMany(productColors::class, 'product_id');
+    }
+
+
+    public function getSize()
+    {
+        return $this->hasMany(productSizes::class, 'product_id');
+    }
+
+    public function getImage(){
+        return $this->hasMany(productImages::class, 'product_id')->orderBy('order_by', 'ASC');
+    }
+
+    public function getFirstImage(){
+        $firstImage = productImages::where('product_id', $this->id)
+            ->orderBy('order_by', 'ASC')
+            ->take(2)
+            ->get();
+
+            return $firstImage->first();
+    }
+
+
+
 }

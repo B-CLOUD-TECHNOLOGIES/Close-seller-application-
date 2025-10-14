@@ -11,4 +11,9 @@ class colors extends Model
 
     protected $table = "colors";
 
+    
+    static public function getSingle($id){
+        return self::find($id);
+    }
+
 }

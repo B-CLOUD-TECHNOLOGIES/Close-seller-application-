@@ -22,6 +22,7 @@
     <link rel="stylesheet" href="{{ asset('vendors/assets/css/bottom-nav.css') }}">
     {{-- toastr css --}}
     <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.css">
+    <script src="{{ asset('vendors/assets/js/jquery.js') }}"></script>
 
 </head>
 
@@ -33,7 +34,6 @@
 
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
-    <script src="{{ asset('vendors/assets/js/jquery.js') }}"></script>
 
     <script>
         // Keep original functionality

@@ -109,11 +109,11 @@
                             <option value="" disabled selected>
                                 Select an option
                             </option>
-                            <option value="1">Instagram</option>
-                            <option value="2">WhatsApp</option>
-                            <option value="3">Facebook</option>
-                            <option value="4">Social Media</option>
-                            <option value="5">Family and Friends</option>
+                            <option value="Instagram">Instagram</option>
+                            <option value="WhatsApp">WhatsApp</option>
+                            <option value="Facebook">Facebook</option>
+                            <option value="Social Media">Social Media</option>
+                            <option value="Family and Friends">Family and Friends</option>
                         </select>
 
                     </div>

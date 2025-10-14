@@ -19,9 +19,9 @@ return new class extends Migration
             $table->foreignId('admin_id')->nullable();
             $table->foreignId('category_id')->nullable()->constrained('categories')->onDelete('cascade');
             $table->string('sku')->nullable();
-            $table->double('old_price')->defaukt(0);
-            $table->double('new_price')->defaukt(0);
-            $table->integer('stock_quantity')->defaukt(0);
+            $table->double('old_price')->default(0);
+            $table->double('new_price')->default(0);
+            $table->integer('stock_quantity')->default(0)->nullable();
             $table->longText('description')->nullable();
             $table->string('unit')->nullable();
             $table->string('location')->nullable();

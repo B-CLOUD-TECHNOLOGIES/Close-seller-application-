@@ -1,11 +1,11 @@
 <?php
 
+use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Frontend\frontendController;
 use App\Http\Controllers\OtpPasswordController;
-use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\User\userController;
 use App\Http\Controllers\Vendor\vendorController;
-use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Vendor\VendorProductController;
 
 
 
@@ -133,8 +133,17 @@ Route::middleware('vendor')->prefix('vendors')->group(function () {
         Route::get('/settings', 'VendorSettings')->name('vendor.settings');
         Route::get('/logout', 'VendoLlogout')->name('vendor.logout');
     });
-});
 
+    Route::controller(VendorProductController::class)->group(function () {
+        Route::get('/add-product', 'VendorAddProduct')->name('vendor.add.products');
+        Route::post('/create-product', 'VendorCreateProduct')->name('vendor.create.product');
+        Route::get('/edit-product/{productid}', 'VendorEditProduct')->name('vendor.edit.product');
+        Route::get('/delete-product/{id}', 'VendorDeleteImage')->name('vendor.image_delete');
+        Route::post('/update/product', 'VendorUpdateProduct')->name('vendor.update.product'); 
+
+
+    });
+});
 
 
 
