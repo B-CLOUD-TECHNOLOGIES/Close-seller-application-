@@ -21,4 +21,14 @@ class Vendor extends Authenticatable
         'password',
         'remember_token',
     ];
+
+    public function notifications()
+    {
+        return $this->hasMany(Notification::class);
+    }
+
+    public function bankDetails()
+    {
+        return $this->hasOne(BankDetails::class, 'vendor_id');
+    }
 }

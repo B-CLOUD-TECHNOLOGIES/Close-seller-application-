@@ -23,6 +23,7 @@
     {{-- toastr css --}}
     <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.css">
     <script src="{{ asset('vendors/assets/js/jquery.js') }}"></script>
+    <meta name="csrf-token" content="{{ csrf_token() }}">
 
 </head>
 

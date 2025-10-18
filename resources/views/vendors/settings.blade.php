@@ -28,7 +28,7 @@
                     </div>
                 </div>
 
-                <a href="./personal_data.html" class="settings-item">
+                <a href="{{ route("vendor.personal.data") }}" class="settings-item">
                     <div class="settings-item-content">
                         <div class="settings-item-icon">
                             <i class="fas fa-user"></i>
@@ -48,7 +48,7 @@
                     </div>
                 </a>
 
-                <a href="./business_information.html" class="settings-item">
+                <a href="{{ route("vendor.business.information") }}" class="settings-item">
                     <div class="settings-item-content">
                         <div class="settings-item-icon">
                             <i class="fas fa-building"></i>
@@ -67,7 +67,7 @@
                     </div>
                 </a>
 
-                <a href="./accountInfo.html" class="settings-item">
+                <a href="{{ route('vendor.account.info') }}" class="settings-item">
                     <div class="settings-item-content">
                         <div class="settings-item-icon">
                             <i class="fas fa-id-card"></i>
