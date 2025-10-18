@@ -18,6 +18,7 @@
     <link rel="stylesheet" href="{{ asset('users/assets/css/custom.css') }}">
     {{-- toastr css --}}
     <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.css">
+    <script src="{{ asset('users/assets/js/jquery.js') }}"></script>
 
 </head>
 
@@ -29,10 +30,24 @@
 
     <!-- Bootstrap 5 JS Bundle with Popper -->
     <script src="{{ asset('users/assets/js/bootstrap.bundle.js') }}"></script>
-    <script src="{{ asset('users/assets/js/jquery.js') }}"></script>
     <script src="{{ asset('users/assets/js/script.js') }}"></script>
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            $('#theForm').on('submit', function() {
+                var $btn = $(this).find('.spin-btn');
+                var $spinner = $btn.find('.spinner-border');
+                var $text = $btn.find('.btn-text');
 
+                // Disable button to prevent multiple submissions
+                $btn.prop('disabled', true);
+                $text.addClass('d-none'); // hide text
+                $spinner.removeClass('d-none'); // show spinner
+
+                // Let the form continue submitting normally
+            });
+        });
+    </script>
     @if ($errors->any())
         <script>
             @foreach ($errors->all() as $error)

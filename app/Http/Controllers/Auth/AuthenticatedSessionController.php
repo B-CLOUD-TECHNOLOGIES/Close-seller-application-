@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\LoginRequest;
+use App\Models\notification;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -32,7 +33,11 @@ class AuthenticatedSessionController extends Controller
             'message' => 'User Login Successfully',
             'alert-type' => 'success'
         ];
-        return redirect()->route('user.dashboard')->with($notification);
+
+        $user_id = Auth::user()->id;
+        notification::insertRecord($user_id, 'user', "Welcome back", 'https://lol.com', "You are seeing this message because you just logged in", false);
+
+        return redirect()->route('index')->with($notification);
     }
 
     /**

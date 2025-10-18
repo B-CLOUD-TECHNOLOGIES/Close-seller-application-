@@ -1,8 +1,8 @@
     @extends('frontend.frontend-master')
 
     @section('main')
-    <link rel="stylesheet" href="{{ asset('users/assets/css/home.css') }}">
-    
+        <link rel="stylesheet" href="{{ asset('users/assets/css/home.css') }}">
+
         <!-- Loading Placeholder -->
         <div id="loading-placeholder">
             <!-- Skeleton Header -->
@@ -115,11 +115,13 @@
                         <h1 class="h5 fw-bold mb-0 text-purple-600">CloseSeller</h1>
                     </div>
                     <div class="d-flex align-items-center gap-3">
-                        <button class="btn p-0 position-relative">
+                        <button class="btn p-0 position-relative" onclick="window.location.href='{{ url('/notifications') }}'">
                             <span class="material-symbols-outlined text-gray-700">notifications</span>
-                            <span
-                                class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-orange-notification text-white"
-                                style="font-size: 0.5rem">5</span>
+                            @if ($unreadCount > 0)
+                                <span
+                                    class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-orange-notification text-white"
+                                    style="font-size: 0.5rem">{{ $unreadCount }}</span>
+                            @endif
                         </button>
                         <button class="btn p-0 position-relative" onclick="window.location.href='#'">
                             <span class="material-symbols-outlined text-gray-700">shopping_cart</span>
@@ -134,7 +136,8 @@
             <!-- Search Bar -->
             <div class="p-3">
                 <div class="position-relative">
-                    <form action="search.html" method="GET">
+                    <form action="{{ route('product.search') }}" method="GET">
+                        @csrf
                         <span
                             class="material-symbols-outlined position-absolute top-50 translate-middle-y ms-3 text-gray-500">search</span>
                         <input type="text" name="search" class="form-control rounded-pill ps-5 search-input"
@@ -148,16 +151,16 @@
             <div id="bannerCarousel" class="carousel slide" data-bs-ride="carousel">
                 <div class="carousel-inner">
                     <div class="carousel-item active">
-                        <img src="{{ asset('users/assets/images/banner.jpg') }}" class="d-block w-100" alt="Promotional Banner"
-                            style="height: 192px; object-fit: cover;">
+                        <img src="{{ asset('users/assets/images/banner.jpg') }}" class="d-block w-100"
+                            alt="Promotional Banner" style="height: 192px; object-fit: cover;">
                     </div>
                     <div class="carousel-item">
-                        <img src="{{ asset('users/assets/images/banner2.jpg') }}" class="d-block w-100" alt="New Arrivals Banner"
-                            style="height: 192px; object-fit: cover;">
+                        <img src="{{ asset('users/assets/images/banner2.jpg') }}" class="d-block w-100"
+                            alt="New Arrivals Banner" style="height: 192px; object-fit: cover;">
                     </div>
                     <div class="carousel-item">
-                        <img src="{{ asset('users/assets/images/banner.jpg') }}" class="d-block w-100" alt="Best Deals Banner"
-                            style="height: 192px; object-fit: cover;">
+                        <img src="{{ asset('users/assets/images/banner.jpg') }}" class="d-block w-100"
+                            alt="Best Deals Banner" style="height: 192px; object-fit: cover;">
                     </div>
                 </div>
                 <div class="carousel-indicators position-absolute bottom-0 mb-2">
@@ -174,26 +177,34 @@
                     <h3 class="h5 fw-bold text-gray-800 mb-0">Categories</h3>
                 </div>
                 <div class="category-scroll no-scrollbar">
-                    <div class="category-item">
-                        <a href="#" class="text-decoration-none">
-                            <div class="category-icon-wrapper bg-purple-100">
-                                <span class="material-symbols-outlined text-purple-600 category-icon">
-                                    smartphone
-                                </span>
-                            </div>
-                            <p class="category-name">Electronics</p>
-                        </a>
-                    </div>
-                    <div class="category-item">
-                        <a href="#" class="text-decoration-none">
-                            <div class="category-icon-wrapper bg-orange-100">
-                                <span class="material-symbols-outlined text-orange-600 category-icon">
-                                    smartphone
-                                </span>
-                            </div>
-                            <p class="category-name">Electronics</p>
-                        </a>
-                    </div>
+
+                    @php
+                        $colors = [
+                            ['bg' => 'bg-purple-100', 'text' => 'text-purple-600'],
+                            ['bg' => 'bg-orange-100', 'text' => 'text-orange-600'],
+                        ];
+                    @endphp
+
+                    @foreach ($categories as $index => $cat)
+                        @php
+                            $color = $colors[$index % 2]; // alternate between purple & orange
+                        @endphp
+
+                        <div class="category-item">
+                            <a href="{{ route('product.categories', [$cat->id, Str::slug($cat->category_name)]) }}"
+                                class="text-decoration-none">
+                                <div class="category-icon-wrapper {{ $color['bg'] }}">
+                                    <span class="material-symbols-outlined {{ $color['text'] }} category-icon">
+                                        {{ $cat->image }}
+                                    </span>
+                                </div>
+                                <p class="category-name">{{ $cat->category_name }}</p>
+                            </a>
+                        </div>
+                    @endforeach
+
+
+
 
                 </div>
             </div>
@@ -218,7 +229,8 @@
 
                         <a href="#" class="text-decoration-none">
                             <div class="overflow-hidden">
-                                <img src="{{ asset('users/assets/images/1.jpg') }}" class="product-img w-100" alt="iPhone 15 Pro">
+                                <img src="{{ asset('users/assets/images/1.jpg') }}" class="product-img w-100"
+                                    alt="iPhone 15 Pro">
                             </div>
                             <div class="card-body p-2">
                                 <h6 class="card-title fw-semibold text-gray-800 text-truncate">iPhone 15 Pro Max</h6>
@@ -255,7 +267,8 @@
 
                         <a href="#" class="text-decoration-none">
                             <div class="overflow-hidden">
-                                <img src="{{ asset('users/assets/images/2.jpg') }}" class="product-img w-100" alt="MacBook Pro">
+                                <img src="{{ asset('users/assets/images/2.jpg') }}" class="product-img w-100"
+                                    alt="MacBook Pro">
                             </div>
                             <div class="card-body p-2">
                                 <h6 class="card-title fw-semibold text-gray-800 text-truncate">MacBook Pro M3</h6>
@@ -292,7 +305,8 @@
 
                         <a href="#" class="text-decoration-none">
                             <div class="overflow-hidden">
-                                <img src="{{ asset('users/assets/images/11.jpg') }}" class="product-img w-100" alt="AirPods Pro">
+                                <img src="{{ asset('users/assets/images/11.jpg') }}" class="product-img w-100"
+                                    alt="AirPods Pro">
                             </div>
                             <div class="card-body p-2">
                                 <h6 class="card-title fw-semibold text-gray-800 text-truncate">AirPods Pro 2nd Gen</h6>
@@ -327,137 +341,18 @@
                 </div>
                 <div class="row mt-3 g-3">
                     <!-- Product 1 -->
-                    <div class="col-6">
-                        <div class="card new-arrival-card border border-gray-200 rounded-3 overflow-hidden h-100">
-                            <button class="btn btn-light p-1 position-absolute top-0 end-0 m-2 z-2 rounded-circle"
-                                style="background: rgba(255,255,255,0.7);"
-                                onclick="toggleHeart(this.querySelector('.heart-icon'))">
-                                <i class='heart-icon fa fa-heart-o' style='color: #555;font-size:1rem'></i>
-                            </button>
+                    @if ($products->count() > 0)
+                        @foreach ($products as $product)
+                            @include('frontend._products')
+                        @endforeach
+                    @else
+                        <h6 class="text-muted fw-bold">No Product(s) Available for this category</h6>
+                    @endif
 
-                            <a href="#" class="text-decoration-none">
-                                <div class="overflow-hidden">
-                                    <img src="{{ asset('users/assets/images/17.jpg') }}" class="new-arrival-img w-100"
-                                        alt="Wireless Headphones">
-                                </div>
-                                <div class="card-body p-2">
-                                    <h6 class="card-title fs-12 fw-semibold text-gray-800">Sony WH-1000XM5 Headphones</h6>
-                                    <p class="card-text fw-bold text-purple-600 mb-1">₦450,000</p>
-                                    <div class="d-flex justify-content-between flex-wrap align-items-center mb-1 small">
-                                        <div class="product-rating">
-                                            <i class="fa fa-star text-warning" aria-hidden="true"></i>
-                                            <span class="rating-text">4.6</span>
-                                        </div>
-
-                                        <div class="product-location text-end">
-                                            <i class="fa fa-map-marker text-muted" aria-hidden="true"></i>
-                                            <span class="location-text">Kano</span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </a>
-                        </div>
-                    </div>
-
-                    <!-- Product 2 -->
-                    <div class="col-6">
-                        <div class="card new-arrival-card border border-gray-200 rounded-3 overflow-hidden h-100">
-                            <button class="btn btn-light p-1 position-absolute top-0 end-0 m-2 z-2 rounded-circle"
-                                style="background: rgba(255,255,255,0.7);"
-                                onclick="toggleHeart(this.querySelector('.heart-icon'))">
-                                <i class='heart-icon fa fa-heart-o' style='color: #555;font-size:1rem'></i>
-                            </button>
-
-                            <a href="#" class="text-decoration-none">
-                                <div class="overflow-hidden">
-                                    <img src="{{ asset('users/assets/images/8.jpg') }}" class="new-arrival-img w-100" alt="Smart Watch">
-                                </div>
-                                <div class="card-body p-2">
-                                    <h6 class="card-title fs-12 fw-semibold text-gray-800">Apple Watch Series 9</h6>
-                                    <p class="card-text fw-bold text-purple-600 mb-1">₦650,000</p>
-                                    <div class="d-flex justify-content-between flex-wrap align-items-center mb-1 small">
-                                        <div class="product-rating">
-                                            <i class="fa fa-star text-warning" aria-hidden="true"></i>
-                                            <span class="rating-text">4.8</span>
-                                        </div>
-
-                                        <div class="product-location text-end">
-                                            <i class="fa fa-map-marker text-muted" aria-hidden="true"></i>
-                                            <span class="location-text">Port Harcourt</span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </a>
-                        </div>
-                    </div>
-
-                    <!-- Product 3 -->
-                    <div class="col-6">
-                        <div class="card new-arrival-card border border-gray-200 rounded-3 overflow-hidden h-100">
-                            <button class="btn btn-light p-1 position-absolute top-0 end-0 m-2 z-2 rounded-circle"
-                                style="background: rgba(255,255,255,0.7);"
-                                onclick="toggleHeart(this.querySelector('.heart-icon'))">
-                                <i class='heart-icon fa fa-heart-o' style='color: #555;font-size:1rem'></i>
-                            </button>
-
-                            <a href="#" class="text-decoration-none">
-                                <div class="overflow-hidden">
-                                    <img src="{{ asset('users/assets/images/17.jpg') }}" class="new-arrival-img w-100" alt="Gaming Console">
-                                </div>
-                                <div class="card-body p-2">
-                                    <h6 class="card-title fs-12 fw-semibold text-gray-800">PlayStation 5 Console</h6>
-                                    <p class="card-text fw-bold text-purple-600 mb-1">₦800,000</p>
-                                    <div class="d-flex justify-content-between flex-wrap align-items-center mb-1 small">
-                                        <div class="product-rating">
-                                            <i class="fa fa-star text-warning" aria-hidden="true"></i>
-                                            <span class="rating-text">4.9</span>
-                                        </div>
-
-                                        <div class="product-location text-end">
-                                            <i class="fa fa-map-marker text-muted" aria-hidden="true"></i>
-                                            <span class="location-text">Lagos</span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </a>
-                        </div>
-                    </div>
-
-                    <!-- Product 4 -->
-                    <div class="col-6">
-                        <div class="card new-arrival-card border border-gray-200 rounded-3 overflow-hidden h-100">
-                            <button class="btn btn-light p-1 position-absolute top-0 end-0 m-2 z-2 rounded-circle"
-                                style="background: rgba(255,255,255,0.7);"
-                                onclick="toggleHeart(this.querySelector('.heart-icon'))">
-                                <i class='heart-icon fa fa-heart-o' style='color: #555;font-size:1rem'></i>
-                            </button>
-
-                            <a href="#" class="text-decoration-none">
-                                <div class="overflow-hidden">
-                                    <img src="{{ asset('users/assets/images/14.jpg') }}" class="new-arrival-img w-100" alt="Laptop">
-                                </div>
-                                <div class="card-body p-2">
-                                    <h6 class="card-title fs-12 fw-semibold text-gray-800">Dell XPS 13 Laptop</h6>
-                                    <p class="card-text fw-bold text-purple-600 mb-1">₦1,800,000</p>
-                                    <div class="d-flex justify-content-between flex-wrap align-items-center mb-1 small">
-                                        <div class="product-rating">
-                                            <i class="fa fa-star text-warning" aria-hidden="true"></i>
-                                            <span class="rating-text">4.5</span>
-                                        </div>
-
-                                        <div class="product-location text-end">
-                                            <i class="fa fa-map-marker text-muted" aria-hidden="true"></i>
-                                            <span class="location-text">Abuja</span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </a>
-                        </div>
-                    </div>
                 </div>
             </div>
 
             <!-- Fixed Footer Navigation -->
-            @include("frontend.footer")
+            @include('frontend.footer')
         </div>
     @endsection

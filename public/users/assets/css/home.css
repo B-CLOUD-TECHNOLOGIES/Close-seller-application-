@@ -816,7 +816,7 @@
 
 
 
-.dropdown {
+/* .dropdown {
     position: relative;
     display: inline-block;
 }
@@ -846,7 +846,7 @@
     border-radius: 6px;
     min-width: 180px;
     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
-    z-index: 10;
+    z-index: 9999 !important;
 }
 
 .dropdown-content a {
@@ -860,7 +860,7 @@
 .dropdown-content a:hover {
     background: var(--primary-color);
     color: #fff;
-}
+} */
 
 /* Show active dropdown */
 .dropdown.active .dropdown-content {
@@ -873,4 +873,57 @@
         font-size: 0.9rem !important;
     }
 
+}
+
+.heart-icon{
+    z-index: 10px !important;
+}
+
+.sticky-top{
+    z-index: 99999 !important;
+}
+
+
+.custom-dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+.dropdown-select {
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    background: #f8f9fa;
+    border: 1px solid #ddd;
+    padding: 6px 32px 6px 12px; /* extra right padding for arrow */
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    user-select: none;
+    color: #333;
+    transition: all 0.3s ease;
+}
+
+/* Add hover effect */
+.dropdown-select:hover {
+    /* background: var(--orange); */
+    /* color: #fff; */
+}
+
+/* Custom arrow icon */
+.custom-dropdown::after {
+    content: "▾";
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    pointer-events: none;
+    color: #555;
+    font-size: 14px;
+}
+
+/* Optional focus style */
+.dropdown-select:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(255, 165, 0, 0.3); /* orange glow */
 }

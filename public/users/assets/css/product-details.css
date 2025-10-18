@@ -1064,3 +1064,16 @@
         background: white;
         transform: scale(1.3);
     }
+
+
+    /* Hide the up/down arrows (spinners) for number inputs */
+    .quantity-input::-webkit-outer-spin-button,
+    .quantity-input::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+    }
+
+    .quantity-input {
+        -moz-appearance: textfield;
+        /* Firefox */
+    }

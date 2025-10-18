@@ -201,7 +201,7 @@
         </div>
 
 
-        <form class="form" method="POST" action="{{ route('user.password.otp.verify') }}" id="signUpForm">
+        <form class="form" method="POST" action="{{ route('user.password.otp.verify') }}" id="theForm">
             @csrf
             <input type="hidden" name="email" value="{{ $email }}">
             <div class="input-div">
@@ -222,8 +222,9 @@
                 </div>
             </div>
 
-            <button type="submit" name="verify_otp" id="verifyBtn">
-                <div class="spinner"></div> Verify OTP
+            <button type="submit" name="verify_otp" id="verifyBtn" class="spin-btn">
+                <span class="btn-text">Verify OTP</span>
+                <span class="spinner-border spinner-border-sm ms-2 d-none" role="status" aria-hidden="true"></span>
             </button>
         </form>
 
@@ -250,6 +251,23 @@
     <script src="{{ asset('users/assets/js/bootstrap.bundle.js') }}"></script>
     <script src="{{ asset('users/assets/js/jquery.js') }}"></script>
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+
+    <script>
+        $(document).ready(function() {
+            $('#theForm').on('submit', function() {
+                var $btn = $(this).find('.spin-btn');
+                var $spinner = $btn.find('.spinner-border');
+                var $text = $btn.find('.btn-text');
+
+                // Disable button to prevent multiple submissions
+                $btn.prop('disabled', true);
+                $text.addClass('d-none'); // hide text
+                $spinner.removeClass('d-none'); // show spinner
+
+                // Let the form continue submitting normally
+            });
+        });
+    </script>
 
     <script>
         document.querySelectorAll('.otp-input').forEach((input, index, inputs) => {

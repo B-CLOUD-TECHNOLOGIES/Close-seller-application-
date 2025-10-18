@@ -17,6 +17,12 @@ class products extends Model
     ];
 
 
+    public function getCategory()
+    {
+        return $this->belongsTo(categories::class, 'category_id', 'id');
+    }
+
+
     public function getColor()
     {
         return $this->hasMany(productColors::class, 'product_id');
@@ -28,19 +34,18 @@ class products extends Model
         return $this->hasMany(productSizes::class, 'product_id');
     }
 
-    public function getImage(){
+    public function getImage()
+    {
         return $this->hasMany(productImages::class, 'product_id')->orderBy('order_by', 'ASC');
     }
 
-    public function getFirstImage(){
+    public function getFirstImage()
+    {
         $firstImage = productImages::where('product_id', $this->id)
             ->orderBy('order_by', 'ASC')
             ->take(2)
             ->get();
 
-            return $firstImage->first();
+        return $firstImage->first();
     }
-
-
-
 }

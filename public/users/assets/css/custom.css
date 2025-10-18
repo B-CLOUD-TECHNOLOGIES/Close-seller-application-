@@ -154,10 +154,15 @@ footer {
     background-color: #f97316;
 }
 
+.nav-div{
+    margin: 0;
+    padding: 0 10px;
+}
+
 .notification-badge {
     position: absolute;
-    top: 2px;
-    right: 25px;
+    top: -5px;
+    right: 0;
     font-size: 0.6rem;
     min-width: 16px;
     height: 18px;
@@ -195,4 +200,9 @@ footer {
 button:active, button:focus{
     border: none !important;
     outline: none !important;
+}
+
+a:active{
+    outline: none !important;
+    border: none !important;
 }

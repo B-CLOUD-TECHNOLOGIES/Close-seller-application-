@@ -25,6 +25,12 @@ Route::controller(frontendController::class)->group(function () {
     Route::get('/auth-type', 'AuthType')->name('auth.type');
     Route::get('/splash-screen', 'SplashScreen')->name('splash.screen');
     Route::get('/', 'Home')->name('index');
+    Route::get('/product-details/{productid}/{productName}/{catid}/{catName}', 'ProductDetails')->name('product.details');
+    Route::get('/product-categories/{catid}/{catName}', 'ProductCategories')->name('product.categories');
+    Route::get('/categories', 'categories')->name('categories');
+    Route::get('/search/q', 'productSearch')->name('product.search');
+    Route::get('/notifications', 'AuthNotification')->name('notifications');
+    Route::get('/notifications/details/{id}', 'notificationDetails')->name('notifications.details');
 });
 
 // =============================  FRONTEND ENDS ============================= //
@@ -140,6 +146,7 @@ Route::middleware('vendor')->prefix('vendors')->group(function () {
         Route::get('/edit-product/{productid}', 'VendorEditProduct')->name('vendor.edit.product');
         Route::get('/delete-product/{id}', 'VendorDeleteImage')->name('vendor.image_delete');
         Route::post('/update/product', 'VendorUpdateProduct')->name('vendor.update.product'); 
+        Route::post('/vendor/update-image-order', 'productImageSort')->name('vendor.update_image_order'); 
 
 
     });

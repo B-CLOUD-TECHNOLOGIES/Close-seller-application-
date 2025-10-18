@@ -211,7 +211,8 @@
                 <div class="form-contain">
                     <label class="form-label">City</label>
                     <div class="form-input">
-                        <input type="text" name="city" value="Lagos" class="form-control" id="city">
+                        <input type="text" name="city" value="{{ $product->city }}" class="form-control"
+                            id="city">
                     </div>
                 </div>
 
@@ -396,23 +397,44 @@
                     $('.sortable_image').each(function() {
                         var id = $(this).attr('id');
                         photo_id.push(id);
-                    })
+                    });
 
                     let product_id = `{{ $product->id }}`;
+
+                    // Show updating modal
+                    $('#updatingModal').modal('show');
+
                     $.ajax({
-                        url: `editProduct.php?id=${product_id}`,
+                        url: `{{ route('vendor.update_image_order') }}`,
                         type: 'POST',
                         data: {
                             photo_id: photo_id,
+                            _token: '{{ csrf_token() }}',
                         },
                         success: function(data) {
+                            // Hide modal after success
+                            $('#updatingModal').modal('hide');
 
+                            if (data.success) {
+                                toastr.success('Image order updated successfully',
+                                    'Success');
+                            } else {
+                                toastr.warning(
+                                    'Update completed, but with unexpected result',
+                                    'Notice');
+                            }
+
+                            console.log("Order updated successfully:", data);
                         },
                         error: function(error) {
+                            // Hide modal
+                            $('#updatingModal').modal('hide');
+
+                            toastr.error('Failed to update image order. Please try again.',
+                                'Error');
                             console.error("Error updating order:", error);
                         }
                     });
-
                 }
             });
 

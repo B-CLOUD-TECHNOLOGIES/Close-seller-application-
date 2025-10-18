@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Vendor;
 
 use App\Http\Controllers\Controller;
 use App\Models\categories;
-use App\Models\colors;
+use App\Models\Color;
 use App\Models\Location;
 use App\Models\productColors;
 use App\Models\productImages;
@@ -70,7 +70,7 @@ class VendorProductController extends Controller
         $data['units'] = Units::orderBy('unit', 'ASC')->get();
         $data['categories'] = categories::orderBy('category_name', 'ASC')->get();
         $data['locations'] = Location::orderBy('name', 'ASC')->get();
-        $data['colors'] = colors::orderBy('color', 'ASC')->get();
+        $data['colors'] = Color::orderBy('color', 'ASC')->get();
 
         return view('vendors.products.edit-product', $data);
     }
@@ -186,7 +186,7 @@ class VendorProductController extends Controller
 
                         $manager = new ImageManager(new Driver());
                         $img = $manager->read($image);
-                        $img->resize(300, 300);
+                        $img->resize(150, 150);
                         $img->save(public_path($normalPath));
 
                         productImages::create([
@@ -211,6 +211,24 @@ class VendorProductController extends Controller
         }
     }
 
+
+    public function productImageSort(Request $request)
+    {
+        if (!empty($request->photo_id)) {
+            $i = 1;
+            foreach ($request->photo_id as $photo_id) {
+                $image = productImages::find($photo_id);
+                $image->order_by = $i;
+                $image->save();
+                $i++;
+            }
+        }
+
+        // $json['success'] = true;
+        // echo json_encode($json);
+
+    return response()->json(['success' => true]);
+    }
 
 
 

@@ -57,6 +57,6 @@ class RegisteredUserController extends Controller
             'message' => 'User Registered Successfully',
             'alert-type' => 'success'
         ];
-        return redirect()->route('user.dashboard')->with($notification);
+        return redirect()->route('index')->with($notification);
     }
 }

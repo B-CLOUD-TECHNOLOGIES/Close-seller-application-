@@ -80,7 +80,7 @@
                 <h2 class="fw-bold text-dark">Welcome Back !</h2>
             </div>
 
-            <form class="p-4 bg-white rounded-4 shadow-sm" method="POST" action="{{ route('login') }}">
+            <form class="p-4 bg-white rounded-4 shadow-sm" method="POST" action="{{ route('login') }}" id="theForm">
                 @csrf
                 <div class="mb-3">
                     <label for="email" class="form-label">Email address</label>
@@ -112,7 +112,11 @@
                             class="text-decoration-none text-primary-custom">Click here</a></small>
                 </div>
 
-                <button type="submit" class="btn-outline-primary w-100 py-2 mb-3 fw-semibold">Log In</button>
+                <button type="submit" class="btn-outline-primary w-100 py-2 mb-3 fw-semibold spin-btn">
+                    <span class="btn-text">Log In</span>
+                    <span class="spinner-border spinner-border-sm ms-2 d-none" role="status" aria-hidden="true"></span>
+                </button>
+
 
                 <div class="divider my-4"><span>OR</span></div>
 
@@ -134,7 +138,8 @@
 
                 <div class="text-center mt-3">
                     <small>Don't have an account yet?
-                        <a href="{{ url('/register') }}" class="text-decoration-none text-orange-600 fw-medium">Signup</a>
+                        <a href="{{ url('/register') }}"
+                            class="text-decoration-none text-orange-600 fw-medium">Signup</a>
                     </small>
                 </div>
             </form>
@@ -151,6 +156,24 @@
     <!-- Bootstrap 5 JS Bundle with Popper -->
     <script src="{{ asset('users/assets/js/bootstrap.bundle.js') }}"></script>
     <script src="{{ asset('users/assets/js/jquery.js') }}"></script>
+
+    <script>
+        $(document).ready(function() {
+            $('#theForm').on('submit', function() {
+                var $btn = $(this).find('.spin-btn');
+                var $spinner = $btn.find('.spinner-border');
+                var $text = $btn.find('.btn-text');
+
+                // Disable button to prevent multiple submissions
+                $btn.prop('disabled', true);
+                $text.addClass('d-none'); // hide text
+                $spinner.removeClass('d-none'); // show spinner
+
+                // Let the form continue submitting normally
+            });
+        });
+    </script>
+
     <script>
         $(document).ready(function() {
             $('.toggle-password').on('click', function() {
@@ -166,7 +189,7 @@
             });
         })
     </script>
-        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
 
     @if ($errors->any())
         <script>

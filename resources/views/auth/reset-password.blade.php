@@ -50,7 +50,7 @@
                 <p class="text-muted small">Enter your new password below</p>
             </div>
 
-            <form class="p-4 bg-white rounded-4 shadow-sm" method="POST" action="{{ route('user.reset-password') }}">
+            <form class="p-4 bg-white rounded-4 shadow-sm" method="POST" action="{{ route('user.reset-password') }}" id="theForm">
                 @csrf
 
                 {{-- Hidden Email Field --}}
@@ -88,7 +88,10 @@
                     @enderror
                 </div>
 
-                <button type="submit" class="btn-outline-primary w-100 py-2 mb-3 fw-semibold">Reset Password</button>
+                <button type="submit" class="btn-outline-primary w-100 py-2 mb-3 fw-semibold spin-btn">
+                    <span class="btn-text">Reset Password</span>
+                    <span class="spinner-border spinner-border-sm ms-2 d-none" role="status" aria-hidden="true"></span>
+                </button>
 
                 <div class="text-center mt-3">
                     <small>Remembered your password?
@@ -102,7 +105,22 @@
     <!-- Bootstrap 5 JS -->
     <script src="{{ asset('users/assets/js/bootstrap.bundle.js') }}"></script>
     <script src="{{ asset('users/assets/js/jquery.js') }}"></script>
+    <script>
+        $(document).ready(function() {
+            $('#theForm').on('submit', function() {
+                var $btn = $(this).find('.spin-btn');
+                var $spinner = $btn.find('.spinner-border');
+                var $text = $btn.find('.btn-text');
 
+                // Disable button to prevent multiple submissions
+                $btn.prop('disabled', true);
+                $text.addClass('d-none'); // hide text
+                $spinner.removeClass('d-none'); // show spinner
+
+                // Let the form continue submitting normally
+            });
+        });
+    </script>
     <script>
         $(document).ready(function() {
             $('.toggle-password').on('click', function() {
