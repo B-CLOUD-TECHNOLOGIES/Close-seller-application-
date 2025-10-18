@@ -6,6 +6,7 @@ use App\Http\Controllers\OtpPasswordController;
 use App\Http\Controllers\User\userController;
 use App\Http\Controllers\Vendor\vendorController;
 use App\Http\Controllers\Vendor\VendorProductController;
+use App\Http\Controllers\VendorBankController;
 
 
 
@@ -126,11 +127,15 @@ Route::controller(vendorController::class)->group(function () {
 
 Route::middleware('vendor')->prefix('vendors')->group(function () {
 
-    Route::controller(vendorController::class)->group(function () {
+   Route::controller(vendorController::class)->group(function () {
         Route::get('/verification', 'VendorDocumentVerification')->name('vendor.doc.verify');
         Route::post('/doc/store', 'VendorDocStore')->name('vendor.verify.docs');
         Route::get('/dashboard', 'VendorDashboard')->name('vendor.dashboard');
         Route::get('/settings', 'VendorSettings')->name('vendor.settings');
+        Route::get('/personal-data', 'VendorPersonalData')->name('vendor.personal.data');
+        Route::post('/personal-data/update', 'VendorUpdatePersonalData')->name('vendor.update.personal.data');
+        Route::get('/business-information', 'VendorBusinessInfo')->name('vendor.business.information');
+        Route::post('/business-information/update', 'VendorUpdateBusinessInfo')->name('vendor.update.business.information');
         Route::get('/logout', 'VendoLlogout')->name('vendor.logout');
     });
 
@@ -142,6 +147,13 @@ Route::middleware('vendor')->prefix('vendors')->group(function () {
         Route::post('/update/product', 'VendorUpdateProduct')->name('vendor.update.product'); 
 
 
+    });
+
+    Route::controller(VendorBankController::class)->group(function () {
+        Route::get('/account-info', 'showAccountInfo')->name('vendor.account.info');
+        Route::get('/banks', 'getBanks')->name('vendor.get.banks');
+        Route::post('/verify-bank', 'verifyAccount')->name('vendor.verify.account');
+        Route::post('/save-bank-details', 'saveDetails')->name('vendor.save.bank.details');
     });
 });
 

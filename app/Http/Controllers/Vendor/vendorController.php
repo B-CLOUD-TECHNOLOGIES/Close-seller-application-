@@ -4,7 +4,8 @@ namespace App\Http\Controllers\Vendor;
 
 use App\Http\Controllers\Controller;
 use App\Models\Vendor;
-use App\Models\vendorVerification;
+use App\Models\VendorVerification;
+use App\Models\Notification;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rules;
 use Illuminate\Support\Facades\Auth;
@@ -28,6 +29,164 @@ class vendorController extends Controller
     public function VendorSettings(){
         return view('vendors.settings');
     }
+
+     public function VendorPersonalData()
+    {
+        $vendor = auth('vendor')->user(); // Fetch logged-in vendor
+        return view('vendors.settings.personal-data', compact('vendor'));
+    }
+
+    public function VendorBusinessInfo()
+    {
+        $vendor = auth('vendor')->user();
+        $businessInfo = VendorVerification::where('vendor_id', $vendor->id)->first();
+
+        return view('vendors.settings.business-information', compact('vendor', 'businessInfo'));
+    }
+
+
+// public function VendorUpdatePersonalData(Request $request)
+// {
+//     $vendor = Vendor::find(auth('vendor')->id());
+
+//     $request->validate([
+//         'firstname' => 'required|string|max:255',
+//         'lastname' => 'required|string|max:255',
+//         'phone' => 'required|string|max:20',
+//         'gender' => 'nullable|string|max:50',
+//         'image' => 'nullable|image|mimes:jpeg,png,webp|max:2048',
+//     ]);
+
+//     // Handle image upload
+//     if ($request->hasFile('image')) {
+//         $file = $request->file('image');
+//         $fileName = time().'_'.$file->getClientOriginalName();
+//         $filePath = $file->storeAs('uploads/vendors', $fileName, 'public');
+//         $vendor->image = $filePath;
+//     }
+
+//     // Update vendor data
+//     $vendor->firstname = $request->firstname;
+//     $vendor->lastname = $request->lastname;
+//     $vendor->phone = $request->phone;
+//     $vendor->gender = $request->gender;
+//     $vendor->save();
+
+//     // ✅ Create a notification record
+//     \App\Models\Notification::create([
+//         'vendor_id' => $vendor->id,
+//         'title' => 'Profile Updated',
+//         'message' => 'Your personal information was updated successfully on ' . now()->format('M d, Y H:i A'),
+//     ]);
+
+//     return back()->with('success', 'Profile updated successfully!');
+// }
+public function VendorUpdatePersonalData(Request $request)
+{
+    try {
+        $vendor = Vendor::find(auth('vendor')->id());
+
+        if (!$vendor) {
+            return response()->json(['success' => false, 'message' => 'Vendor not found.'], 404);
+        }
+
+        $request->validate([
+            'firstname' => 'required|string|max:255',
+            'lastname'  => 'required|string|max:255',
+            'phone'     => 'required|string|max:20',
+            'gender'    => 'nullable|string|max:50',
+            'image'     => 'nullable|image|mimes:jpeg,png,webp|max:2048',
+        ]);
+
+        // Handle image upload
+        if ($request->hasFile('image')) {
+            $file = $request->file('image');
+            $fileName = time() . '_' . $file->getClientOriginalName();
+            $filePath = $file->storeAs('uploads/vendors', $fileName, 'public');
+            $vendor->image = $filePath;
+        }
+
+        // Update vendor info
+        $vendor->firstname = $request->firstname;
+        $vendor->lastname  = $request->lastname;
+        $vendor->phone     = $request->phone;
+        $vendor->gender    = $request->gender;
+        $vendor->save();
+
+        // ✅ Create a notification record
+    Notification::create([
+        'vendor_id' => $vendor->id,
+        'title' => 'Profile Updated',
+        'message' => 'Your personal information was updated successfully on ' . now()->format('M d, Y H:i A'),
+    ]);
+
+        // Return JSON success
+        return response()->json([
+            'success' => true,
+            'message' => 'Profile updated successfully!',
+            'vendor' => $vendor
+        ]);
+    } catch (\Exception $e) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Error updating profile: ' . $e->getMessage(),
+        ], 500);
+    }
+}
+
+
+
+public function VendorUpdateBusinessInfo(Request $request)
+{
+    try {
+        $vendor = auth('vendor')->user();
+
+        if (!$vendor) {
+            return response()->json(['success' => false, 'message' => 'Vendor not found.'], 404);
+        }
+
+        // ✅ Validate request
+        $request->validate([
+            'businessName' => 'required|string|max:255',
+            'description'  => 'required|string|max:500',
+            'website'      => 'nullable|url|max:255',
+            'address'      => 'required|string|max:255',
+        ]);
+
+        // ✅ Find or create the vendor verification record
+        $verification = VendorVerification::firstOrNew(['vendor_id' => $vendor->id]);
+
+        // ✅ Update fields
+        $verification->name        = $request->businessName;
+        $verification->description = $request->description;
+        $verification->web_url     = $request->website;
+        $verification->address     = $request->address;
+
+        // Reset status to pending when details change (optional)
+        $verification->status = 0;
+
+        $verification->save();
+
+        // ✅ Create a notification record
+        Notification::create([
+            'vendor_id' => $vendor->id,
+            'title'     => 'Business Information Updated',
+            'message'   => 'Your business information was updated successfully on ' . now()->format('M d, Y H:i A'),
+        ]);
+
+        // ✅ Return JSON response
+        return response()->json([
+            'success' => true,
+            'message' => 'Business information updated successfully!',
+            'data'    => $verification
+        ]);
+    } catch (\Exception $e) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Error updating business information: ' . $e->getMessage(),
+        ], 500);
+    }
+}
 
     public function VendorDashboard(){
         return view('vendors.index');
