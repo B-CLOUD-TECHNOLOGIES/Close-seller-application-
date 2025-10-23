@@ -8,9 +8,10 @@ use App\Http\Controllers\User\userController;
 use App\Http\Controllers\Vendor\vendorController;
 use App\Http\Controllers\Vendor\VendorProductController;
 use App\Http\Controllers\VendorBankController;
-
-
-
+use App\Http\Controllers\Vendor\VendorPasswordController;
+use App\Http\Controllers\Vendor\FaqController;
+use App\Http\Controllers\Vendor\HelpController;
+use App\Http\Controllers\Vendor\VendorReviewController;
 
 // Route::get('/dashboard', function () {
 //     return view('dashboard');
@@ -179,6 +180,8 @@ Route::middleware('vendor')->prefix('vendors')->group(function () {
         Route::get('/products', 'VendorProducts')->name('vendor.products');
 
 
+        Route::post('/update/product', 'VendorUpdateProduct')->name('vendor.update.product');
+        Route::post('/vendor/update-image-order', 'productImageSort')->name('vendor.update_image_order');
     });
 
     Route::controller(VendorBankController::class)->group(function () {
