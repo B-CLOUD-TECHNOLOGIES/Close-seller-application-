@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Frontend\frontendController;
 use App\Http\Controllers\OtpPasswordController;
 use App\Http\Controllers\User\userController;
+use App\Http\Controllers\User\CartController;
 use App\Http\Controllers\Vendor\vendorController;
 use App\Http\Controllers\Vendor\VendorProductController;
 use App\Http\Controllers\VendorBankController;

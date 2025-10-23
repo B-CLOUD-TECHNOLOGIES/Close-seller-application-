@@ -442,6 +442,7 @@ class CartController extends Controller
                     'name' => $request->name,
                     'email' => $request->email,
                     'phone' => $request->phone,
+                    'address' => $request->address,
                     'state' => $request->state,
                     'city' => $request->city,
                     'country' => $request->country,

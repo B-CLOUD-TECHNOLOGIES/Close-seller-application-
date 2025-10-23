@@ -21,6 +21,7 @@ return new class extends Migration
             $table->string('phone')->nullable();
             $table->string('coupon_code')->nullable();
             $table->string('coupon_amount')->nullable();
+            $table->string('address')->nullable();
             $table->string('state')->nullable();
             $table->string('city')->nullable();
             $table->string('country')->nullable();
