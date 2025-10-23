@@ -48,4 +48,10 @@ class products extends Model
 
         return $firstImage->first();
     }
+
+    public function mainImage()
+    {
+        // This returns the first image ordered by 'order_by'
+        return $this->hasOne(productImages::class, 'product_id')->orderBy('order_by', 'ASC');
+    }
 }

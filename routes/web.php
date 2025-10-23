@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Vendor\NotificationController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Frontend\frontendController;
 use App\Http\Controllers\OtpPasswordController;
@@ -7,9 +8,10 @@ use App\Http\Controllers\User\userController;
 use App\Http\Controllers\Vendor\vendorController;
 use App\Http\Controllers\Vendor\VendorProductController;
 use App\Http\Controllers\VendorBankController;
-
-
-
+use App\Http\Controllers\Vendor\VendorPasswordController;
+use App\Http\Controllers\Vendor\FaqController;
+use App\Http\Controllers\Vendor\HelpController;
+use App\Http\Controllers\Vendor\VendorReviewController;
 
 // Route::get('/dashboard', function () {
 //     return view('dashboard');
@@ -152,6 +154,7 @@ Route::middleware('vendor')->prefix('vendors')->group(function () {
         Route::get('/delete-product/{id}', 'VendorDeleteImage')->name('vendor.image_delete');
         Route::post('/update/product', 'VendorUpdateProduct')->name('vendor.update.product'); 
         Route::post('/vendor/update-image-order', 'productImageSort')->name('vendor.update_image_order'); 
+        Route::get('/products', 'VendorProducts')->name('vendor.products');
 
 
     });
@@ -161,6 +164,36 @@ Route::middleware('vendor')->prefix('vendors')->group(function () {
         Route::get('/banks', 'getBanks')->name('vendor.get.banks');
         Route::post('/verify-bank', 'verifyAccount')->name('vendor.verify.account');
         Route::post('/save-bank-details', 'saveDetails')->name('vendor.save.bank.details');
+    });
+
+    Route::controller(VendorPasswordController::class)->group(function () {
+        Route::get('/change-password', 'showChangePasswordForm')->name('vendor.change.password');
+        Route::post('/update-password', 'updatePassword')->name('vendor.update.password');
+    });
+
+     Route::controller(NotificationController::class)->group(function () {
+        Route::get('/vendor/notifications',  'index')->name('vendor.notifications');
+        Route::get('/vendor/notifications/{id}',  'show')->name('vendor.notifications.show');
+        Route::post('/vendor/notifications/mark-all',  'markAllAsRead')->name('vendor.notifications.markAll');
+    });
+
+     Route::controller(FaqController::class)->group(function () {
+        Route::get('/faqs',  'index')->name('vendor.faqs');
+        Route::get('/faqs/{id}',  'show')->name('vendor.faqs.show');
+    });
+
+    Route::controller(HelpController::class)->group(function () {
+        Route::get('/get-help',  'index')->name('vendor.gethelp');
+        Route::get('/customer-support',  'customerSupport')->name('vendor.customer.support');
+        Route::get('/send-feedback',  'sendFeedback')->name('vendor.sendFeedback');
+        Route::get('/report',  'sendReport')->name('vendor.sendReport');
+        Route::post('/vendors/send-feedback',  'storeFeedback')->name('vendor.send.feedback');
+        Route::post('/vendors/send-report',  'storeReport')->name('vendor.send.report');
+    });
+
+    Route::controller(VendorReviewController::class)->group(function () {
+        Route::get('/reviews',  'index')->name('vendor.reviews');
+        Route::get('/fetch-reviews',  'fetchReviews')->name('vendor.reviews.fetch');
     });
 });
 

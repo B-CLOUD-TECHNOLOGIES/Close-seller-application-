@@ -14,11 +14,14 @@
                 </svg>
             </button>
 
-            <div class="profile">
-                <img src="https://via.placeholder.com/70" alt="Profile Picture" class="profile-img"
-                    style="border-radius:50%;width:70px;height:70px;object-fit:cover;object-position:top;"
-                    id="showImage" />
-                <p>John Doe</p>
+           <div class="profile">
+                <img 
+                    src="{{ $vendor->image ? asset('storage/' . $vendor->image) : asset('vendors/assets/images/default-avatar.png') }}" 
+                    alt="Profile Picture"
+                    class="profile-img"
+                    style="border-radius:50%;width:70px;height:70px;object-fit:cover;"
+                />
+                <p>{{ $vendor->firstname }} {{ $vendor->lastname }}</p>
             </div>
             <a href="{{ route('vendor.settings') }}" class="settings-btn">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none"
@@ -41,7 +44,7 @@
         <section class="section-2">
             <div class="menu-grid">
                 <!-- My Products -->
-                <a href="./products.html" class="menu-item">
+                <a href="{{ route('vendor.products') }}" class="menu-item">
                     <div class="menu-content">
                         <div class="menu-icon">
                             <svg width="20" height="22" viewBox="0 0 20 22" fill="none"
@@ -58,9 +61,12 @@
                     </div>
                 </a>
 
-                <!-- Notifications -->
-                <a href="notification-index.html" class="menu-item notification-item">
-                    <div class="notification-badge"></div>
+               <a href="{{ route('vendor.notifications') }}" class="menu-item notification-item">
+                    <div class="notification-badge">
+                        @if($unreadNotifications > 0)
+                            <span class="badge">{{ $unreadNotifications }}</span>
+                        @endif
+                    </div>
                     <div class="menu-content">
                         <div class="menu-icon">
                             <svg width="20" height="20" viewBox="0 0 20 20" fill="none"
@@ -122,7 +128,7 @@
                 </a>
 
                 <!-- Request Help -->
-                <a href="gethelp.html" class="menu-item">
+                <a href="{{ route ('vendor.gethelp') }}" class="menu-item">
                     <div class="menu-content">
                         <div class="menu-icon">
                             <svg width="20" height="20" viewBox="0 0 24 24" fill="none"
@@ -140,7 +146,7 @@
                 </a>
 
                 <!-- FAQ -->
-                <a href="faq.html" class="menu-item">
+                <a href="{{ route('vendor.faqs') }}" class="menu-item">
                     <div class="menu-content">
                         <div class="menu-icon">
                             <svg width="20" height="20" viewBox="0 0 24 24" fill="none"
@@ -158,7 +164,7 @@
                 </a>
 
                 <!-- Reviews -->
-                <a href="review.html" class="menu-item">
+                <a href="{{ route('vendor.reviews') }}" class="menu-item">
                     <div class="menu-content">
                         <div class="menu-icon">
                             <svg width="20" height="20" viewBox="0 0 24 24" fill="none"
@@ -184,7 +190,7 @@
         </section>
 
         <!-- Help Button -->
-        <button class="help-button" onclick="toggleHelp()">
+        <button class="help-button" onclick="toggleHelpCard()">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none"
                 xmlns="http://www.w3.org/2000/svg">
                 <path
@@ -193,7 +199,21 @@
             </svg>
         </button>
 
+        <!-- Help Card -->
+        <div id="helpCard" class="help-card hidden">
+            <div class="help-card-content">
+                <h3>Need Help?</h3>
+                <p>Choose one of the support options below:</p>
+                <div class="help-options">
+                    <a href="{{ route('vendor.gethelp') }}" class="help-link">📩 Request Help</a>
+                    <a href="{{ route('vendor.faqs') }}" class="help-link">❓ FAQ</a>
+                    <a href="tel:+1234567890" class="help-link">📞 Call Support</a>
+                </div>
+                <button class="close-help" onclick="toggleHelpCard()">Close</button>
+            </div>
+        </div>
 
 
-        @include('vendors.body.footer')
+
+        @include('vendors.body.footer') 
 @endsection
