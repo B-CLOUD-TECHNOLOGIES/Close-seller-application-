@@ -206,3 +206,31 @@ a:active{
     outline: none !important;
     border: none !important;
 }
+
+/* Customize Toastr Colors */
+#toast-container > .toast-success {
+  background-color: var(--purple) !important;
+  color: #fff !important;
+}
+
+#toast-container > .toast-info {
+  background-color: var(--primary-color) !important;
+  color: #fff !important;
+}
+
+#toast-container > .toast-error {
+  background-color: #ef4444 !important;
+  color: #fff !important;
+}
+
+#toast-container > .toast-warning {
+  background-color: #facc15 !important;
+  color: #000 !important;
+}
+
+/* Optional: Rounded corners and font */
+.toast {
+  border-radius: 10px !important;
+  font-family: var(--general-font-family) !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
+}

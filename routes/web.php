@@ -7,6 +7,7 @@ use App\Http\Controllers\User\userController;
 use App\Http\Controllers\Vendor\vendorController;
 use App\Http\Controllers\Vendor\VendorProductController;
 use App\Http\Controllers\VendorBankController;
+use App\Http\Controllers\User\CartController;
 
 
 
@@ -32,6 +33,22 @@ Route::controller(frontendController::class)->group(function () {
     Route::get('/search/q', 'productSearch')->name('product.search');
     Route::get('/notifications', 'AuthNotification')->name('notifications');
     Route::get('/notifications/details/{id}', 'notificationDetails')->name('notifications.details');
+    Route::post('/add-to-wishlist', 'addToWishList')->name('add.to.wishlist');
+});
+
+
+Route::middleware('auth')->group(function () {
+
+    Route::controller(CartController::class)->group(function () {
+        Route::post('/add-to-cart', 'addToCart')->name('add.to.cart');
+        Route::get('/update-cart-count', 'cartCountUpdate')->name('cart.count');
+        Route::get('/view-cart', 'viewCart')->name('view.cart');
+        Route::post('/remove-cart', 'removeItem')->name('cart.remove');
+        Route::post('/update-cart', 'updateCart')->name('update.cart');
+        Route::get('/checkout', 'Checkout')->name('checkout');
+        Route::post('/place-order', 'placeOrder')->name('place.order');
+    });
+    
 });
 
 // =============================  FRONTEND ENDS ============================= //
@@ -81,24 +98,19 @@ Route::middleware('auth')->prefix('users')->group(function () {
     Route::controller(userController::class)->group(function () {
         Route::get('/dashboard', 'UserDashboard')->name('user.dashboard');
         Route::get('/logout', 'UserLogout')->name('user_logout');
-
-        // Route::get('/profile', 'Profile')->name('profile');
-        // Route::get('/settings', 'Settings')->name('settings');
-        // Route::get('/orders', 'Orders')->name('orders');
-        // Route::get('/invoices', 'Invoices')->name('invoices');
-        // Route::get('/cart', 'Cart')->name('cart');
-        // Route::get('/checkout', 'Checkout')->name('checkout');
-        // Route::get('/products', 'Products')->name('products');
-        // Route::get('/product/details/{id}', 'ProductDetails')->name('product.details');
-        // Route::get('/wishlist', 'Wishlist')->name('wishlist');
-        // Route::get('/chat', 'Chat')->name('chat');
-        // Route::get('/notifications', 'Notifications')->name('notifications');
-        // Route::get('/helpdesk', 'Helpdesk')->name('helpdesk');
-        // Route::get('/faqs', 'Faqs')->name('faqs');
-        // Route::get('/terms-conditions', 'TermsConditions')->name('terms.conditions');
-        // Route::get('/privacy-policy', 'PrivacyPolicy')->name('privacy.policy');
+        Route::get('/wishlist', 'getUserProductWishlist')->name('user.wishlist');
+        Route::get('/delete-wishlist/{id}', 'deleteWishlist')->name('delete_wishlist');
+        Route::get('/wishlist/status', 'WuishListStatus')->name('wishlist.status');
     });
 });
+
+
+
+
+
+
+
+
 
 
 
@@ -129,11 +141,21 @@ Route::controller(vendorController::class)->group(function () {
 });
 
 
+
+
+
+
+
+
+
+
+
+
 // =============================  VENDOR CONTROLLER WITH AUTH ============================= //
 
 Route::middleware('vendor')->prefix('vendors')->group(function () {
 
-   Route::controller(vendorController::class)->group(function () {
+    Route::controller(vendorController::class)->group(function () {
         Route::get('/verification', 'VendorDocumentVerification')->name('vendor.doc.verify');
         Route::post('/doc/store', 'VendorDocStore')->name('vendor.verify.docs');
         Route::get('/dashboard', 'VendorDashboard')->name('vendor.dashboard');
@@ -150,10 +172,8 @@ Route::middleware('vendor')->prefix('vendors')->group(function () {
         Route::post('/create-product', 'VendorCreateProduct')->name('vendor.create.product');
         Route::get('/edit-product/{productid}', 'VendorEditProduct')->name('vendor.edit.product');
         Route::get('/delete-product/{id}', 'VendorDeleteImage')->name('vendor.image_delete');
-        Route::post('/update/product', 'VendorUpdateProduct')->name('vendor.update.product'); 
-        Route::post('/vendor/update-image-order', 'productImageSort')->name('vendor.update_image_order'); 
-
-
+        Route::post('/update/product', 'VendorUpdateProduct')->name('vendor.update.product');
+        Route::post('/vendor/update-image-order', 'productImageSort')->name('vendor.update_image_order');
     });
 
     Route::controller(VendorBankController::class)->group(function () {

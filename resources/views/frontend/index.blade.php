@@ -114,7 +114,7 @@
                     <div class="d-flex align-items-center">
                         <h1 class="h5 fw-bold mb-0 text-purple-600">CloseSeller</h1>
                     </div>
-                    <div class="d-flex align-items-center gap-3">
+                    <div class="d-flex align-items-center justify-content-around gap-3">
                         <button class="btn p-0 position-relative" onclick="window.location.href='{{ url('/notifications') }}'">
                             <span class="material-symbols-outlined text-gray-700">notifications</span>
                             @if ($unreadCount > 0)
@@ -123,12 +123,7 @@
                                     style="font-size: 0.5rem">{{ $unreadCount }}</span>
                             @endif
                         </button>
-                        <button class="btn p-0 position-relative" onclick="window.location.href='#'">
-                            <span class="material-symbols-outlined text-gray-700">shopping_cart</span>
-                            <span
-                                class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-orange-notification text-white"
-                                style="font-size: 0.5rem">10</span>
-                        </button>
+                        @include('frontend._cart-button')
                     </div>
                 </div>
             </header>

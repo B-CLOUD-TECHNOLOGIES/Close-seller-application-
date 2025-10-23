@@ -3,16 +3,21 @@
 namespace App\Http\Controllers\Frontend;
 
 use App\Http\Controllers\Controller;
+use App\Models\CartItem;
 use App\Models\categories;
 use App\Models\notification;
 use App\Models\productColors;
 use App\Models\productImages;
 use App\Models\products;
 use App\Models\productSizes;
+use App\Models\productWhishlist;
+use App\Models\productWishlist;
 use App\Models\Vendor;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 
 class frontendController extends Controller
@@ -104,6 +109,12 @@ class frontendController extends Controller
             ->inRandomOrder()
             ->get();
 
+        $data['isAdded'] = CartItem::whereHas('cart', function ($query) {
+            $query->where('user_id', Auth::id());
+        })
+            ->where('product_id', $product->id)
+            ->exists();
+
 
 
         return view("frontend.product-details", $data);
@@ -189,18 +200,27 @@ class frontendController extends Controller
 
 
 
-            return view('frontend.product-search', $data);
+        return view('frontend.product-search', $data);
     }
 
 
 
-    public function AuthNotification(){
+    public function AuthNotification()
+    {
+        if (!Auth::check()) {
+            $notification = array(
+                'message' => 'Please Login first',
+                'alert-type' => 'error'
+            );
+            return redirect()->route('login')->with($notification);
+        }
         //  I added the codes already in app/providers/appserviceproviders
         return view('frontend.notification.notification-list');
     }
 
 
-    public function notificationDetails($id){
+    public function notificationDetails($id)
+    {
         $notify  = notification::getSingle($id);
         $notify->is_read = 1;
         $notify->save();
@@ -211,4 +231,34 @@ class frontendController extends Controller
     }
 
 
+    public function addToWishList(Request $request)
+    {
+        if (Auth::guard('web')->check()) {
+            $check = productWishlist::checkAlready($request->product_id, Auth::user()->id);
+            if (empty($check)) {
+                $save = new productWishlist();
+                $save->user_id = Auth::user()->id;
+                $save->product_id = trim($request->product_id);
+                $save->save();
+
+                $json['isWishlist'] = 1;
+            } else {
+                $check = productWishlist::deleteRecord($request->product_id, Auth::user()->id);
+                $json['isWishlist'] = 0;
+            }
+
+            $json['status'] = true;
+            $json['product_id'] = $request->product_id;
+        } else {
+            // Save intended wishlist product ID in session
+            session(['intended_wishlist_product' => $request->product_id]);
+
+            $json['status'] = false;
+            $json['message'] = 'Please log in to add this item to your wishlist.';
+            $json['redirect'] = route('login');
+            $json['product_id'] = $request->product_id;
+        }
+
+        return response()->json($json);
+    }
 }

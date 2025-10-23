@@ -19,7 +19,7 @@
     {{-- toastr css --}}
     <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.css">
     <script src="{{ asset('users/assets/js/jquery.js') }}"></script>
-
+    <meta name="csrf-token" content="{{ csrf_token() }}">
 </head>
 
 <body>
@@ -48,6 +48,8 @@
             });
         });
     </script>
+
+
     @if ($errors->any())
         <script>
             @foreach ($errors->all() as $error)
@@ -55,6 +57,8 @@
             @endforeach
         </script>
     @endif
+
+
     <script>
         @if (Session::has('message'))
             var type = "{{ Session::get('alert-type', 'info') }}"
@@ -77,9 +81,66 @@
             }
         @endif
     </script>
+
+    <script>
+        // ✅ Update cart badge dynamically
+        function updateCartCount() {
+            $.ajax({
+                url: "{{ route('cart.count') }}",
+                type: 'GET',
+                cache: false,
+                dataType: 'json',
+                success: function(response) {
+                    console.log('Cart Count: ' + response.count);
+
+                    let $badge = $('.cartCount');
+
+                    if (response.count > 0) {
+                        $badge.text(response.count).show();
+                    } else {
+                        $badge.hide();
+                    }
+                },
+                error: function(xhr) {
+                    console.error('Error fetching cart count:', xhr.responseText);
+                }
+            });
+        }
+
+        // ✅ Keep badge updated
+        $(document).ready(function() {
+            updateCartCount();
+        });
+
+        window.addEventListener('pageshow', updateCartCount);
+
+        document.addEventListener('visibilitychange', function() {
+            if (document.visibilityState === 'visible') updateCartCount();
+            console.log('visible')
+        });
+    </script>
+
+    @if (Auth::check())
+        @include('frontend._wishlist-script')
+    @endif
+    @include('frontend._cart-script')
+    <script>
+        toastr.options = {
+            "closeButton": true,
+            "progressBar": true,
+            "positionClass": "toast-top-right",
+            "timeOut": "3000",
+            "showMethod": "fadeIn",
+            "hideMethod": "fadeOut",
+            "preventDuplicates": false
+        };
+    </script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
 
     <script src="{{ asset('users/assets/js//code.js') }}"></script>
+
+
+
 </body>
 
 </html>

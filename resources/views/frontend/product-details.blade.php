@@ -107,6 +107,11 @@
             </div>
         </div> --}}
 
+        @php
+            $productid = $product->id;
+            $inWishlist = Auth::check() ? \App\Models\productWishlist::isInWishlist($productid, Auth::id()) : false;
+            $stock_quantity = $product->stock_quantity;
+        @endphp
         <!-- Main Content -->
         <div id="main-content">
             <!-- Header -->
@@ -124,12 +129,18 @@
                                 <h2 class="h6 mb-0 fw-bold">Product Details</h2>
                             </div>
                             <div class="col-auto">
-                                <div class="d-flex gap-2">
-                                    <button class="action-btn">
-                                        <span class="material-symbols-outlined">share</span>
+                                <div class="d-flex justify-content-center">
+                                    <button class="action-btn" onclick="window.location.href='{{ url('/') }}'">
+                                        <span class="material-symbols-outlined d-block nav-icon"
+                                            style='font-size:1.5rem'>home</span>
                                     </button>
-                                    <button class="action-btn favorite-toggle">
-                                        <i class="heart-icon fa fa-heart-o" style="color: #555;font-size:1rem"></i>
+                                    <button class="action-btn favorite-toggle"
+                                        onclick="toggleHeart(this.querySelector('.heart-icon'), {{ $productid }})">
+                                        @if ($inWishlist)
+                                            <i class='heart-icon fa fa-heart' style='color: #7c3aed;font-size:1rem'></i>
+                                        @else
+                                            <i class='heart-icon fa fa-heart-o' style='color: #555;font-size:1rem'></i>
+                                        @endif
                                     </button>
                                 </div>
                             </div>
@@ -205,11 +216,15 @@
 
                 <!-- Selection Section -->
                 <div class="selection-section bg-body">
-                    <form action="#" id="theForm" method="GET">
+                    <form id="theForm" method="POST">
+                        @csrf
+
+                        <input type="hidden" value="{{ $product->id }}" name="product_id">
+
                         @if ($productSizes->count() >= 1)
                             <div class="selection-group">
                                 <label class="form-label">Size</label>
-                                <select name="size_id" id="size_id" class="form-select">
+                                <select name="size_id" id="size_id" class="form-select" {{ 'required' }}>
                                     <option value="" selected disabled>Select a Size</option>
                                     @foreach ($productSizes as $size)
                                         <option value="{{ $size->id }}"
@@ -225,7 +240,7 @@
                         @if ($product->getColor->count() >= 1)
                             <div class="selection-group">
                                 <label class="form-label">Color</label>
-                                <select name="color_id" id="color_id" class="form-select">
+                                <select name="color_id" id="color_id" class="form-select" {{ 'required' }}>
                                     <option value="" selected disabled>Select Color</option>
                                     @foreach ($product->getColor as $color)
                                         <option value="{{ $color->getProductColor->id }}">
@@ -327,12 +342,12 @@
 
                 <!-- Message Vendor -->
                 <!-- <div class="message-section">
-                                <h6 class="fw-bold mb-3">Message Vendor</h6>
-                                <form action="#">
-                                    <textarea name="message" class="message-textarea" placeholder="Type your message..." required></textarea>
-                                    <button type="submit" class="btn btn-outline-primary">Send Message</button>
-                                </form>
-                            </div> -->
+                                                                                <h6 class="fw-bold mb-3">Message Vendor</h6>
+                                                                                <form action="#">
+                                                                                    <textarea name="message" class="message-textarea" placeholder="Type your message..." required></textarea>
+                                                                                    <button type="submit" class="btn btn-outline-primary">Send Message</button>
+                                                                                </form>
+                                                                            </div> -->
 
                 <!-- Related Products -->
                 <div class="px-3 pt-4 mb-5 pb-4 bg-body">
@@ -342,7 +357,7 @@
                     <div class="row mt-3 g-3">
                         <!-- Product 1 -->
                         @foreach ($relatedProducts as $product)
-                            @include('frontend._products')                            
+                            @include('frontend._products')
                         @endforeach
 
 
@@ -391,18 +406,30 @@
                         <span class="material-symbols-outlined" style="font-size: 14px;">chat</span>
                         Chat with {{ $vendorType == 'Vendor' ? $vendorType : 'Closeseller' }}
                     </button>
-                    <button class="btn-primary spin-btn" type="submit" form="theForm" name="addProductToCart">
-                        <span class="material-symbols-outlined" style="font-size: 14px;">shopping_cart</span>
-                        <span class="btn-text">Add to Cart</span>
-                        <span class="spinner-border spinner-border-sm ms-2 d-none" role="status"
-                            aria-hidden="true"></span>
-                    </button>
-                    <button class="btn p-0 position-relative" onclick="window.location.href='../checkout/checkout.php'">
+                    @if ($stock_quantity > 0)
+                        <button class="btn-primary spin-btn addProductToCart" type="submit" form="theForm"
+                            name="addProductToCart">
+                            <span class="material-symbols-outlined" style="font-size: 14px;">shopping_cart</span>
+                            <span class="btn-text">{{ $isAdded ? 'Update' : 'Add to' }} {{ $stock_quantity }} Cart</span>
+                            <span class="spinner-border spinner-border-sm ms-2 d-none" role="status"
+                                aria-hidden="true"></span>
+                        </button>
+                    @else
+                        <button class="btn-primary spin-btn addProductToCart" type="button" {{ 'disabled' }}>
+                            <span class="material-symbols-outlined" style="font-size: 14px;">shopping_cart</span>
+                            <span class="btn-text">Out of Stock</span>
+                            <span class="spinner-border spinner-border-sm ms-2 d-none" role="status"
+                                aria-hidden="true"></span>
+                        </button>
+                    @endif
+
+
+                    <button class="btn p-0 position-relative" onclick="window.location.href='{{ route('view.cart') }}'">
                         <span class="material-symbols-outlined text-gray-700">shopping_cart</span>
                         <!-- Modify existing badge color -->
                         <span
-                            class="start-100 translate-middle notification-badge rounded-pill bg-orange-notification text-white"
-                            style="font-size: 0.5rem;top:7px;">2
+                            class="cartCount start-100 translate-middle notification-badge rounded-pill bg-orange-notification text-white"
+                            style="font-size: 0.5rem;top:7px; display: {{ $cartCount > 0 ? 'inline-block' : 'none' }}">{{ $cartCount }}
                         </span>
                     </button>
                 </div>
@@ -412,6 +439,55 @@
 
 
         <script src="{{ asset('users/assets/js/script.js') }}"></script>
+        <script>
+            // ✅ Handle cart form submission
+            $('#theForm').on('submit', function(e) {
+                e.preventDefault();
+
+                let formData = Object.fromEntries(new FormData(this));
+
+                $.ajax({
+                    url: "{{ route('add.to.cart') }}",
+                    type: 'POST',
+                    dataType: 'json',
+                    data: formData,
+                    headers: {
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    },
+                    success: function(response) {
+                        toastr.success(response.message);
+                        updateCartCount(); // refresh count dynamically
+
+                        // ✅ Update button state after adding to cart
+                        let $button = $('.addProductToCart');
+                        // $button.attr('type', 'button');
+                        // $button.prop('disabled', true);
+                        $button.find('.btn-text').text('Update Cart');
+                    },
+                    error: function(xhr) {
+                        if (xhr.status === 401) {
+                            // Parse and show clean error message
+                            let res = JSON.parse(xhr.responseText);
+                            toastr.warning(res.message || 'Please log in first.');
+
+                            // Redirect to login after 2 seconds
+                            setTimeout(() => {
+                                window.location.href = "{{ route('login') }}";
+                            }, 2000);
+                        } else {
+                            // For other types of errors
+                            console.error(xhr.responseText);
+                            toastr.error('Something went wrong, please try again.');
+                        }
+                    }
+                });
+            });
+        </script>
+
+
+
+
+
         <script>
             // Full-screen carousel functionality
             class FullScreenCarousel {

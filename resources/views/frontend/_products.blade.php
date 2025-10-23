@@ -1,16 +1,27 @@
                             @php
                                 $firstImage = $product->getFirstImage();
+                                $productid = $product->id;
+                                $inWishlist = Auth::check()
+                                    ? \App\Models\productWishlist::isInWishlist($productid, Auth::id())
+                                    : false;
                             @endphp
 
                             <div class="col-6 product-item" data-date="{{ $product->updated_at }}"
                                 data-price="{{ $product->new_price }}">
+
                                 <div
                                     class="card new-arrival-card border border-gray-200 rounded-3 overflow-hidden h-100">
                                     <button
                                         class="btn btn-light p-1 position-absolute top-0 end-0 m-2 z-2 rounded-circle"
                                         style="background: rgba(255,255,255,0.7);"
-                                        onclick="toggleHeart(this.querySelector('.heart-icon'))">
-                                        <i class='heart-icon fa fa-heart-o' style='color: #555;font-size:1rem'></i>
+                                        data-product-id="{{ $productid }}"
+                                        onclick="toggleHeart(this.querySelector('.heart-icon'), {{ $productid }})">
+                                        {{-- 👇 Default heart state --}}
+                                        @if ($inWishlist)
+                                            <i class='heart-icon fa fa-heart' style='color: #7c3aed;font-size:1rem'></i>
+                                        @else
+                                            <i class='heart-icon fa fa-heart-o' style='color: #555;font-size:1rem'></i>
+                                        @endif
                                     </button>
 
                                     <a href="{{ route('product.details', [
@@ -18,9 +29,7 @@
                                         $product->product_name,
                                         $product->category_id,
                                         Str::slug($product->getCategory->category_name),
-                                    ]) }}
-"
-                                        class="text-decoration-none">
+                                    ]) }}" class="text-decoration-none">
                                         <div class="overflow-hidden">
                                             <img src="{{ !empty($firstImage) ? asset($firstImage->image_name) : asset('uploads/no_image.jpg') }}"
                                                 class="new-arrival-img w-100" alt="{{ $product->product_name }}">

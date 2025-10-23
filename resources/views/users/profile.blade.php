@@ -30,6 +30,20 @@
     <div class="container mt-4">
         <div class="list-group">
 
+            <a href="{{ route('user.wishlist') }}" class="list-group-item d-flex align-items-center justify-content-between mb-3 menu-item">
+                <div class="d-flex align-items-center">
+                    <div class="icon-box"><i class="fas fa-heart"></i></div>
+                    <div>
+                        <span class="menu-title">My Wishlist</span>
+                        <br>
+                        <small class="menu-sub">
+                            View my wishlist
+                        </small>
+                    </div>
+                </div>
+                <i class="fas fa-chevron-right arrow"></i>
+            </a>
+
             <a href="#" class="list-group-item d-flex align-items-center justify-content-between mb-3 menu-item">
                 <div class="d-flex align-items-center">
                     <div class="icon-box"><i class="fas fa-receipt"></i></div>

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Models\notification;
 use App\Models\User;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\RedirectResponse;
@@ -57,6 +58,17 @@ class RegisteredUserController extends Controller
             'message' => 'User Registered Successfully',
             'alert-type' => 'success'
         ];
+
+        notification::insertRecord(
+            $user->id,
+            'user',
+            'Account Creation Successful',
+            'https://lol.com',
+            'Welcome to Closeseller! Discover a world of top-quality products, trusted vendors, and smooth shopping experiences.',
+            false
+        );
+
+
         return redirect()->route('index')->with($notification);
     }
 }
