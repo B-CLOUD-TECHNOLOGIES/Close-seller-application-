@@ -65,31 +65,19 @@
         });
 
         // Help button functionality
-        function toggleHelp() {
-            // You can customize this function based on your needs
-            const helpOptions = [{
-                    text: 'Request Help',
-                    href: '../../../customerSupport/gethelp.php'
-                },
-                {
-                    text: 'FAQ',
-                    href: '../../../customerSupport/faq.php'
-                },
-                {
-                    text: 'Call Support',
-                    href: 'tel:+1234567890'
-                }
-            ];
+      function toggleHelpCard() {
+        const card = document.getElementById('helpCard');
+        card.classList.toggle('hidden');
+    }
 
-            // Simple alert for now - you can replace with a modal
-            const choice = confirm('Need help? Click OK to go to support page, or Cancel to view FAQ.');
-            if (choice) {
-                window.location.href = 'customer-support.html';
-            } else {
-                window.location.href = 'faq.html';
-            }
+    // Optional: Close when clicking outside
+    document.addEventListener('click', (e) => {
+        const card = document.getElementById('helpCard');
+        const button = document.querySelector('.help-button');
+        if (!card.contains(e.target) && !button.contains(e.target)) {
+            card.classList.add('hidden');
         }
-
+    });
         // Add entrance animations
         function animateMenuItems() {
             const menuItems = document.querySelectorAll('.menu-item');

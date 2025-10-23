@@ -5,6 +5,9 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\BankDetails;
+use App\Models\Vendor;
+use App\Models\notification;
+
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Http;
 
@@ -79,31 +82,49 @@ class VendorBankController extends Controller
     ], 400);
 }
 
-    public function saveDetails(Request $request)
-    {
-        $request->validate([
-            'accountNumber' => 'required|digits:10',
-            'bankCode' => 'required|string',
-            'bankName' => 'required|string',
-            'accountName' => 'required|string',
-        ]);
+   public function saveDetails(Request $request)
+{
+    $request->validate([
+        'acctNo'   => 'required|digits:10',
+        'bankCode' => 'required|string',
+        'bankName' => 'required|string',
+        'acctName' => 'required|string',
+    ]);
 
-        $vendorId = Auth::id();
+    $vendorId = Auth::guard('vendor')->id();
 
-        $bankDetail = BankDetails::updateOrCreate(
-            ['vendor_id' => $vendorId],
-            [
-                'bankCode' => $request->bankCode,
-                'bankName' => $request->bankName,
-                'acctName' => $request->accountName,
-                'acctNo' => $request->accountNumber,
-            ]
-        );
-
+    if (!$vendorId) {
         return response()->json([
-            'status' => true,
-            'message' => 'Bank details saved successfully!',
-            'data' => $bankDetail,
-        ]);
+            'status' => false,
+            'message' => 'User not authenticated.',
+        ], 401);
     }
+
+    $bankDetail = BankDetails::updateOrCreate(
+        ['vendor_id' => $vendorId],
+        [
+            'bankCode' => $request->bankCode,
+            'bankName' => $request->bankName,
+            'acctName' => $request->acctName,
+            'acctNo'   => $request->acctNo,
+        ]
+    );
+
+    // ✅ Create notification using helper method
+    notification::insertRecord(
+        $vendorId,
+        'vendor',
+        'Bank Details Updated',
+        '/vendor/settings/bank',
+        'Your bank account details were successfully updated on ' . now()->format('M d, Y H:i A'),
+        false
+    );
+
+    return response()->json([
+        'status' => true,
+        'message' => 'Bank details saved successfully!',
+        'data' => $bankDetail,
+    ]);
+}
+
 }

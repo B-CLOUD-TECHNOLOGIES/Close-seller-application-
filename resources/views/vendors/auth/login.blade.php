@@ -29,12 +29,10 @@
     <div class="container">
         <!-- Header Section -->
         <div class="selectionHeading">
-            <a href="./selectAuth.html" style="visibility: hidden;">
+            <a href="{{route ('auth.type')}}" >
                 <figure>
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none"
-                        xmlns="http://www.w3.org/2000/svg">
-                        <path d="M20 11H7.83L13.42 5.41L12 4L4 12L12 20L13.41 18.59L7.83 13H20V11Z" fill="#701d9d" />
-                    </svg>
+                   <img src="{{ asset('onboard/closesellerlogo.png') }}" alt="Company Logo" class="img-fluid mb-3"
+                    style="height: 30px;">
                 </figure>
             </a>
             <h3>Welcome back!</h3>

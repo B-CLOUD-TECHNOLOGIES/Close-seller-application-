@@ -21,7 +21,7 @@ return new class extends Migration
         $table->string('recipient_code')->nullable();
         $table->timestamps();
 
-        $table->foreign('vendor_id')->references('id')->on('users')->onDelete('cascade');
+        $table->foreign('vendor_id')->references('id')->on('vendors')->onDelete('cascade');
     });
 }
 

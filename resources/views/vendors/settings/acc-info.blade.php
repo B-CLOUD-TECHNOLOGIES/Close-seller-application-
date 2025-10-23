@@ -274,10 +274,18 @@
                 }
             });
 
-            // === Submit form ===
             form.addEventListener('submit', async function (e) {
                 e.preventDefault();
+
                 const formData = new FormData(form);
+                const submitBtn = form.querySelector('.save-btn');
+                const spinner = submitBtn.querySelector('.spinner');
+
+                // Disable button and show spinner
+                submitBtn.disabled = true;
+                spinner.style.display = 'inline-block';
+                spinner.classList.add('loading'); // optional class for styling
+                submitBtn.textContent = 'Saving...';
 
                 try {
                     const res = await fetch(`{{ route('vendor.save.bank.details') }}`, {
@@ -291,13 +299,18 @@
                     const data = await res.json();
 
                     if (data.status) {
-                        showToast('success', 'Bank details saved!');
+                        showToast('success', data.message || 'Bank details saved!');
                     } else {
                         showToast('error', data.message || 'Save failed.');
                     }
                 } catch (err) {
                     console.error(err);
                     showToast('error', 'Error saving bank details.');
+                } finally {
+                    // Re-enable button and hide spinner
+                    submitBtn.disabled = false;
+                    spinner.style.display = 'none';
+                    submitBtn.textContent = 'Save Bank Details';
                 }
             });
 

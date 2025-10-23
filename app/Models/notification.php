@@ -45,6 +45,11 @@ class notification extends Model
             ->paginate(30);
     }
 
+    public function vendor()
+    {
+        return $this->belongsTo(Vendor::class);
+    }
+
 
     // ======================================= USAGE ======================================= // 
     // For a user

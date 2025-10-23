@@ -39,7 +39,12 @@ class VendorProductController extends Controller
         $product->title = $request->product_name;
         $product->product_name = $request->product_name;
         $product->product_owner = "Vendor";
-        $product->sku = $this->generateSKU($request->product_name);;
+        $product->sku = $this->generateSKU($request->product_name);
+        $product->old_price = 0;
+        $product->new_price = 0;
+        $product->stock_quantity = 0;
+        $product->status = 1;
+        $product->isdelete = 0;
         $product->save();
 
         $productID = $product->id;
@@ -228,6 +233,22 @@ class VendorProductController extends Controller
         // echo json_encode($json);
 
     return response()->json(['success' => true]);
+    }
+
+    public function VendorProducts()
+    {
+        $vendor = Auth::guard('vendor')->user();
+
+       $activeProducts = products::where('vendor_id', $vendor->id)
+            ->where('status', 1)
+            ->latest()
+            ->get();
+
+        $declinedProducts = products::where('vendor_id', $vendor->id)
+            ->where('status', 0)
+            ->latest()
+            ->get();
+        return view('vendors.products.products', compact('activeProducts', 'declinedProducts'));
     }
 
 
