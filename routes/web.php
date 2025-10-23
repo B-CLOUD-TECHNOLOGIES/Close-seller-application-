@@ -47,6 +47,8 @@ Route::middleware('auth')->group(function () {
         Route::post('/update-cart', 'updateCart')->name('update.cart');
         Route::get('/checkout', 'Checkout')->name('checkout');
         Route::post('/place-order', 'placeOrder')->name('place.order');
+        Route::get('/security/check/{order_id}', 'securityCheck')->name('security.check');
+        Route::post('/security/verify', 'securityVerify')->name('security.verify');
     });
     
 });
