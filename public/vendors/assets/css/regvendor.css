@@ -69,6 +69,7 @@
         /* Header Section */
         .selectionHeading {
             display: flex;
+            flex-direction: column;
             align-items: center;
             margin-bottom: 10px;
             padding-top: 40px;
@@ -76,19 +77,21 @@
 
         .selectionHeading a {
             text-decoration: none;
-            margin-right: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+              
+            
+            
         }
 
         .selectionHeading figure {
-            background: var(--background);
-            width: 44px;
-            height: 44px;
-            border-radius: 12px;
+          
             display: flex;
             align-items: center;
             justify-content: center;
             box-shadow: var(--input-shadow);
-            transition: all 0.2s ease;
+            transition: all 0.2s ease; 
         }
 
         .selectionHeading figure:hover {
@@ -96,11 +99,11 @@
             box-shadow: 0 4px 12px rgba(112, 29, 157, 0.12);
         }
 
-        .selectionHeading figure img {
+        /* .selectionHeading figure img {
             width: 18px;
             height: 18px;
             filter: brightness(0) saturate(100%) invert(19%) sepia(89%) saturate(1729%) hue-rotate(262deg) brightness(94%) contrast(101%);
-        }
+        } */
 
         .selectionHeading h3 {
             font-size: 28px;
@@ -109,7 +112,7 @@
             line-height: 1.2;
             flex: 1;
             text-align: center;
-            margin-right: 44px;
+            
         }
 
         .headingText {
@@ -305,6 +308,17 @@
             text-align: center;
             padding: 0 20px;
             margin-bottom: 20px;
+        }
+
+         .textEnd a {
+            color: var(--purple);
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.2s ease;
+        }
+
+        .textEnd a:hover {
+            text-decoration: underline;
         }
 
         .textEnd p {

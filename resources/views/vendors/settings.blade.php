@@ -98,7 +98,7 @@
                     </div>
                 </div>
 
-                <a href="./changePassword.html" class="settings-item">
+                <a href="{{ route('vendor.change.password') }}" class="settings-item">
                     <div class="settings-item-content">
                         <div class="settings-item-icon">
                             <i class="fas fa-lock"></i>
@@ -129,7 +129,7 @@
                     </div>
                 </div>
 
-                <a href="customer-support.html" class="settings-item">
+                <a href="{{route ('vendor.customer.support')}}" class="settings-item">
                     <div class="settings-item-content">
                         <div class="settings-item-icon">
                             <i class="fas fa-headset"></i>

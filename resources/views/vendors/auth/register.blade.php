@@ -27,12 +27,10 @@
     <div class="container">
         <section class="selectionHeading">
             <a href="{{ route('vendor.login') }}" aria-label="Back">
-                <!-- Inline SVG for left arrow -->
-                <svg width="32" height="32" viewBox="0 0 24 24" fill="none"
-                    xmlns="http://www.w3.org/2000/svg">
-                    <path d="M15 19L8 12L15 5" stroke="#460475" stroke-width="2" stroke-linecap="round"
-                        stroke-linejoin="round" />
-                </svg>
+                 <figure>
+                   <img src="{{ asset('onboard/closesellerlogo.png') }}" alt="Company Logo" class="img-fluid mb-3"
+                    style="height: 30px;">
+                </figure>
             </a>
             <h3>Create a CloseSeller<br />Account</h3>
         </section>
@@ -129,7 +127,9 @@
 
             </form>
         </section>
-
+         <div class="textEnd">
+                <p>Already have an account? &nbsp; <a href="{{ route('vendor.login') }}">Login</a></p>
+            </div>
         <div class="textEnd">
             <p>By continuing, you agree to the <span>CloseSeller<br />Agreement</span> and <span>Privacy Policy</span>
             </p>

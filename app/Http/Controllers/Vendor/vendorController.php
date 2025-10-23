@@ -87,7 +87,10 @@ public function VendorUpdatePersonalData(Request $request)
         $vendor = Vendor::find(auth('vendor')->id());
 
         if (!$vendor) {
-            return response()->json(['success' => false, 'message' => 'Vendor not found.'], 404);
+            return response()->json([
+                'success' => false,
+                'message' => 'Vendor not found.'
+            ], 404);
         }
 
         $request->validate([
@@ -98,7 +101,7 @@ public function VendorUpdatePersonalData(Request $request)
             'image'     => 'nullable|image|mimes:jpeg,png,webp|max:2048',
         ]);
 
-        // Handle image upload
+        // ✅ Handle image upload
         if ($request->hasFile('image')) {
             $file = $request->file('image');
             $fileName = time() . '_' . $file->getClientOriginalName();
@@ -106,21 +109,23 @@ public function VendorUpdatePersonalData(Request $request)
             $vendor->image = $filePath;
         }
 
-        // Update vendor info
+        // ✅ Update vendor info
         $vendor->firstname = $request->firstname;
         $vendor->lastname  = $request->lastname;
         $vendor->phone     = $request->phone;
         $vendor->gender    = $request->gender;
         $vendor->save();
 
-        // ✅ Create a notification record
-    Notification::create([
-        'vendor_id' => $vendor->id,
-        'title' => 'Profile Updated',
-        'message' => 'Your personal information was updated successfully on ' . now()->format('M d, Y H:i A'),
-    ]);
+        // ✅ Create notification using helper method
+        notification::insertRecord(
+            $vendor->id,
+            'vendor',
+            'Profile Updated',
+            '/vendor/profile',
+            'Your personal information was updated successfully on ' . now()->format('M d, Y H:i A'),
+            false
+        );
 
-        // Return JSON success
         return response()->json([
             'success' => true,
             'message' => 'Profile updated successfully!',
@@ -135,14 +140,16 @@ public function VendorUpdatePersonalData(Request $request)
 }
 
 
-
 public function VendorUpdateBusinessInfo(Request $request)
 {
     try {
         $vendor = auth('vendor')->user();
 
         if (!$vendor) {
-            return response()->json(['success' => false, 'message' => 'Vendor not found.'], 404);
+            return response()->json([
+                'success' => false,
+                'message' => 'Vendor not found.'
+            ], 404);
         }
 
         // ✅ Validate request
@@ -153,7 +160,7 @@ public function VendorUpdateBusinessInfo(Request $request)
             'address'      => 'required|string|max:255',
         ]);
 
-        // ✅ Find or create the vendor verification record
+        // ✅ Find or create vendor verification record
         $verification = VendorVerification::firstOrNew(['vendor_id' => $vendor->id]);
 
         // ✅ Update fields
@@ -161,20 +168,19 @@ public function VendorUpdateBusinessInfo(Request $request)
         $verification->description = $request->description;
         $verification->web_url     = $request->website;
         $verification->address     = $request->address;
-
-        // Reset status to pending when details change (optional)
-        $verification->status = 0;
-
+        $verification->status      = 0; // reset to pending
         $verification->save();
 
-        // ✅ Create a notification record
-        Notification::create([
-            'vendor_id' => $vendor->id,
-            'title'     => 'Business Information Updated',
-            'message'   => 'Your business information was updated successfully on ' . now()->format('M d, Y H:i A'),
-        ]);
+        // ✅ Create notification record
+        notification::insertRecord(
+            $vendor->id,
+            'vendor',
+            'Business Information Updated',
+            '/vendor/business-info',
+            'Your business information was updated successfully on ' . now()->format('M d, Y H:i A'),
+            false
+        );
 
-        // ✅ Return JSON response
         return response()->json([
             'success' => true,
             'message' => 'Business information updated successfully!',
@@ -188,9 +194,28 @@ public function VendorUpdateBusinessInfo(Request $request)
     }
 }
 
-    public function VendorDashboard(){
-        return view('vendors.index');
+
+   public function VendorDashboard()
+{
+    // Get the currently authenticated vendor
+    $vendor = auth('vendor')->user();
+
+    if (!$vendor) {
+        return redirect()->route('vendor.login')->with('error', 'Please log in first.');
     }
+
+    // Count unread notifications for this vendor
+    $unreadNotifications = Notification::where('user_id', $vendor->id)
+                            ->where('user_type', 'vendor')
+                            ->where('is_read', false)
+                            ->count();
+
+    // Pass vendor + unread count to the dashboard
+    return view('vendors.index', [
+        'vendor' => $vendor,
+        'unreadNotifications' => $unreadNotifications
+    ]);
+}
 
 public function VendorDocStore(Request $request)
 {
