@@ -553,6 +553,8 @@ public function securityVerify(Request $request)
         ->where('user_id', $user->id)
         ->first();
 
+        Log::info('Order: ' . $order);
+
     if (!$order) {
         return back()->with([
             'message' => 'Invalid order or access denied.',
@@ -560,8 +562,22 @@ public function securityVerify(Request $request)
         ]);
     }
 
-    // ✅ Password verified — redirect to payment
-    return redirect()->route('paystack.initialize', ['order_id' => $order->id]);
+
+    if($order->payment_method = 'paystack'){
+            // ✅ Password verified — redirect to payment
+    // return redirect()->route('paystack.initialize', ['order_id' => $order->id]);
+    }
+    elseif($order->payment_method = 'opay'){
+            // ✅ Password verified — redirect to payment
+    }
+    elseif($order->payment_method = 'stripe'){
+            // ✅ Password verified — redirect to payment
+    }else{
+        // credit card
+    }
+    
+
+
 }
 
 
