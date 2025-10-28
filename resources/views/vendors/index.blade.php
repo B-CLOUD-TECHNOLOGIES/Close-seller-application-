@@ -110,7 +110,7 @@
                 </a>
 
                 <!-- All Orders -->
-                <a href="{{ route('vendor.orders') }}" class="menu-item">
+                <a href="{{ route('vendor.orders.order-index') }}" class="menu-item">
                     <div class="menu-content">
                         <div class="menu-icon">
                             <svg width="20" height="20" viewBox="0 0 24 24" fill="none"

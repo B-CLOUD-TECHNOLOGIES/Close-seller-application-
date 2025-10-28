@@ -21,4 +21,10 @@ class OrderItem extends Model
     {
         return $this->belongsTo(Products::class, 'product_id', 'id');
     }
+    public function tracking()
+    {
+        return $this->hasMany(OrderTracking::class, 'product_id', 'product_id')
+                    ->whereColumn('order_id', 'order_id')
+                    ->latest();
+    }
 }

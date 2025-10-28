@@ -259,7 +259,10 @@ Route::middleware('vendor')->prefix('vendors')->group(function () {
 
      Route::controller(VendorOrderController::class)->group(function () {
         Route::get('/orders',  'index')->name('vendor.orders');
+        Route::get('/order-index',  'orderIndex')->name('vendor.orders.order-index');
         Route::get('/fetch-orders',  'fetchOrders')->name('vendor.fetch.orders');
+        Route::get('/order-summary/{orderId}', 'orderSummary')->name('vendor.order.summary');
+        Route::get('/fetch-order-items/{orderId}', 'fetchOrderItems')->name('vendor.fetch.order-items');
         Route::get('/order/{id}',  'show')->name('vendor.order.show');
          Route::post('/order/{id}/update-status', 'updateStatus')->name('vendor.order.update-status');
     });

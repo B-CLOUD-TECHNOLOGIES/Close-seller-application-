@@ -24,11 +24,11 @@
         </div>
         <div class="stat-card">
             <div class="stat-number" id="completed-orders">0</div>
-            <div class="stat-label">Completed</div>
+            <div class="stat-label">Delivered</div>
         </div>
         <div class="stat-card">
             <div class="stat-number" id="inprogress-orders">0</div>
-            <div class="stat-label">In Progress</div>
+            <div class="stat-label">In Transit</div>
         </div>
         <div class="stat-card">
             <div class="stat-number" id="cancelled-orders">0</div>
@@ -36,15 +36,27 @@
         </div>
     </div>
 
-    <!-- Filter Tabs -->
+    {{-- <!-- Filter Tabs -->
     <div class="order-list">
         <ul>
             <li><a class="li-a active" href="#" data-filter="all">All Orders</a></li>
-            <li><a class="li-a inactive" href="#" data-filter="completed">Completed</a></li>
+            <li><a class="li-a inactive" href="#" data-filter="pending">Pending</a></li>
             <li><a class="li-a inactive" href="#" data-filter="inprogress">In Progress</a></li>
             <li><a class="li-a inactive" href="#" data-filter="cancelled">Cancelled</a></li>
+            <li><a class="li-a inactive" href="#" data-filter="cancelled">Cancelled</a></li>
+            <li><a class="li-a inactive" href="#" data-filter="cancelled">Cancelled</a></li>
         </ul>
-    </div>
+    </div> --}}
+    {{-- <div class="order-list">
+        <ul>
+            <li><a class="li-a active" href="#" data-filter="all">All</a></li>
+            <li><a class="li-a inactive" href="#" data-filter="pending">Pending</a></li>
+            <li><a class="li-a inactive" href="#" data-filter="processing">Processing</a></li>
+            <li><a class="li-a inactive" href="#" data-filter="dispatched">Dispatched</a></li>
+            <li><a class="li-a inactive" href="#" data-filter="delivered">Delivered</a></li>
+            <li><a class="li-a inactive" href="#" data-filter="cancelled">Cancelled</a></li>
+        </ul>
+    </div> --}}
 
     <!-- Orders List -->
     <div class="order-item-detail-all" id="all-orders"></div>
@@ -58,7 +70,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     let orders = []; // store orders globally
 
     try {
-        const response = await fetch("{{ route('vendor.fetch.orders') }}");
+        const response = await fetch("{{ route('vendor.fetch.order-items', $order->id) }}");
         const data = await response.json();
 
         // 🟢 Update stats
@@ -96,27 +108,36 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
 
     // 🧩 Function to render orders based on filter
+    // 🧩 Render Orders Function
     function renderOrders(filter) {
-        let filteredOrders = [];
+        let filtered = [];
 
-        if (filter === 'all') {
-            filteredOrders = orders;
-        } else if (filter === 'completed') {
-            filteredOrders = orders.filter(o => o.status.toLowerCase() === 'completed');
-        } else if (filter === 'inprogress') {
-            filteredOrders = orders.filter(o =>
-                ['processing', 'in progress'].includes(o.status.toLowerCase())
-            );
-        } else if (filter === 'cancelled') {
-            filteredOrders = orders.filter(o => o.status.toLowerCase() === 'cancelled');
+        switch (filter) {
+            case 'pending':
+                filtered = orders.filter(o => o.status.toLowerCase() === 'pending');
+                break;
+            case 'processing':
+                filtered = orders.filter(o => o.status.toLowerCase() === 'processing');
+                break;
+            case 'dispatched':
+                filtered = orders.filter(o => o.status.toLowerCase() === 'dispatched');
+                break;
+            case 'delivered':
+                filtered = orders.filter(o => o.status.toLowerCase() === 'delivered');
+                break;
+            case 'cancelled':
+                filtered = orders.filter(o => o.status.toLowerCase() === 'cancelled');
+                break;
+            default:
+                filtered = orders;
         }
 
-        if (filteredOrders.length === 0) {
+        if (filtered.length === 0) {
             container.innerHTML = `<p style="text-align:center; color:gray;">No ${filter} orders found.</p>`;
             return;
         }
 
-       container.innerHTML = filteredOrders.map(order => `
+       container.innerHTML = filtered.map(order => `
             <div class="order-detail" data-status="${order.status.toLowerCase()}">
                 <div class="order-item">
                     <img class="order-item-img" src="${order.image}" alt="${order.product_name}">
@@ -134,7 +155,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                         <p class="order-item-id">Order ID: <span class="order-item-id-code">#${order.order_no}</span></p>
                     </div>
                     <div class="order-item-status">
-                        <p class="order-item-status-text ${order.status_class}">${order.status}</p>
+                        <p class="order-item-status-text status-${order.status_class}">${order.status}</p>
                         ${order.status !== 'Cancelled' ? 
                             `<a class="order-item-status-btn" href="${'{{ url('/vendors/order') }}'}/${order.id}">View Details</a>` 
                             : ''

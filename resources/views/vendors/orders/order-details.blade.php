@@ -57,18 +57,29 @@
                     <span class="detail-label">Date Ordered</span>
                     <span class="detail-value">{{ $order->created_at->format('d/m/Y') }}</span>
                 </div>
-               <div class="detail-item">
-                    <span class="detail-label">Color</span>
-                    <span class="detail-value">{{ $item->color_name ?? 'N/A' }}</span>
-                </div>
-                <div class="detail-item">
-                    <span class="detail-label">Size</span>
-                    <span class="detail-value">{{ $item->size_name ?? 'N/A' }}</span>
-                </div>
-                <div class="detail-item">
-                    <span class="detail-label">Size Amount</span>
-                    <span class="detail-value">₦{{ number_format($item->size_amount ?? 0, 2) }}</span>
-                </div>
+                {{-- Show color only if available --}}
+                @if(!empty($item->color_name))
+                    <div class="detail-item">
+                        <span class="detail-label">Color</span>
+                        <span class="detail-value">{{ $item->color_name }}</span>
+                    </div>
+                @endif
+
+                {{-- Show size only if available --}}
+                @if(!empty($item->size_name))
+                    <div class="detail-item">
+                        <span class="detail-label">Size</span>
+                        <span class="detail-value">{{ $item->size_name }}</span>
+                    </div>
+                @endif
+
+                {{-- Show size amount only if greater than 0 --}}
+                @if(!empty($item->size_amount) && $item->size_amount > 0)
+                    <div class="detail-item">
+                        <span class="detail-label">Size Amount</span>
+                        <span class="detail-value">₦{{ number_format($item->size_amount, 2) }}</span>
+                    </div>
+                @endif
                 <div class="detail-item">
                     <span class="detail-label">Quantity</span>
                     <span class="detail-value">{{ $item->quantity ?? 0 }}</span>
