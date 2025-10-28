@@ -17,76 +17,262 @@ class VendorOrderController extends Controller
     {
         return view('vendors.orders.index');
     }
-
-    public function fetchOrders()
+    public function orderIndex()
     {
-        $vendor = auth('vendor')->user();
+        return view('vendors.orders.order-index');
+    }
 
-        // Fetch all order items that belong to this vendor’s products
-        $orders = OrderItem::with([
-            'product.mainImage', 
-            'order.user'
+//    public function fetchOrders()
+// {
+//     $vendor = auth('vendor')->user();
+
+//     // Fetch all order items that belong to this vendor’s products
+//     $orders = OrderItem::with([
+//         'product.mainImage',
+//         'order.user'
+//     ])
+//     ->whereHas('product', function ($q) use ($vendor) {
+//         $q->where('vendor_id', $vendor->id);
+//     })
+//     ->latest()
+//     ->get()
+//     ->map(function ($item) {
+//         $order = $item->order;
+
+//         // ✅ Fetch the most recent tracking status for this order
+//         $latestTracking = OrderTracking::where('order_id', $order->id)
+//             ->orderByDesc('created_at')
+//             ->first();
+
+//         // If tracking exists, use that status, otherwise fallback to order->status
+//         $statusCode = $latestTracking->status ?? $order->status;
+
+//         // Map numeric status to readable text
+//         $statusText = match ((int)$statusCode) {
+//             0 => 'Cancelled',
+//             1 => 'Processing',
+//             2 => 'Dispatched',
+//             3 => 'Delivered',
+//             default => 'Pending',
+//         };
+
+//         // Assign CSS class for styling
+//         $statusClass = match ($statusText) {
+//             'Cancelled' => 'status-cancelled',
+//             'Processing', 'Dispatched' => 'status-in-progress',
+//             'Delivered' => 'status-completed',
+//             default => 'status-pending',
+//         };
+
+//         return [
+//             'id' => $item->id,
+//             'order_no' => $order->order_no ?? 'N/A',
+//             'buyer' => $order->user->name ?? $order->name ?? 'Anonymous',
+//             'status' => $statusText,
+//             'status_class' => $statusClass,
+//             'image' => $item->product && $item->product->mainImage
+//                 ? asset($item->product->mainImage->image_name)
+//                 : asset('vendors/assets/images/default-product.png'),
+//             'product_name' => $item->product->product_name ?? 'Unknown Product',
+//             'category' => $item->product->category->category_name ?? 'Uncategorized',
+//             'quantity' => $item->quantity,
+//             'price' => number_format($item->total_price, 2),
+//             'created_at' => $order->created_at->format('M d, Y'),
+//         ];
+//     });
+
+//     // ✅ Calculate summary stats
+//     $total = $orders->count();
+//     $completed = $orders->where('status', 'Delivered')->count();
+//     $inProgress = $orders->filter(function ($order) {
+//         return in_array($order['status'], ['Processing', 'Dispatched']);
+//     })->count();
+//     $cancelled = $orders->where('status', 'Cancelled')->count();
+
+//     return response()->json([
+//         'stats' => [
+//             'total' => $total,
+//             'completed' => $completed,
+//             'inprogress' => $inProgress,
+//             'cancelled' => $cancelled,
+//         ],
+//         'orders' => $orders
+//     ]);
+// }
+public function fetchOrders()
+{
+    $vendor = auth('vendor')->user();
+
+    $orders = OrderItem::with([
+        'product.mainImage', 
+        'product.category',
+        'order.user',
+        'order.orderTrackings' => fn($q) => $q->latest(),
+    ])
+    ->whereHas('product', fn($q) => $q->where('vendor_id', $vendor->id))
+    ->latest()
+    ->get()
+    ->groupBy('order_id') // group items by order
+    ->map(function ($items, $orderId) {
+        $firstItem = $items->first();
+        $order = $firstItem->order;
+
+        // Latest tracking record
+        $latestTracking = $order->orderTrackings->first();
+        $trackingStatus = $latestTracking ? $latestTracking->status : null;
+
+        // Map status text
+        $statusText = match ((string)$trackingStatus) {
+            '0', 'cancelled', 'Canceled', 'Cancelled' => 'Cancelled',
+            '1', 'placed', 'Placed', 'processing', 'Processing' => 'Processing',
+            '2', 'dispatched', 'in_progress', 'In Progress' => 'In Progress',
+            '3', 'completed', 'Completed' => 'Completed',
+            default => 'Pending',
+        };
+
+        // CSS status class
+        $statusClass = match ($statusText) {
+            'Cancelled' => 'status-cancelled',
+            'Processing' => 'status-processing',
+            'In Progress' => 'status-in-progress',
+            'Completed' => 'status-completed',
+            default => 'status-pending',
+        };
+
+        // Calculate totals
+        // $totalAmount = $items->sum('total_amount');
+        $totalItems = $items->sum('quantity');
+         $isPaid = (bool) $order->is_payment;
+        $paymentStatus = $isPaid ? 'paid' : 'unpaid';
+
+        return [
+            'id' => $order->id,
+            'order_no' => $order->order_no ?? 'N/A',
+            'buyer' => $order->user->name ?? $order->name ?? 'Anonymous',
+            'status' => $statusText,
+            'status_class' => $statusClass,
+            'total_amount' => $order->total_amount,
+            'total_items' => $totalItems,
+            'payment_status' =>  $paymentStatus,
+            'shipping_fee' => $order->shipping_amount ?? 0,
+            'created_at' => $order->created_at->toDateString(),
+        ];
+    })->values();
+
+    // Stats
+    $total = $orders->count();
+    $completed = $orders->where('status', 'Completed')->count();
+    $inProgress = $orders->where('status', 'In Progress')->count();
+    $processing = $orders->where('status', 'Processing')->count();
+    $cancelled = $orders->where('status', 'Cancelled')->count();
+
+    return response()->json([
+        'stats' => [
+            'total' => $total,
+            'completed' => $completed,
+            'inprogress' => $inProgress,
+            'processing' => $processing,
+            'cancelled' => $cancelled,
+        ],
+        'orders' => $orders,
+    ]);
+}
+public function orderSummary($orderId)
+{
+    $vendor = auth('vendor')->user();
+
+    // Find the order that includes items belonging to this vendor
+    $order = Orders::with([
+            'items.product',
+            'user',
+            'orderTrackings' => function ($q) {
+                $q->latest();
+            }
         ])
-        ->whereHas('product', function ($q) use ($vendor) {
-            $q->where('vendor_id', $vendor->id);
+        ->whereHas('items.product', function ($query) use ($vendor) {
+            $query->where('vendor_id', $vendor->id);
         })
-        ->latest()
-        ->get()
-        ->map(function ($item) {
-            $order = $item->order;
+        ->where('id', $orderId)
+        ->first();
 
-            // Map order status to readable form
-            $statusText = match ((int)$order->status) {
-                0 => 'Cancelled',
-                1 => 'Processing',
-                2 => 'In Progress',
-                3 => 'Completed',
-                default => 'Unknown',
-            };
+    if (!$order) {
+        return redirect()->back()->with('error', 'Order not found or access denied.');
+    }
 
-            // Assign CSS class for styling
-            $statusClass = match ($statusText) {
-                'Cancelled' => 'status-cancelled',
-                'Processing', 'In Progress' => 'status-in-progress',
-                'Completed' => 'status-completed',
-                default => 'status-pending',
-            };
+    return view('vendors.orders.order-summary', compact('order'));
+}
+
+public function fetchOrderItems($orderId)
+{
+    $vendorId = auth('vendor')->id();
+
+    // Load order with only items that belong to this vendor
+    $order = Orders::with([
+        'items.product.category',
+        'items.tracking' => function ($q) {
+            $q->latest();
+        }
+    ])
+    ->whereHas('items.product', function ($q) use ($vendorId) {
+        $q->where('vendor_id', $vendorId);
+    })
+    ->where('id', $orderId)
+    ->first();
+
+    if (!$order) {
+        return response()->json(['success' => false, 'message' => 'Order not found or access denied'], 404);
+    }
+
+    // Filter items belonging to the vendor
+    $filteredItems = $order->items->filter(fn($i) => $i->product && $i->product->vendor_id == $vendorId);
+
+    // Compute stats based on tracking status
+    $stats = [
+        'total' => $filteredItems->count(),
+        'completed' => $filteredItems->filter(fn($i) => optional($i->tracking->first())->status == 3)->count(),
+        'inprogress' => $filteredItems->filter(fn($i) => optional($i->tracking->first())->status == 2)->count(),
+        'cancelled' => $filteredItems->filter(fn($i) => optional($i->tracking->first())->status == 0)->count(),
+    ];
+
+    // Status code mapping
+    $statusMap = [
+        0 => 'Cancelled',
+        1 => 'Order Placed',
+        2 => 'Dispatched',
+        3 => 'Completed'
+    ];
+
+    // Map items with readable data
+    $items = $filteredItems->map(function ($item) use ($statusMap) {
+        $latestTracking = $item->tracking->first();
+        $statusCode = $latestTracking->status ?? null;
+        $statusText = $statusMap[$statusCode] ?? 'Pending';
+
+        $product = $item->product;
+            $firstImage = $product?->getFirstImage();
+            $imagePath = $firstImage ? asset($firstImage->image_name) : asset('vendors/assets/img/default-product.png');
 
             return [
                 'id' => $item->id,
-                'order_no' => $order->order_no ?? 'N/A',
-                'buyer' => $order->user->name ?? $order->name ?? 'Anonymous',
-                'status' => $statusText,
-                'status_class' => $statusClass,
-                'image' => $item->product && $item->product->mainImage
-                    ? asset($item->product->mainImage->image_name)
-                    : asset('vendors/assets/images/default-product.png'),
-                'product_name' => $item->product->product_name ?? 'Unknown Product',
-                'category' => $item->product->category->category_name ?? 'Uncategorized',
+                'product_name' => $product->product_name ?? 'Unnamed Product',
+                'category' => $product->category->name ?? 'N/A',
+                'price' => number_format($item->price, 2),
                 'quantity' => $item->quantity,
-                'price' => number_format($item->total_price, 2),
-                'created_at' => $order->created_at->format('M d, Y'),
+                'image' => $imagePath,
+                'buyer' => $item->order->name ?? 'Unknown Buyer',
+                'order_no' => $item->order->order_no ?? '',
+                'status' => $statusText,
+                'status_class' => strtolower(str_replace(' ', '-', $statusText)),
             ];
-        });
+    })->values();
 
-        // Calculate stats
-        $total = $orders->count();
-        $completed = $orders->where('status', 'Completed')->count();
-        $inProgress = $orders->filter(function ($order) {
-            return in_array($order['status'] ?? '', ['Processing', 'In Progress']);
-        })->count();
-        $cancelled = $orders->where('status', 'Cancelled')->count();
+    return response()->json([
+        'success' => true,
+        'stats' => $stats,
+        'orders' => $items,
+    ]);
+}
 
-        return response()->json([
-            'stats' => [
-                'total' => $total,
-                'completed' => $completed,
-                'inprogress' => $inProgress,
-                'cancelled' => $cancelled,
-            ],
-            'orders' => $orders
-        ]);
-    }
 
     public function show($id)
 {
