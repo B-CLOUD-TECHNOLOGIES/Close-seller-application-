@@ -14,6 +14,7 @@ return Application::configure(basePath: dirname(__DIR__))
         //
         // Route middleware
         $middleware->alias([
+            'admin' => \App\Http\Middleware\Admin::class,
             'vendor' => \App\Http\Middleware\Vendor::class,
             "auth" => \App\Http\Middleware\User::class,
         ]);

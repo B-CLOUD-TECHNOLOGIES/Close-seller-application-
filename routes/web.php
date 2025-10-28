@@ -5,6 +5,17 @@ use App\Http\Controllers\OtpPasswordController;
 use App\Http\Controllers\User\CartController;
 use App\Http\Controllers\User\PaymentController;
 use App\Http\Controllers\User\userController;
+use App\Http\Controllers\User\userOrderController;
+
+
+
+
+use App\Http\Controllers\Admin\adminController;
+
+
+
+
+
 use App\Http\Controllers\Vendor\FaqController;
 use App\Http\Controllers\Vendor\HelpController;
 use App\Http\Controllers\Vendor\NotificationController;
@@ -44,7 +55,6 @@ Route::controller(frontendController::class)->group(function () {
 
 
 Route::middleware('auth')->group(function () {
-
     Route::controller(CartController::class)->group(function () {
         Route::post('/add-to-cart', 'addToCart')->name('add.to.cart');
         Route::get('/update-cart-count', 'cartCountUpdate')->name('cart.count');
@@ -124,6 +134,13 @@ Route::middleware('auth')->prefix('users')->group(function () {
         Route::get('/edit/profile', 'editUserProfile')->name('edit.user.profile');
         Route::post('/update/profile', 'userUpdateProfile')->name('user.update.profile');
     });
+
+    Route::controller(userOrderController::class)->group(function () {
+        Route::get('/orders', 'usersOrders')->name('users.orders');
+    });
+
+
+
 });
 
 
@@ -248,6 +265,63 @@ Route::middleware('vendor')->prefix('vendors')->group(function () {
     });
 });
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// =============================  ADMIN CONTROLLER WITH AUTH ============================= //
+Route::middleware('admin')->prefix('admin')->group(function () {
+
+    Route::controller(adminController::class)->group(function () {
+        Route::get('/dashboard', 'adminDashboard')->name('admin.dashboard');
+        Route::get('/login', 'adminLogin')->name('admin.login');
+    });
+
+
+
+
+});
 
 
 

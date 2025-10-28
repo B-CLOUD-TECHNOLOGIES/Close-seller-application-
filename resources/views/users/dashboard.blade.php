@@ -52,7 +52,7 @@
                 </div><i class="fas fa-chevron-right arrow"></i>
             </a>
 
-            <a href="#" class="list-group-item d-flex align-items-center justify-content-between mb-3 menu-item">
+            <a href="{{ route('users.orders') }}" class="list-group-item d-flex align-items-center justify-content-between mb-3 menu-item">
                 <div class="d-flex align-items-center">
                     <div class="icon-box"><i class="fas fa-shopping-bag"></i></div>
                     <div><span class="menu-title">My Orders</span><br><small class="menu-sub">View order history</small>
