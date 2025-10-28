@@ -1,5 +1,5 @@
     <!-- Bottom Navigation -->
-    <div class="bottom-nav">
+    <div class="bottom-nav" style="margin-top: 80px !important;">
         <div class="container-fluid">
             <div class="row">
                 <div class="col">

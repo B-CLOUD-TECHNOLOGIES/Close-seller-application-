@@ -8,7 +8,7 @@ class OrderTracking extends Model
 {
     //
 
-     protected $table = 'order_tracking';
+     protected $table = 'order_trackings';
 
     protected $guarded = [];
 
