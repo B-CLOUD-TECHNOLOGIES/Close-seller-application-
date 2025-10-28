@@ -295,18 +295,29 @@ public function fetchOrderItems($orderId)
         $order->country ?? null,
     ])));
 
-    // Fetch tracking history for this specific order
+    // Fetch tracking history (for timeline)
     $tracking = OrderTracking::where('order_id', $order->id)
         ->orderBy('created_at')
         ->get();
 
+    // ✅ Get latest tracking status (if any)
+    $latestTracking = OrderTracking::where('order_id', $order->id)
+        ->latest('created_at')
+        ->first();
+
+    // ✅ If tracking exists, override order->status
+    if ($latestTracking) {
+        $order->status = $latestTracking->status;
+    }
+
     return view('vendors.orders.order-details', [
         'order' => $order,
-        'item' => $orderItem, // Pass only this vendor’s item
+        'item' => $orderItem,
         'tracking' => $tracking,
         'fullAddress' => $fullAddress,
     ]);
 }
+
    public function updateStatus(Request $request, $id)
 {
     $request->validate([
