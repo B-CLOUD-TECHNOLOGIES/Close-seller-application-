@@ -89,20 +89,38 @@ class VendorOrderController extends Controller
     }
 
     public function show($id)
-    {
-        $vendor = Auth::guard('vendor')->user();
+{
+    $vendor = Auth::guard('vendor')->user();
 
-        $order = Orders::with(['items.product', 'user'])
-            ->whereHas('items.product', function ($q) use ($vendor) {
-                $q->where('vendor_id', $vendor->id);
-            })
-            ->findOrFail($id);
+    // Fetch the single order item that belongs to this vendor
+    $orderItem = OrderItem::with(['order.user', 'product'])
+        ->whereHas('product', function ($q) use ($vendor) {
+            $q->where('vendor_id', $vendor->id);
+        })
+        ->findOrFail($id);
 
-        $tracking = OrderTracking::where('order_id', $id)->orderBy('created_at')->get();
+    $order = $orderItem->order;
 
-        return view('vendors.orders.order-details', compact('order', 'tracking'));
-    }
+    // Combine address parts
+    $fullAddress = trim(implode(', ', array_filter([
+        $order->address,
+        $order->city ?? null,
+        $order->state ?? null,
+        $order->country ?? null,
+    ])));
 
+    // Fetch tracking history for this specific order
+    $tracking = OrderTracking::where('order_id', $order->id)
+        ->orderBy('created_at')
+        ->get();
+
+    return view('vendors.orders.order-details', [
+        'order' => $order,
+        'item' => $orderItem, // Pass only this vendor’s item
+        'tracking' => $tracking,
+        'fullAddress' => $fullAddress,
+    ]);
+}
    public function updateStatus(Request $request, $id)
 {
     $request->validate([
@@ -166,4 +184,4 @@ class VendorOrderController extends Controller
             : 'Order delivered successfully and notifications sent.',
     ]);
 }
-}
+} 
