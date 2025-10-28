@@ -1,0 +1,754 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap");
+
+*,
+*::before,
+*::after {
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+  list-style-type: none;
+  text-decoration: none;
+}
+
+html {
+  font-size: 62.5%;
+}
+
+:root {
+  --phone-header-color: #c582f5;
+  --general-font-family: "Poppins", sans-serif;
+  --primary-color: #55048e;
+}
+
+body {
+  font-family: var(--general-font-family);
+  background-color: #fefefe;
+  display: none;
+}
+
+@media (max-width: 885px) {
+  body {
+    display: block;
+  }
+  /************************** header section ***************************/
+  .header {
+    background-color: var(--phone-header-color);
+    padding: 4rem 0;
+  }
+
+  .header article {
+    width: 90%;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .header span {
+    display: flex;
+    flex-flow: column nowrap;
+    gap: 1rem;
+    text-align: right;
+  }
+
+  .header div {
+    display: flex;
+    gap: 2.5rem;
+    text-align: left;
+  }
+
+  .header span button {
+    background-color: transparent;
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+    border: none;
+    font-size: 12px;
+    font-weight: 300;
+    line-height: 16px;
+    font-family: var(--general-font-family);
+  }
+
+  .header div button {
+    background-color: transparent;
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+    border: none;
+    font-size: 12px;
+    font-weight: 300;
+    line-height: 16px;
+    font-family: var(--general-font-family);
+  }
+
+  .cartNo {
+    border: 1px solid;
+    color: #ffffff;
+    position: relative;
+  }
+
+  .cartNo p {
+    font-size: 8px;
+    top: -1rem;
+    right: -0.3rem;
+    font-weight: 700;
+    font-family: var(--general-font-family);
+    background-color: green;
+    position: absolute;
+    width: 13px;
+    height: 13px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    border-radius: 5rem;
+  }
+
+  /********************* process section **********************/
+  .process {
+    margin: 3rem 0;
+  }
+
+  .process figure {
+    display: flex;
+    width: 90%;
+    margin: 0 auto;
+    justify-content: space-between;
+  }
+
+  .process figure img {
+    text-align: left;
+    width: 16px;
+    height: 20.41px;
+  }
+
+  .process article {
+    display: flex;
+    align-items: center;
+    width: 90%;
+    margin: 0 auto;
+  }
+
+  .process .circle {
+    background-color: var(--primary-color);
+    width: 15px;
+    height: 15px;
+    border-radius: 5rem;
+  }
+
+  .process image {
+    display: block;
+  }
+
+  .process .line {
+    width: 100%;
+    height: 3px;
+    background-color: var(--primary-color);
+  }
+
+  .opacityHide {
+    opacity: 0;
+  }
+
+  .process span {
+    display: flex;
+    justify-content: space-between;
+    width: 96%;
+    margin: 0 auto;
+    font-family: var(--general-font-family);
+  }
+  .process span p {
+    font-size: 18px;
+    font-weight: 500;
+    line-height: 27px;
+    width: 97px;
+    padding: 8px;
+    color: var(--primary-color);
+  }
+
+  /*********************** cartItems_section *********************/
+  .cartItems_section {
+    display: flex;
+    flex-flow: column nowrap;
+    gap: 2rem;
+    width: 90%;
+    justify-content: center;
+    margin: 5rem auto;
+  }
+
+  .container {
+    position: relative;
+  }
+
+  .content {
+    position: relative;
+    background-color: #fff;
+    padding: 10px 10px;
+    flex: 1;
+    transition: transform 0.6s ease-in-out;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    z-index: 1;
+  }
+
+  .action {
+    position: absolute;
+    right: 0;
+    top: 55%;
+    height: 100%;
+    transform: translateY(-50%);
+    display: none;
+    z-index: 0.5;
+  }
+
+  .trash-btn {
+    background-color: #ff4d4d;
+    border: none;
+    border-radius: 1rem;
+    padding: 5px 30px;
+    height: 93%;
+    width: 100%;
+    cursor: pointer;
+  }
+
+  .container.slid .content {
+    transform: translateX(-60px);
+    border-radius: 2.5rem;
+  }
+
+  .container.slid .action {
+    display: block;
+  }
+
+  .container .content {
+    display: flex;
+    background-color: #fff;
+    gap: 2rem;
+    border-radius: 2rem;
+    font-family: var(--general-font-family);
+    text-align: left;
+    box-shadow: 5px 20px 20px rgb(205, 205, 205);
+  }
+
+  .container h3 {
+    font-size: 16px;
+    font-weight: 400;
+    line-height: 24px;
+  }
+
+  .container h5 {
+    font-size: 14px;
+    line-height: 2.5;
+    font-weight: 700;
+  }
+
+  .container p {
+    font-size: 14px;
+    font-weight: 700;
+    line-height: 42px;
+  }
+
+  .container .content div {
+    display: flex;
+    flex-flow: column nowrap;
+    padding: 1rem 0;
+    width: 75%;
+    padding-right: 2rem;
+    position: relative;
+    background-color: #fff;
+    z-index: 1;
+    border-radius: 2rem;
+  }
+
+  .container figure img {
+    width: 80px;
+    height: 80px;
+    border-radius: 2rem;
+    margin: 1rem;
+    background-color: #f6f6f6;
+    padding-top: 0.3rem;
+  }
+
+  .container .content span {
+    width: 100px;
+    height: 26.67px;
+    display: flex;
+    gap: 0.5rem;
+    border-radius: 0.5rem;
+    border: 1px solid #dee2e7;
+    align-items: center;
+    justify-content: space-between;
+    float: right;
+    overflow: hidden;
+  }
+
+  .container .content span button {
+    background-color: transparent;
+    width: 26.67px;
+    border: 0.67px;
+    border: 0.67px solid #dee2e7;
+    border-top: none;
+    border-bottom: none;
+    cursor: pointer;
+    height: 100%;
+  }
+
+  .container .content span p {
+    color: #1c1c1c;
+    font-family: "Inter", sans-serif;
+    font-size: 10.67px;
+    font-weight: 500;
+    line-height: 12.91px;
+    text-align: center;
+  }
+
+  /******************** cart_total section ************************/
+  .cart_total {
+    margin: 4rem 0;
+    display: flex;
+    flex-flow: column nowrap;
+    gap: 1rem;
+  }
+
+  .cart_total hr {
+    border: 1px solid #00000080;
+  }
+
+  .cart_total article {
+    width: 90%;
+    margin: 0 auto;
+    display: flex;
+    flex-flow: column nowrap;
+    font-family: var(--general-font-family);
+    gap: 1rem;
+  }
+
+  .cart_total span {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .cart_total h3 {
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 30px;
+  }
+
+  .cart_total h5 {
+    font-size: 14px;
+    font-weight: 700;
+    line-height: 30px;
+  }
+
+  .cart_total p {
+    font-size: 12px;
+    font-weight: 300;
+    line-height: 16px;
+  }
+
+  .cart_total div {
+    display: flex;
+    justify-content: space-between;
+    gap: 2rem;
+  }
+
+  .cart_total div button {
+    flex: 1;
+    width: 189.74px;
+    height: 46.9px;
+    border-radius: 6.95px;
+    border: 0.87px solid var(--primary-color);
+    background-color: transparent;
+    color: var(--primary-color);
+    font-family: "Inter", sans-serif;
+    cursor: pointer;
+    font-size: 15.63px;
+    font-weight: 500;
+    line-height: 18.91px;
+    text-align: center;
+  }
+
+  /************************ closemodal ***********************/
+
+  .closemodal {
+    display: flex;
+    justify-content: flex-end;
+    width: 90%;
+    margin: 2.5rem auto;
+  }
+
+  .closemodal button {
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+  }
+
+  /************************ success_sty ***********************/
+
+  .success_sty {
+    width: 90%;
+    margin: 10rem auto;
+    display: flex;
+    flex-flow: column nowrap;
+    gap: 5rem;
+    justify-content: center;
+    align-items: center;
+    min-height: 50vh;
+    font-family: var(--general-font-family);
+    text-align: left;
+  }
+
+  .success_sty figure {
+    width: 156px;
+    height: 156px;
+    display: flex;
+    border-radius: 50%;
+    align-items: center;
+    justify-content: center;
+    background-color: #7b61ff1a;
+  }
+
+  .success_sty h2 {
+    font-size: 38px;
+    font-weight: 600;
+    line-height: 57px;
+    letter-spacing: -0.30000001192092896px;
+  }
+
+  .success_sty p {
+    font-size: 20px;
+    font-weight: 400;
+    line-height: 30px;
+    letter-spacing: -0.30000001192092896px;
+    color: var(--primary-color);
+  }
+
+  .sucess_btn button {
+    flex: 1;
+    width: 189.74px;
+    height: 40.9px;
+    border-radius: 6.95px;
+    border: 0.87px solid var(--primary-color);
+    background-color: transparent;
+    color: var(--primary-color);
+    font-family: "Inter", sans-serif;
+    cursor: pointer;
+    font-size: 15.63px;
+    font-weight: 500;
+    line-height: 18.91px;
+    text-align: center;
+  }
+  /********************** shippingForm **************************/
+  .shippingForm {
+    display: flex;
+    flex-flow: column nowrap;
+    gap: 2rem;
+    width: 90%;
+    margin: 2rem auto;
+  }
+
+  .shippingForm h1 {
+    font-size: 20px;
+    font-weight: 700;
+    line-height: 32px;
+    text-align: left;
+  }
+
+  .shippingForm form {
+    display: flex;
+    flex-flow: column nowrap;
+    gap: 2.2rem;
+    font-family: var(--general-font-family);
+  }
+
+  .shippingForm input, .shippingForm select {
+    width: 100%;
+    height: 40px;
+    padding: 0 1rem;
+    padding-top: 0.5rem;
+    border: 1px solid #dee2e7;
+    border-radius: 0.5rem;
+    outline: none;
+  }
+
+  .shippingForm input::placeholder,
+  .shippingForm textarea {
+    font-size: 16px;
+    font-weight: 400;
+    line-height: 24px;
+    text-align: left;
+    color: #c6c6c6;
+  }
+
+  .shippingForm p {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+    font-size: 12px;
+    font-weight: 300;
+    line-height: 16px;
+    text-align: left;
+    color: #1c1c1c;
+  }
+
+  .shippingForm p input {
+    width: 1rem;
+    border: 2px solid #bdbdbd;
+    width: 15px;
+    height: 15px;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+
+  .shippingForm h5 {
+    display: flex;
+    justify-content: flex-end;
+    font-family: "Inter", sans-serif;
+    font-size: 16px;
+    font-weight: 400;
+    line-height: 19.36px;
+    text-align: left;
+    color: #c8c5c5;
+  }
+
+  .shippingForm textarea {
+    width: 100%;
+    height: 100px;
+    padding: 0.5rem;
+    border: 1px solid #dee2e7;
+    border-radius: 0.5rem;
+    outline: none;
+    padding: 1rem;
+    color: #000;
+  }
+  /********************* shipping_method ***********************/
+  .shipping_method {
+    display: flex;
+    flex-flow: column nowrap;
+    gap: 2.5rem;
+    width: 90%;
+    margin: 0 auto;
+  }
+
+  .shipping_method .method {
+    width: 100%;
+    padding: 2rem 1rem;
+    border: 1px solid #dee2e7;
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    border-radius: 0.6rem;
+    font-family: var(--general-font-family);
+  }
+
+  .shipping_method .method h3 {
+    width: 212px;
+    font-size: 14px;
+    font-weight: 700;
+    line-height: 21px;
+    text-align: left;
+    color: #4f4f4f;
+  }
+
+  .shipping_method .method h4 {
+    font-family: var(--general-font-family);
+    font-size: 16px;
+    font-weight: 700;
+    line-height: 24.32px;
+    color: #000000;
+  }
+
+  .shipping_method .sucess_btn {
+    display: flex;
+    gap: 2rem;
+    margin-bottom: 2.5rem;
+  }
+
+  .shipping_method .sucess_btn button {
+    flex: 1;
+  }
+
+  /************************** confirmPass ****************************/
+  .confirmPass {
+    width: 90%;
+    margin: 0 auto;
+    display: flex;
+    flex-flow: column nowrap;
+    justify-content: space-between;
+    gap: 5rem;
+    /* min-height: 70vh; */
+    overflow: hidden;
+    font-family: var(--general-font-family);
+  }
+
+  .confirmPass span {
+    display: flex;
+    flex-flow: column nowrap;
+    gap: 1rem;
+    width: 93vw;
+  }
+
+  .confirmPass span .lineAdd {
+    width: 100%;
+    border-radius: 0.5rem;
+    border-bottom: none;
+    display: flex;
+    flex-flow: row;
+    justify-content: space-between;
+  }
+
+  .confirmPass span .lineAdd hr {
+    border: 1px solid #f7f7f7;
+    border-bottom: none;
+    flex: 1;
+  }
+
+  .confirmPass span .lineAdd div {
+    position: relative;
+    left: -15rem;
+  }
+
+  .confirmPass article {
+    display: flex;
+    flex-flow: column nowrap;
+    gap: 0.5rem;
+  }
+
+  .confirmPass article h2 {
+    font-size: 16px;
+    font-weight: 400;
+    line-height: 24px;
+    text-align: left;
+    color: #1c1c1c;
+  }
+
+  .confirmPass article form {
+    display: flex;
+    flex-flow: column nowrap;
+    gap: 1.5rem;
+  }
+
+  .confirmPass article form input,
+  .confirmPass div input {
+    width: 100%;
+    height: 40px;
+    border-radius: 6px;
+    border: 1px solid #dee2e7;
+    padding: 1rem 2rem;
+    outline: none;
+  }
+
+  .confirmPass article form input::placeholder,
+  .confirmPass div input::placeholder {
+    font-family: "Inter", sans-serif;
+    font-size: 16px;
+    font-weight: 400;
+    line-height: 19.36px;
+    text-align: left;
+    color: #bdc4cd;
+  }
+
+  .confirmPass article form button {
+    width: 100%;
+    height: 40px;
+    background-color: var(--primary-color);
+    width: 189.74px;
+    height: 46.9px;
+    padding: 0px 17.37px;
+    border-radius: 6.95px;
+    color: #fff;
+    border: none;
+    margin: 2rem auto;
+    text-align: center;
+  }
+
+  .confirmPass div {
+    display: flex;
+    flex-flow: column nowrap;
+    gap: 2rem;
+    margin-bottom: 2rem;
+  }
+
+  .confirmPass div p {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+    font-size: 12px;
+    font-weight: 300;
+    line-height: 16px;
+    text-align: left;
+    color: #1c1c1c;
+  }
+
+  .confirmPass div p input {
+    width: 1rem;
+    border: 2px solid #bdbdbd;
+    width: 17px;
+    height: 17px;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+}
+
+@media (max-width: 400px) {
+  .cart_total div {
+    display: flex;
+    gap: 1rem;
+  }
+  .cart_total div button {
+    white-space: nowrap;
+    font-size: 12px;
+    padding: 0 1rem;
+  }
+
+  .container h3 {
+    font-size: 13px;
+  }
+
+  .container h5 {
+    font-size: 12px;
+  }
+
+  .container p {
+    font-size: 11px;
+  }
+
+  .success_sty h2 {
+    font-size: 29px;
+  }
+
+  .success_sty p {
+    font-size: 18px;
+  }
+
+  .shipping_method .sucess_btn button {
+    font-size: small;
+  }
+  .shipping_method .method h3 {
+    font-size: 12px;
+  }
+
+  .shipping_method .method h4 {
+    font-size: 12px;
+  }
+
+  .process article img {
+    width: 12px;
+    height: 20.41px;
+  }
+
+  .process span {
+    width: 100%;
+    padding: 0;
+  }
+
+  .process span p {
+    font-size: 15px;
+  }
+
+  .confirmPass article h2 {
+    font-size: 12px;
+  }
+}

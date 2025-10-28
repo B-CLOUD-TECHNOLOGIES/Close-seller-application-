@@ -17,17 +17,19 @@ class Orders extends Model
         'payment_data' => 'array',
     ];
 
-    public function items()
+    public function user()
     {
-        return $this->hasMany(OrderItem::class, 'order_id');
+        return $this->belongsTo(User::class, 'user_id', 'id');
     }
+    
     public function orderTrackings()
 {
     return $this->hasMany(OrderTracking::class, 'order_id', 'id');
 }
 
-    public function user()
+
+        public function items()
     {
-        return $this->belongsTo(User::class, 'user_id');
+        return $this->hasMany(OrderItem::class, 'order_id', 'id');
     }
 }

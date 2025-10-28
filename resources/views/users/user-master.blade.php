@@ -19,6 +19,7 @@
     {{-- toastr css --}}
     <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.css">
 
+    <script src="{{ asset('users/assets/js/jquery.js') }}"></script>
 </head>
 
 <body>
@@ -29,7 +30,6 @@
 
     <!-- Bootstrap 5 JS Bundle with Popper -->
     <script src="{{ asset('users/assets/js/bootstrap.bundle.js') }}"></script>
-    <script src="{{ asset('users/assets/js/jquery.js') }}"></script>
     <script src="{{ asset('users/assets/js/script.js') }}"></script>
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
 

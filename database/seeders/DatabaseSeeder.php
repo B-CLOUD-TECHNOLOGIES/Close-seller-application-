@@ -21,10 +21,11 @@ class DatabaseSeeder extends Seeder
         // ]);
 
         $this->call([
-        LocationSeeder::class,
-        CategorySeeder::class,
-        UnitSeeder::class,
-        ColorSeeder::class,
+        // LocationSeeder::class,
+        // CategorySeeder::class,
+        // UnitSeeder::class,
+        // ColorSeeder::class,
+         AdminSeeder::class,
     ]);
     }
     
