@@ -70,14 +70,14 @@
         card.classList.toggle('hidden');
     }
 
-    // Optional: Close when clicking outside
-    document.addEventListener('click', (e) => {
-        const card = document.getElementById('helpCard');
-        const button = document.querySelector('.help-button');
-        if (!card.contains(e.target) && !button.contains(e.target)) {
-            card.classList.add('hidden');
-        }
-    });
+    //Optional: Close when clicking outside
+    //document.addEventListener('click', (e) => {
+    //    const card = document.getElementById('helpCard');
+    //    const button = document.querySelector('.help-button');
+    //    if (!card.contains(e.target) && !button.contains(e.target)) {
+    //        card.classList.add('hidden');
+    //    }
+    //}); 
         // Add entrance animations
         function animateMenuItems() {
             const menuItems = document.querySelectorAll('.menu-item');

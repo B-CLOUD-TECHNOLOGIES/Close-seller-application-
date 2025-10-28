@@ -13,6 +13,7 @@ use App\Http\Controllers\Vendor\VendorPasswordController;
 use App\Http\Controllers\Vendor\FaqController;
 use App\Http\Controllers\Vendor\HelpController;
 use App\Http\Controllers\Vendor\VendorReviewController;
+use App\Http\Controllers\Vendor\VendorOrderController;
 
 // Route::get('/dashboard', function () {
 //     return view('dashboard');
@@ -220,6 +221,13 @@ Route::middleware('vendor')->prefix('vendors')->group(function () {
     Route::controller(VendorReviewController::class)->group(function () {
         Route::get('/reviews',  'index')->name('vendor.reviews');
         Route::get('/fetch-reviews',  'fetchReviews')->name('vendor.reviews.fetch');
+    });
+
+     Route::controller(VendorOrderController::class)->group(function () {
+        Route::get('/orders',  'index')->name('vendor.orders');
+        Route::get('/fetch-orders',  'fetchOrders')->name('vendor.fetch.orders');
+        Route::get('/order/{id}',  'show')->name('vendor.order.show');
+         Route::post('/order/{id}/update-status', 'updateStatus')->name('vendor.order.update-status');
     });
 });
 
