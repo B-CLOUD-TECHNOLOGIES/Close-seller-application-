@@ -11,6 +11,8 @@ use Illuminate\Validation\Rules;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Auth\Events\Registered;
+use Intervention\Image\ImageManager;
+use Intervention\Image\Drivers\Gd\Driver;
 
 
 class vendorController extends Controller
@@ -101,12 +103,29 @@ public function VendorUpdatePersonalData(Request $request)
             'image'     => 'nullable|image|mimes:jpeg,png,webp|max:2048',
         ]);
 
-        // ✅ Handle image upload
-        if ($request->hasFile('image')) {
-            $file = $request->file('image');
-            $fileName = time() . '_' . $file->getClientOriginalName();
-            $filePath = $file->storeAs('uploads/vendors', $fileName, 'public');
-            $vendor->image = $filePath;
+        // ✅ Handle profile image upload
+        if ($request->hasFile('image') && $request->file('image')->isValid()) {
+            $image = $request->file('image');
+            $extension = strtolower($image->getClientOriginalExtension());
+            $allowed = ['jpeg', 'jpg', 'png', 'gif', 'webp'];
+
+            if (in_array($extension, $allowed)) {
+                $uniqueName = hexdec(uniqid()) . '.' . $extension;
+                $uploadPath = 'uploads/vendor-profile/' . $uniqueName;
+
+                // ✅ Resize and save to public folder
+                $manager = new ImageManager(new Driver());
+                $img = $manager->read($image);
+                $img->resize(250, 250);
+                $img->save(public_path($uploadPath));
+
+                // ✅ Delete old image (optional but recommended)
+                if (!empty($vendor->image) && file_exists(public_path($vendor->image))) {
+                    @unlink(public_path($vendor->image));
+                }
+
+                $vendor->image = $uploadPath;
+            }
         }
 
         // ✅ Update vendor info
