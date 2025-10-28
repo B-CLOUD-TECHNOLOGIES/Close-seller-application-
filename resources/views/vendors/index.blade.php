@@ -13,16 +13,19 @@
                         stroke-linecap="round" stroke-linejoin="round" />
                 </svg>
             </button>
-
-           <div class="profile">
-                <img 
-                    src="{{ $vendor->image ? asset('storage/' . $vendor->image) : asset('vendors/assets/images/default-avatar.png') }}" 
-                    alt="Profile Picture"
-                    class="profile-img"
-                    style="border-radius:50%;width:70px;height:70px;object-fit:cover;"
-                />
-                <p>{{ $vendor->firstname }} {{ $vendor->lastname }}</p>
-            </div>
+            <a href="{{ route('vendor.personal.data') }}">
+                <div class="profile">
+                    
+                    <img 
+                        src="{{ $vendor->image ? asset('storage/' . $vendor->image) : asset('vendors/assets/images/default-avatar.png') }}" 
+                        alt="Profile Picture"
+                        class="profile-img"
+                        style="border-radius:50%;width:70px;height:70px;object-fit:cover;"
+                    />
+                    <p>{{ $vendor->firstname }} {{ $vendor->lastname }}</p>
+                    
+                </div>
+            </a>
             <a href="{{ route('vendor.settings') }}" class="settings-btn">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none"
                     xmlns="http://www.w3.org/2000/svg">
@@ -107,7 +110,7 @@
                 </a>
 
                 <!-- All Orders -->
-                <a href="order-summary.html" class="menu-item">
+                <a href="{{ route('vendor.orders') }}" class="menu-item">
                     <div class="menu-content">
                         <div class="menu-icon">
                             <svg width="20" height="20" viewBox="0 0 24 24" fill="none"

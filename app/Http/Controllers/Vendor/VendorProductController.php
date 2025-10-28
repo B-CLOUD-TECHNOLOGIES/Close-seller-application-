@@ -18,6 +18,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 use Intervention\Image\Drivers\Gd\Driver;
 use Intervention\Image\ImageManager;
+use App\Models\notification;
 
 class VendorProductController extends Controller
 {
@@ -52,6 +53,17 @@ class VendorProductController extends Controller
             'message' => "Product Sucessfully created Complete your prodduct inforation",
             'alert-type' => 'success'
         );
+
+         // ✅ Create notification using helper method
+        notification::insertRecord(
+            $product->vendor_id,
+            'vendor',
+            'New Product Added by Vendor',
+            '/vendor/products',
+            'You just  has added a new product:' .        $product->title. "on ". now()->format('M d, Y H:i A'),
+            false
+        );
+
 
 
 
@@ -208,6 +220,16 @@ class VendorProductController extends Controller
                 'message' => 'Product Successfully Updated',
                 'alert-type' => 'success',
             ];
+
+              // ✅ Create notification using helper method
+            notification::insertRecord(
+                $product->vendor_id,
+                'vendor',
+                'Product Updated by Vendor',
+                '/vendor/products',
+                'You updated the product:' .   $product->title. "on ". now()->format('M d, Y H:i A'),
+                false
+            );
 
             return redirect()->back()->with($notification);
             //  redirect to the product view page

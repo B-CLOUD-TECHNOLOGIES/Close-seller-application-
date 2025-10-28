@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Frontend\frontendController;
+use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\OtpPasswordController;
 use App\Http\Controllers\User\CartController;
 use App\Http\Controllers\User\PaymentController;
@@ -12,9 +13,6 @@ use App\Http\Controllers\Vendor\vendorController;
 use App\Http\Controllers\Vendor\VendorPasswordController;
 use App\Http\Controllers\Vendor\VendorProductController;
 use App\Http\Controllers\Vendor\VendorReviewController;
-use App\Http\Controllers\VendorBankController;
-use Illuminate\Support\Facades\Route;
-
 
 // Route::get('/dashboard', function () {
 //     return view('dashboard');
@@ -236,6 +234,13 @@ Route::middleware('vendor')->prefix('vendors')->group(function () {
     Route::controller(VendorReviewController::class)->group(function () {
         Route::get('/reviews',  'index')->name('vendor.reviews');
         Route::get('/fetch-reviews',  'fetchReviews')->name('vendor.reviews.fetch');
+    });
+
+     Route::controller(VendorOrderController::class)->group(function () {
+        Route::get('/orders',  'index')->name('vendor.orders');
+        Route::get('/fetch-orders',  'fetchOrders')->name('vendor.fetch.orders');
+        Route::get('/order/{id}',  'show')->name('vendor.order.show');
+         Route::post('/order/{id}/update-status', 'updateStatus')->name('vendor.order.update-status');
     });
 });
 

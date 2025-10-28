@@ -174,6 +174,7 @@
             background: linear-gradient(45deg, transparent 98%, var(--purple) 98%);
             opacity: 0;
             transition: opacity 0.3s ease;
+             pointer-events: none; 
         }
 
         .order-detail:hover {
@@ -235,6 +236,7 @@
 
         .order-item-detail {
             flex: 1;
+            
         }
 
         .order-item-name {
@@ -455,10 +457,25 @@
                 font-size: 20px;
             }
 
+            .order-item-info {
+                width: 100%;
+               
+            }
+
             .order-detail {
                 flex-direction: column;
-                text-align: center;
+               
                 gap: 1rem;
+                
+
+            }
+            .order-item-detail {
+                
+                width: 100%;
+            }
+            .order-item-cost{
+                text-align: center;
+                justify-content: center;
             }
 
             .order-item-info {
