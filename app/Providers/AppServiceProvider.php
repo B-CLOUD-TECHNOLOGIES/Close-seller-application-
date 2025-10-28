@@ -7,6 +7,7 @@ use App\Models\notification;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
+use MusheAbdulHakim\Paystack\Paystack;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -16,6 +17,10 @@ class AppServiceProvider extends ServiceProvider
     public function register(): void
     {
         //
+        $this->app->singleton(Paystack::class, function ($app) {
+            $secret = config('paystack.secret_key');
+            return new Paystack($secret);
+        });
     }
 
     /**

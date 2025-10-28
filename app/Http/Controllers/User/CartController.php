@@ -362,7 +362,7 @@ class CartController extends Controller
                 'state' => 'required',
                 'country' => 'required',
                 'payment' => 'required',
-                'total' => 'required',
+                'subtotal' => 'required',
             ]);
 
             if ($request->payment !== 'paystack') {
@@ -377,7 +377,7 @@ class CartController extends Controller
                 ]);
             }
 
-            $sessionTotal = session()->get('checkout_total');
+            $sessionTotal = session()->get('checkout_subtotal');
             if (!$sessionTotal) {
                 Log::warning('⚠️ Session total missing', [
                     'user_id' => Auth::id()
@@ -389,7 +389,7 @@ class CartController extends Controller
                 ]);
             }
 
-            $postedTotal = (float) str_replace(',', '', $request->total);
+            $postedTotal = (float) str_replace(',', '', $request->subtotal);
             $serverTotal = (float) $sessionTotal;
 
             if (round($postedTotal, 2) !== round($serverTotal, 2)) {
@@ -524,7 +524,8 @@ class CartController extends Controller
 
 
 
-    public function securityCheck($order_id) {
+    public function securityCheck($order_id)
+    {
         $orderid = $order_id;
         return view("frontend.security-check", compact("orderid"));
     }
@@ -549,11 +550,7 @@ public function securityVerify(Request $request)
 
     $orderId = base64_decode($request->order_id);
 
-    $order = Orders::where('id', $orderId)
-        ->where('user_id', $user->id)
-        ->first();
-
-        Log::info('Order: ' . $order);
+    $order = Orders::where('user_id', $user->id)->find($orderId);
 
     if (!$order) {
         return back()->with([
@@ -562,24 +559,18 @@ public function securityVerify(Request $request)
         ]);
     }
 
+    // Log::info('Order verified:', ['order' => $order]);
 
-    if($order->payment_method = 'paystack'){
-            // ✅ Password verified — redirect to payment
-    // return redirect()->route('paystack.initialize', ['order_id' => $order->id]);
+    // ✅ Redirect based on payment method
+    if ($order->payment_method == 'paystack') {
+        return redirect()->route('paystack.initialize', ['order_id' => $request->order_id]);
+    } elseif ($order->payment_method == 'opay') {
+        // redirect to opay
+    } elseif ($order->payment_method == 'stripe') {
+        // redirect to stripe
+    } else {
+        // handle credit card or other methods
     }
-    elseif($order->payment_method = 'opay'){
-            // ✅ Password verified — redirect to payment
-    }
-    elseif($order->payment_method = 'stripe'){
-            // ✅ Password verified — redirect to payment
-    }else{
-        // credit card
-    }
-    
-
-
 }
-
-
 
 }

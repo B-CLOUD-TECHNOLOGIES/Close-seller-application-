@@ -16,4 +16,15 @@ class Orders extends Model
     protected $casts = [
         'payment_data' => 'array',
     ];
+
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'user_id', 'id');
+    }
+
+
+        public function items()
+    {
+        return $this->hasMany(OrderItem::class, 'order_id', 'id');
+    }
 }

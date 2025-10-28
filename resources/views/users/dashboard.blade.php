@@ -18,10 +18,10 @@
 
     <!-- Profile Info -->
     <div class="text-center mt-3">
-        <img src="https://i.pravatar.cc/120" class="profile-img mb-2">
+        <img src="{{ !empty($user->image) ? asset($user->image) : asset('uploads/no_image.png') }}" class="profile-img mb-2">
         <h5 class="profile-name">{{ $user->username }}</h5>
-        <p class="text-muted mb-1">08151934545</p>
-        <button class="edit-btn">
+        <p class="text-muted mb-1">{{ $user->phone ?? '' }}</p>
+        <button class="edit-btn" onclick="window.location.href='{{ route('edit.user.profile') }}'">
             <i class="fas fa-pen me-1"></i> Edit profile
         </button>
     </div>

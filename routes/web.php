@@ -1,18 +1,20 @@
 <?php
 
-use App\Http\Controllers\Vendor\NotificationController;
-use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Frontend\frontendController;
 use App\Http\Controllers\OtpPasswordController;
-use App\Http\Controllers\User\userController;
 use App\Http\Controllers\User\CartController;
-use App\Http\Controllers\Vendor\vendorController;
-use App\Http\Controllers\Vendor\VendorProductController;
-use App\Http\Controllers\VendorBankController;
-use App\Http\Controllers\Vendor\VendorPasswordController;
+use App\Http\Controllers\User\PaymentController;
+use App\Http\Controllers\User\userController;
 use App\Http\Controllers\Vendor\FaqController;
 use App\Http\Controllers\Vendor\HelpController;
+use App\Http\Controllers\Vendor\NotificationController;
+use App\Http\Controllers\Vendor\vendorController;
+use App\Http\Controllers\Vendor\VendorPasswordController;
+use App\Http\Controllers\Vendor\VendorProductController;
 use App\Http\Controllers\Vendor\VendorReviewController;
+use App\Http\Controllers\VendorBankController;
+use Illuminate\Support\Facades\Route;
+
 
 // Route::get('/dashboard', function () {
 //     return view('dashboard');
@@ -52,8 +54,20 @@ Route::middleware('auth')->group(function () {
         Route::get('/security/check/{order_id}', 'securityCheck')->name('security.check');
         Route::post('/security/verify', 'securityVerify')->name('security.verify');
     });
-    
 });
+
+
+
+Route::controller(PaymentController::class)->group(function () {
+    Route::get('/paystack/initialize/{order_id}',  'initializePayment')->name('paystack.initialize');
+    Route::get('/paystack/callback',  'handleCallback')->name('paystack.callback');
+    Route::post('/paystack/webhook',  'handleWebhook')->name('paystack.webhook');
+    Route::get('/payment/success', 'paymentSuccess')->name('payment.success');
+    Route::get('/payment/failed', 'paymentFailed')->name('payment.failed');
+
+});
+
+
 
 // =============================  FRONTEND ENDS ============================= //
 
@@ -105,6 +119,8 @@ Route::middleware('auth')->prefix('users')->group(function () {
         Route::get('/wishlist', 'getUserProductWishlist')->name('user.wishlist');
         Route::get('/delete-wishlist/{id}', 'deleteWishlist')->name('delete_wishlist');
         Route::get('/wishlist/status', 'WuishListStatus')->name('wishlist.status');
+        Route::get('/edit/profile', 'editUserProfile')->name('edit.user.profile');
+        Route::post('/update/profile', 'userUpdateProfile')->name('user.update.profile');
     });
 });
 
@@ -176,8 +192,8 @@ Route::middleware('vendor')->prefix('vendors')->group(function () {
         Route::post('/create-product', 'VendorCreateProduct')->name('vendor.create.product');
         Route::get('/edit-product/{productid}', 'VendorEditProduct')->name('vendor.edit.product');
         Route::get('/delete-product/{id}', 'VendorDeleteImage')->name('vendor.image_delete');
-        Route::post('/update/product', 'VendorUpdateProduct')->name('vendor.update.product'); 
-        Route::post('/vendor/update-image-order', 'productImageSort')->name('vendor.update_image_order'); 
+        Route::post('/update/product', 'VendorUpdateProduct')->name('vendor.update.product');
+        Route::post('/vendor/update-image-order', 'productImageSort')->name('vendor.update_image_order');
         Route::get('/products', 'VendorProducts')->name('vendor.products');
 
 
@@ -197,13 +213,13 @@ Route::middleware('vendor')->prefix('vendors')->group(function () {
         Route::post('/update-password', 'updatePassword')->name('vendor.update.password');
     });
 
-     Route::controller(NotificationController::class)->group(function () {
+    Route::controller(NotificationController::class)->group(function () {
         Route::get('/vendor/notifications',  'index')->name('vendor.notifications');
         Route::get('/vendor/notifications/{id}',  'show')->name('vendor.notifications.show');
         Route::post('/vendor/notifications/mark-all',  'markAllAsRead')->name('vendor.notifications.markAll');
     });
 
-     Route::controller(FaqController::class)->group(function () {
+    Route::controller(FaqController::class)->group(function () {
         Route::get('/faqs',  'index')->name('vendor.faqs');
         Route::get('/faqs/{id}',  'show')->name('vendor.faqs.show');
     });
