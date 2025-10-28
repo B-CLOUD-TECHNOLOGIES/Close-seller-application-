@@ -21,6 +21,10 @@ class Orders extends Model
     {
         return $this->hasMany(OrderItem::class, 'order_id');
     }
+    public function orderTrackings()
+{
+    return $this->hasMany(OrderTracking::class, 'order_id', 'id');
+}
 
     public function user()
     {
