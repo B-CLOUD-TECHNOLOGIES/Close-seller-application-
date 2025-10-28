@@ -34,7 +34,7 @@
     <label for="image" style="cursor: pointer;">
       <div class="profile-image-container">
         <img 
-          src="{{ $vendor->image ? asset('storage/'.$vendor->image) : 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face' }}"
+          src="{{ $vendor->image ? asset($vendor->image) : 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face' }}"
           class="profile-img" id="showImage" alt="Profile" />
         <div class="edit-badge">
           <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">

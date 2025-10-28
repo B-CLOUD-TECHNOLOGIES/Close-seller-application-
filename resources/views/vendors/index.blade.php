@@ -17,7 +17,7 @@
                 <div class="profile">
                     
                     <img 
-                        src="{{ $vendor->image ? asset('storage/' . $vendor->image) : asset('vendors/assets/images/default-avatar.png') }}" 
+                        src="{{ $vendor->image ? asset($vendor->image) : asset('vendors/assets/images/default-avatar.png') }}" 
                         alt="Profile Picture"
                         class="profile-img"
                         style="border-radius:50%;width:70px;height:70px;object-fit:cover;"
