@@ -137,6 +137,9 @@ Route::middleware('auth')->prefix('users')->group(function () {
 
     Route::controller(userOrderController::class)->group(function () {
         Route::get('/orders', 'usersOrders')->name('users.orders');
+        Route::get('/fetch/orders', 'userFetchOrders')->name('user.fetch.orders');
+        Route::get('/order/summary/{orderId}', 'userOrderSummary')->name('user.order.summary');
+        Route::get('/order/fwtch/{orderId}', 'userFetchOrderItems')->name('user.fetch.order-items');
     });
 
 

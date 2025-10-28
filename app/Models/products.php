@@ -16,6 +16,9 @@ class products extends Model
         'tags' => 'array',
     ];
 
+    public function getCategory(){
+        return $this->belongsTo(categories::class, 'category_id', 'id');
+    }
 
     public function Category()
     {
@@ -54,4 +57,7 @@ class products extends Model
         // This returns the first image ordered by 'order_by'
         return $this->hasOne(productImages::class, 'product_id')->orderBy('order_by', 'ASC');
     }
+
+
+
 }
