@@ -34,25 +34,20 @@
         </div>
 
         <div class="order-content">
-            @foreach ($order->items as $item)
-                <div class="order-item-section">
-                    <div class="order-item-img-container">
-                        <img class="order-item-img"
-                            src="{{ asset( $item->product->getImage->first()->image_name ?? 'default-product.png') }}"
-                            alt="{{ $item->product->product_name }}">
-                    </div>
-                    <div class="order-item-info">
-                        <h3 class="order-item-name">{{ $item->product->product_name }}</h3>
-                        <div class="order-price">
-                            <span class="naira-symbol">₦</span>
-                            <span>{{ number_format($item->total_price, 2) }}</span>
-                        </div>
+           <div class="order-item-section">
+                <div class="order-item-img-container">
+                    <img class="order-item-img"
+                        src="{{ asset($item->product->getImage->first()->image_name ?? 'default-product.png') }}"
+                        alt="{{ $item->product->product_name }}">
+                </div>
+                <div class="order-item-info">
+                    <h3 class="order-item-name">{{ $item->product->product_name }}</h3>
+                    <div class="order-price">
+                        <span class="naira-symbol">₦</span>
+                        <span>{{ number_format($item->total_price, 2) }}</span>
                     </div>
                 </div>
-            @endforeach
-            @php
-                $item = $order->items->first();
-            @endphp
+            </div>
             <div class="order-details-grid">
                 <div class="detail-item">
                     <span class="detail-label">Buyer Name</span>
@@ -77,7 +72,7 @@
                 <div class="detail-item">
                     <span class="detail-label">Quantity</span>
                     <span class="detail-value">{{ $item->quantity ?? 0 }}</span>
-                </div>
+                </div> 
             </div>
 
             <div class="order-details-grid mt-3">
@@ -87,7 +82,7 @@
                 </div>
                 <div class="detail-item">
                     <span class="detail-label">Delivery Address</span>
-                    <span class="detail-value">{{ $order->address }}</span>
+                    <span class="detail-value">{{ $fullAddress }}</span>
                 </div>
             </div>
             <div class="total-amount">
