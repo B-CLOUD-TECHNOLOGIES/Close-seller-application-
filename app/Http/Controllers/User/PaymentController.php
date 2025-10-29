@@ -6,13 +6,16 @@ use App\Http\Controllers\Controller;
 use App\Mail\orderMailer;
 use App\Models\BankDetails;
 use App\Models\Cart;
+use App\Models\notification;
 use App\Models\Orders;
 use App\Models\OrderTracking;
 use App\Models\PlatformEarning;
 use App\Models\products;
 use App\Models\VendorPayout;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\View;
@@ -282,184 +285,272 @@ class PaymentController extends Controller
 
 
 
-public function handleCallback(Request $request)
-{
-    $reference = $request->query('reference');
+    public function handleCallback(Request $request)
+    {
+        $reference = $request->query('reference');
 
-    if (!$reference) {
-        return back()->with('error', 'Missing payment reference.');
-    }
-
-    DB::beginTransaction();
-
-    try {
-        // Initialize Paystack client
-        $secretKey = config('paystack.secret_key');
-        $paystack  = Paystack::client($secretKey);
-
-        // Verify payment
-        $verify = $paystack->transaction()->verify($reference);
-
-        if (!$verify['status'] || $verify['data']['status'] !== 'success') {
-            throw new \Exception('Payment not successful.');
+        if (!$reference) {
+            return back()->with('error', 'Missing payment reference.');
         }
 
-        // Extract metadata and order
-        $metadata = $verify['data']['metadata'] ?? [];
-        $orderId  = $metadata['order_id'] ?? null;
+        DB::beginTransaction();
 
-        if (!$orderId) {
-            throw new \Exception('Order ID missing in payment metadata.');
-        }
+        try {
+            // Initialize Paystack client
+            $secretKey = config('paystack.secret_key');
+            $paystack  = Paystack::client($secretKey);
 
-        $order = Orders::findOrFail($orderId);
+            // Verify payment
+            $verify = $paystack->transaction()->verify($reference);
 
-        // Update order details
-        $order->update([
-            'is_payment'     => 1,
-            'status'         => 3,
-            'transaction_id' => $verify['data']['id'],
-            'payment_data'   => $metadata['fee_breakdown'] ?? null,
-        ]);
+            if (!$verify['status'] || $verify['data']['status'] !== 'success') {
+                throw new \Exception('Payment not successful.');
+            }
 
-        // Process each order item
-        foreach ($order->items as $item) {
-            OrderTracking::create([
-                'order_id'   => $order->id,
-                'product_id' => $item->product_id,
-                'status'     => 1,
+            // Extract metadata and order
+            $metadata = $verify['data']['metadata'] ?? [];
+            $orderId  = $metadata['order_id'] ?? null;
+
+            if (!$orderId) {
+                throw new \Exception('Order ID missing in payment metadata.');
+            }
+
+            $order = Orders::findOrFail($orderId);
+
+            // Update order details
+            $order->update([
+                'is_payment'     => 1,
+                'status'         => 3,
+                'transaction_id' => $verify['data']['id'],
+                'payment_data'   => $metadata['fee_breakdown'] ?? null,
             ]);
 
-            $product = products::find($item->product_id);
-            if (!$product) continue;
-
-            $grossAmount = $item->total_price * $item->quantity;
-            $platformFee = 10.00;
-            $netAmount   = $grossAmount - $platformFee;
-
-            if ($product->product_owner === 'admin') {
-                // --- Admin-owned product ---
-                VendorPayout::create([
-                    'vendor_id'          => 0,
-                    'order_id'           => $order->id,
-                    'product_id'         => $product->id,
-                    'gross_amount'       => $grossAmount,
-                    'fee_amount'         => 0,
-                    'amount'             => $grossAmount,
-                    'status'             => 'success',
-                    'transfer_reference' => $reference,
+            // Process each order item
+            foreach ($order->items as $item) {
+                OrderTracking::create([
+                    'order_id'   => $order->id,
+                    'product_id' => $item->product_id,
+                    'status'     => 1,
                 ]);
 
-                PlatformEarning::create([
-                    'order_id'       => $order->id,
-                    'amount'         => 0,
-                    'transaction_id' => $verify['data']['id'],
-                ]);
-            } else {
-                // --- Vendor-owned product ---
-                $bank = BankDetails::where('vendor_id', $product->vendor_id)->first();
-                if (!$bank) {
-                    throw new \Exception("Bank details missing for vendor ID {$product->vendor_id}");
-                }
+                $product = products::find($item->product_id);
+                if (!$product) continue;
 
-                if (empty($bank->recipient_code)) {
-                    $recipient = $paystack->transferrecipient()->create([
-                        'type'           => 'nuban',
-                        'name'           => $bank->acctName,
-                        'account_number' => $bank->acctNo,
-                        'bank_code'      => $bank->bankCode,
-                        'currency'       => 'NGN',
+                $grossAmount = $item->total_price * $item->quantity;
+                $platformFee = 10.00;
+                $netAmount   = $grossAmount - $platformFee;
+
+                if ($product->product_owner === 'admin') {
+                    // --- Admin-owned product ---
+                    VendorPayout::create([
+                        'vendor_id'          => 0,
+                        'order_id'           => $order->id,
+                        'product_id'         => $product->id,
+                        'gross_amount'       => $grossAmount,
+                        'fee_amount'         => 0,
+                        'amount'             => $grossAmount,
+                        'status'             => 'success',
+                        'transfer_reference' => $reference,
                     ]);
 
-                    $bank->update(['recipient_code' => $recipient['data']['recipient_code']]);
+                    PlatformEarning::create([
+                        'order_id'       => $order->id,
+                        'amount'         => 0,
+                        'transaction_id' => $verify['data']['id'],
+                    ]);
+
+
+                    // ===================================
+                    // 🔔 SEND NOTIFICATIONS TO ADMIN ₦
+                    // ===================================
+                    notification::insertRecord(
+                        null,
+                        'admin',
+                        '💳 New Payment Received',
+                        url('admin/orders/details/' . $order->id),
+                        "You've received ₦" . number_format($grossAmount, 2) . " for Order #" . $order->order_no,
+                        true
+                    );
+                } else {
+                    // --- Vendor-owned product ---
+                    $bank = BankDetails::where('vendor_id', $product->vendor_id)->first();
+                    if (!$bank) {
+                        throw new \Exception("Bank details missing for vendor ID {$product->vendor_id}");
+                    }
+
+                    // Step 1: Ensure the vendor has a recipient code
+                    if (empty($bank->recipient_code)) {
+                        $recipient = $paystack->transferrecipient()->create([
+                            'type'           => 'nuban',
+                            'name'           => $bank->acctName,
+                            'account_number' => $bank->acctNo,
+                            'bank_code'      => $bank->bankCode,
+                            'currency'       => 'NGN',
+                        ]);
+
+                        $bank->update(['recipient_code' => $recipient['data']['recipient_code']]);
+                    }
+
+                    // Step 2: Initiate transfer
+                    $transfer = $paystack->transfer()->init([
+                        'source'     => 'balance',
+                        'amount'     => $netAmount * 100,
+                        'recipient'  => $bank->recipient_code,
+                        'reason'     => 'Vendor payment for Order #' . $order->order_no,
+                    ]);
+
+                    // Step 3: Get recipient details from Paystack API
+                    $recipientId = $transfer['data']['recipient'] ?? null;
+                    $recipientDetails = null;
+
+                    if ($recipientId) {
+                        try {
+                            $recipientResponse = Http::withToken(config('paystack.secret_key'))
+                                ->get("https://api.paystack.co/transferrecipient/{$recipientId}")
+                                ->json();
+
+                            $recipientDetails = $recipientResponse['data']['details'] ?? null;
+                        } catch (\Throwable $e) {
+                            Log::error('Error fetching Paystack recipient details: ' . $e->getMessage());
+                        }
+                    }
+
+                    // Step 4: Merge recipient info into transfer data
+                    $paystackData = $transfer['data'] ?? [];
+                    if ($recipientDetails) {
+                        $paystackData['recipient_details'] = [
+                            'bank_name'      => $recipientDetails['bank_name'] ?? null,
+                            'account_number' => $recipientDetails['account_number'] ?? null,
+                            'account_name'   => $recipientDetails['account_name'] ?? null,
+                        ];
+                    }
+
+                    // Step 5: Save payout record
+                    VendorPayout::create([
+                        'vendor_id'            => $product->vendor_id,
+                        'order_id'             => $order->id,
+                        'product_id'           => $product->id,
+                        'gross_amount'         => $grossAmount,
+                        'fee_amount'           => $platformFee,
+                        'amount'               => $netAmount,
+                        'paystack_transfer_id' => $transfer['data']['id'] ?? null,
+                        'transfer_reference'   => $transfer['data']['reference'] ?? null,
+                        'status'               => $transfer['data']['status'] ?? 'pending',
+                        'paystack_response'    => json_encode($paystackData, JSON_PRETTY_PRINT),
+                    ]);
+
+
+                    PlatformEarning::create([
+                        'order_id'       => $order->id,
+                        'amount'         => $platformFee,
+                        'transaction_id' => $verify['data']['id'],
+                    ]);
+
+                    // ===================================
+                    // 🔔 SEND NOTIFICATIONS TO VENDOR ₦
+                    // ===================================
+                    notification::insertRecord(
+                        $product->vendor_id,
+                        'vendor',
+                        '💳 New Payment Received',
+                        url('vendors/order-summary/' . $order->id),
+                        "Dear Vendor, You've received " . number_format($grossAmount, 2) . " for Order #" . $order->order_no,
+                        false
+                    );
+
+
+                    // ===================================
+                    // 🔔 SEND NOTIFICATIONS TO ADMIN ₦
+                    // ===================================
+                    notification::insertRecord(
+                        null,
+                        'admin',
+                        '💳 New Payment Processed',
+                        url('admin/orders/details/' . $order->id),
+                        "Vendor " . $bank->acctName . " (ID: " . $product->vendor_id . ") has received ₦" . number_format($netAmount, 2) . " for Order #" . $order->order_no .
+                            ". Gross amount: ₦" . number_format($grossAmount, 2) .
+                            ", Fees: ₦" . number_format(($grossAmount - $netAmount), 2),
+                        true
+                    );
                 }
+            }
 
-                $transfer = $paystack->transfer()->init([
-                    'source'     => 'balance',
-                    'amount'     => $netAmount * 100,
-                    'recipient'  => $bank->recipient_code,
-                    'reason'     => 'Vendor payment for Order #' . $order->order_no,
-                ]);
 
-                VendorPayout::create([
-                    'vendor_id'           => $product->vendor_id,
-                    'order_id'            => $order->id,
-                    'product_id'          => $product->id,
-                    'gross_amount'        => $grossAmount,
-                    'fee_amount'          => $platformFee,
-                    'amount'              => $netAmount,
-                    'paystack_transfer_id'=> $transfer['data']['id'] ?? null,
-                    'transfer_reference'  => $transfer['data']['reference'] ?? null,
-                    'status'              => $transfer['data']['status'] ?? 'pending',
-                    'paystack_response'   => json_encode($transfer['data'] ?? []),
-                ]);
 
-                PlatformEarning::create([
-                    'order_id'       => $order->id,
-                    'amount'         => $platformFee,
-                    'transaction_id' => $verify['data']['id'],
+            // --- Clear cart for the user ---
+            Cart::where('user_id', $order->user_id)->delete();
+
+            // ===================================
+            // 🔔 SEND NOTIFICATIONS TO USERS ₦
+            // ===================================
+            notification::insertRecord(
+                $order->user_id,
+                'user',
+                'Order Confirmed',
+                url('users/order/summary/' . $order->id),
+                " Thank you for your order #" . $order->order_no . "
+                        Order Date: " . Carbon::create($order->created_at)->format('F j, Y') . "
+                        Payment Method: " . $order->payment_method . "
+                        Amount Paid: ₦" . number_format($order->total_amount, 2) . " Your order is now being processed. You'll receive another notification when your items ship.",
+                false
+            );
+
+            // --- Send confirmation email ---
+            try {
+                Mail::to($order->email)->send(new \App\Mail\orderMailer(
+                    'Order Confirmation - #' . $order->order_no,
+                    'Thank you for your purchase!',
+                    $order,                    // $getOrder
+                    $order->items,             // $orderItems
+                    $order->created_at         // $createdAt
+                ));
+            } catch (\Throwable $mailError) {
+                Log::error('Order Confirmation Mail Error', [
+                    'order_id' => $order->id,
+                    'message'  => $mailError->getMessage(),
                 ]);
             }
-        }
 
-        // --- Clear cart for the user ---
-        Cart::where('user_id', $order->user_id)->delete();
+            DB::commit();
 
-        // --- Send confirmation email ---
-        try {
-            Mail::to($order->email)->send(new \App\Mail\orderMailer(
-                'Order Confirmation - #' . $order->order_no,
-                'Thank you for your purchase!',
-                $order,                    // $getOrder
-                $order->items,             // $orderItems
-                $order->created_at         // $createdAt
-            ));
-        } catch (\Throwable $mailError) {
-            Log::error('Order Confirmation Mail Error', [
-                'order_id' => $order->id,
-                'message'  => $mailError->getMessage(),
+            $notification = [
+                "message" => "Payment Successful",
+                "alert-type" => "success",
+            ];
+
+            return redirect()->route('payment.success')->with($notification);
+        } catch (\Throwable $e) {
+            DB::rollBack();
+
+            Log::error('Paystack Callback Error', [
+                'reference' => $reference,
+                'message'   => $e->getMessage(),
+                'trace'     => $e->getTraceAsString(),
             ]);
+
+
+            $notification = [
+                "message" => "Error verifying or processing payment.",
+                "alert-type" => "error",
+            ];
+
+
+            return redirect()->route('payment.failed')->with($notification);
         }
-
-        DB::commit();
-
-        $notification = [
-            "message" => "Payment Successful",
-            "alert-type" => "success",
-        ];
-
-        return redirect()->route('payment.success')->with($notification);
-
-    } catch (\Throwable $e) {
-        DB::rollBack();
-
-        Log::error('Paystack Callback Error', [
-            'reference' => $reference,
-            'message'   => $e->getMessage(),
-            'trace'     => $e->getTraceAsString(),
-        ]);
-
-        
-        $notification = [
-            "message" => "Error verifying or processing payment.",
-            "alert-type" => "error",
-        ];
-
-
-        return redirect()->route('payment.failed')->with($notification);
     }
-}
 
 
 
-public function paymentSuccess(){
-    return view("frontend.payment-success");
-}
+    public function paymentSuccess()
+    {
+        return view("frontend.payment-success");
+    }
 
 
-public function paymentFailed(){
-    return view("frontend.payment-failed");
-}
+    public function paymentFailed()
+    {
+        return view("frontend.payment-failed");
+    }
 
 
 
