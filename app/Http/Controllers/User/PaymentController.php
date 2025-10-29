@@ -15,6 +15,7 @@ use App\Models\VendorPayout;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\View;
@@ -377,6 +378,7 @@ class PaymentController extends Controller
                         throw new \Exception("Bank details missing for vendor ID {$product->vendor_id}");
                     }
 
+                    // Step 1: Ensure the vendor has a recipient code
                     if (empty($bank->recipient_code)) {
                         $recipient = $paystack->transferrecipient()->create([
                             'type'           => 'nuban',
@@ -389,6 +391,7 @@ class PaymentController extends Controller
                         $bank->update(['recipient_code' => $recipient['data']['recipient_code']]);
                     }
 
+                    // Step 2: Initiate transfer
                     $transfer = $paystack->transfer()->init([
                         'source'     => 'balance',
                         'amount'     => $netAmount * 100,
@@ -396,18 +399,46 @@ class PaymentController extends Controller
                         'reason'     => 'Vendor payment for Order #' . $order->order_no,
                     ]);
 
+                    // Step 3: Get recipient details from Paystack API
+                    $recipientId = $transfer['data']['recipient'] ?? null;
+                    $recipientDetails = null;
+
+                    if ($recipientId) {
+                        try {
+                            $recipientResponse = Http::withToken(config('paystack.secret_key'))
+                                ->get("https://api.paystack.co/transferrecipient/{$recipientId}")
+                                ->json();
+
+                            $recipientDetails = $recipientResponse['data']['details'] ?? null;
+                        } catch (\Throwable $e) {
+                            Log::error('Error fetching Paystack recipient details: ' . $e->getMessage());
+                        }
+                    }
+
+                    // Step 4: Merge recipient info into transfer data
+                    $paystackData = $transfer['data'] ?? [];
+                    if ($recipientDetails) {
+                        $paystackData['recipient_details'] = [
+                            'bank_name'      => $recipientDetails['bank_name'] ?? null,
+                            'account_number' => $recipientDetails['account_number'] ?? null,
+                            'account_name'   => $recipientDetails['account_name'] ?? null,
+                        ];
+                    }
+
+                    // Step 5: Save payout record
                     VendorPayout::create([
-                        'vendor_id'           => $product->vendor_id,
-                        'order_id'            => $order->id,
-                        'product_id'          => $product->id,
-                        'gross_amount'        => $grossAmount,
-                        'fee_amount'          => $platformFee,
-                        'amount'              => $netAmount,
+                        'vendor_id'            => $product->vendor_id,
+                        'order_id'             => $order->id,
+                        'product_id'           => $product->id,
+                        'gross_amount'         => $grossAmount,
+                        'fee_amount'           => $platformFee,
+                        'amount'               => $netAmount,
                         'paystack_transfer_id' => $transfer['data']['id'] ?? null,
-                        'transfer_reference'  => $transfer['data']['reference'] ?? null,
-                        'status'              => $transfer['data']['status'] ?? 'pending',
-                        'paystack_response'   => json_encode($transfer['data'] ?? []),
+                        'transfer_reference'   => $transfer['data']['reference'] ?? null,
+                        'status'               => $transfer['data']['status'] ?? 'pending',
+                        'paystack_response'    => json_encode($paystackData, JSON_PRETTY_PRINT),
                     ]);
+
 
                     PlatformEarning::create([
                         'order_id'       => $order->id,
