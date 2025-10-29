@@ -57,6 +57,7 @@
       Total: <span id="totalAmount">₦0.00</span>
     </button>
   </div>
+    @include('vendors.body.footer') 
 
   <!-- Bootstrap JS -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
@@ -120,7 +121,7 @@
                             </div>
                             <div class="transaction-info-item">
                                 <span class="info-label">Order Id</span>
-                                <span class="info-value">${t.orderId}</span>
+                                <span class="info-value">${t.orderNo}</span>
                             </div>
                             <div class="transaction-info-item">
                                 <span class="info-label">Payment</span>
@@ -130,12 +131,12 @@
                             </div>
                         </div>
 
-                        <!-- ✅ View Details button (styled same as your total button) -->
+                       ${!isCanceled ? `
                         <div class="transaction-footer">
-                            <button class="total-btn"" data-transaction-id="${t.transactionId}">
+                            <button class="total-btn view-details-btn" data-order-id="${t.orderId}">
                                 View Details
                             </button>
-                        </div>
+                        </div>` : ''}
                     `;
                     transactionList.appendChild(card);
                 });
@@ -143,9 +144,9 @@
                 // Attach event listeners to "View Details" buttons
                 document.querySelectorAll('.view-details-btn').forEach(btn => {
                     btn.addEventListener('click', (e) => {
-                        const transactionId = e.target.getAttribute('data-transaction-id');
+                        const orderId = e.target.getAttribute('data-order-id');
                         // Navigate to transaction detail page
-                        window.location.href = `/vendors/transactions/${transactionId}`;
+                        window.location.href = `/vendors/transactions/${orderId}`;
                     });
                 });
             }

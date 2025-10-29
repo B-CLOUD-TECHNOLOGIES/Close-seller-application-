@@ -3,7 +3,7 @@
 @section('vendor')
 <link rel="stylesheet" href="{{ asset('vendors/assets/css/order-index.css') }}" />
 
-<main>
+<main style="margin-bottom: 100px;">
   <!-- Header -->
   <div class="order-head">
     <a class="arrow-back-a" href="javascript:history.back()">
@@ -71,6 +71,7 @@
     <p class="empty-state-message">There are no orders matching your current filter selection.</p>
   </div>
 </main>
+  @include('vendors.body.footer') 
 
 <script>
 document.addEventListener('DOMContentLoaded', function () {
