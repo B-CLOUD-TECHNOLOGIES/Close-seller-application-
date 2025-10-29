@@ -303,6 +303,7 @@ class VendorOrderController extends Controller
 
         // ✅ Get latest tracking status (if any)
         $latestTracking = OrderTracking::where('order_id', $order->id)
+            ->where('product_id', $orderItem->product_id)
             ->latest('created_at')
             ->first();
 
