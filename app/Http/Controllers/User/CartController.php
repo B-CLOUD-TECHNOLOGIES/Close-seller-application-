@@ -461,7 +461,7 @@ class CartController extends Controller
                     'country' => $request->country,
                     'total_amount' => number_format($serverTotal, 2, '.', ''),
                     'payment_method' => $request->payment,
-                    'status' => 1,
+                    'status' => 0,
                     'is_payment' => 0,
                 ]);
 
