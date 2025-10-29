@@ -1,0 +1,310 @@
+ :root {
+            --purple: #701d9d;
+            --orange: #fb7e00;
+            --light-purple: #f0e6f7;
+            --light-orange: #fff4ed;
+            --text-dark: #1a1a1a;
+            --text-medium: #666666;
+            --text-light: #999999;
+            --border-color: #e1e5e9;
+            --success-color: #28a745;
+            --warning-color: #ffc107;
+            --danger-color: #dc3545;
+            --info-color: #17a2b8;
+            --background: #ffffff;
+            --card-shadow: 0 2px 20px rgba(112, 29, 157, 0.08);
+            --hover-shadow: 0 4px 25px rgba(112, 29, 157, 0.15);
+            --general-font-family: "Poppins", sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, var(--light-purple) 0%, #f8f9ff 100%);
+            font-family: var(--general-font-family);
+            min-height: 100vh;
+            color: var(--text-dark);
+            padding-bottom: 2rem;
+        }
+
+        .receipt-container {
+            max-width: 100%;
+            overflow-x: hidden;
+        }
+
+        /* Header Section */
+        .receipt-head {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            width: 90%;
+            margin: 2rem auto 1rem;
+            padding: 1.5rem;
+            background: var(--background);
+            border-radius: 20px;
+            box-shadow: var(--card-shadow);
+        }
+
+        .arrow-back-a {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 44px;
+            height: 44px;
+            background: var(--light-purple);
+            border: none;
+            border-radius: 14px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+        }
+
+        .arrow-back-a:hover {
+            background: var(--purple);
+            transform: translateX(-2px);
+        }
+
+        .arrow-back:hover {
+            filter: brightness(0) saturate(100%) invert(100%);
+        }
+
+        .receipt-title {
+            flex: 1;
+            text-align: center;
+        }
+
+        .receipt-title span {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--purple);
+        }
+
+        /* Amount Card */
+        .amount-card {
+            width: 90%;
+            margin: 0 auto 2rem;
+            background: linear-gradient(135deg, var(--purple) 0%, #8a2be2 100%);
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: var(--card-shadow);
+            color: white;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .amount-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm48 25c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm-43-7c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm63 31c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM34 90c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm56-76c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM12 86c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm28-65c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm23-11c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-6 60c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm29 22c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zM32 63c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm57-13c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-9-21c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM60 91c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM35 41c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM12 60c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2z' fill='%23ffffff' fill-opacity='0.1' fill-rule='evenodd'/%3E%3C/svg%3E");
+            opacity: 0.3;
+        }
+
+        .merchant-name {
+            font-size: 14px;
+            opacity: 0.9;
+            margin-bottom: 0.5rem;
+            text-align: left;
+        }
+
+        .transaction-purpose {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            text-align: left;
+        }
+
+        .amount-display {
+            font-size: 48px;
+            font-weight: 800;
+            margin-bottom: 1.5rem;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 0.5rem 1.5rem;
+            border-radius: 25px;
+            font-weight: 600;
+            font-size: 14px;
+            backdrop-filter: blur(10px);
+        }
+
+        /* Details Card */
+        .details-card {
+            width: 90%;
+            margin: 0 auto 2rem;
+            background: var(--background);
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: var(--card-shadow);
+        }
+
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .detail-row:last-child {
+            border-bottom: none;
+        }
+
+        .detail-label {
+            color: var(--text-medium);
+            font-size: 14px;
+        }
+
+        .detail-value {
+            font-weight: 600;
+            text-align: right;
+        }
+
+        .detail-value.amount {
+            color: var(--purple);
+            font-size: 18px;
+        }
+
+        .detail-value.fee {
+            color: var(--danger-color);
+        }
+
+        .detail-value.total {
+            font-size: 18px;
+            font-weight: 700;
+        }
+
+        .section-divider {
+            height: 1px;
+            background: var(--border-color);
+            margin: 1rem 0;
+            opacity: 0.5;
+        }
+
+        .recipient-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: rgba(40, 167, 69, 0.1);
+            color: var(--success-color);
+            padding: 0.25rem 0.75rem;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-left: 0.5rem;
+        }
+
+        /* Action Buttons */
+        .action-buttons {
+            width: 90%;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .action-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.75rem;
+            padding: 1rem 1.5rem;
+            border-radius: 16px;
+            font-weight: 600;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+        }
+
+        .report-btn {
+            background: var(--background);
+            color: var(--text-dark);
+            border: 2px solid var(--border-color);
+            box-shadow: var(--card-shadow);
+        }
+
+        .report-btn:hover {
+            background: var(--light-orange);
+            border-color: var(--orange);
+            transform: translateY(-2px);
+            box-shadow: var(--hover-shadow);
+        }
+
+        .share-btn {
+            background: linear-gradient(45deg, var(--purple), var(--orange));
+            color: white;
+            box-shadow: 0 4px 15px rgba(112, 29, 157, 0.3);
+        }
+
+        .share-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(112, 29, 157, 0.4);
+        }
+
+        /* Animation */
+        .amount-card, .details-card {
+            animation: slideIn 0.6s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .receipt-head,
+            .amount-card,
+            .details-card,
+            .action-buttons {
+                width: 95%;
+            }
+
+            .amount-display {
+                font-size: 36px;
+            }
+
+            .transaction-purpose {
+                font-size: 16px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .receipt-head {
+                margin: 1rem auto 0.5rem;
+                padding: 1rem;
+            }
+
+            .amount-card,
+            .details-card {
+                padding: 1.5rem;
+            }
+
+            .amount-display {
+                font-size: 32px;
+            }
+
+            .detail-row {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 0.5rem;
+            }
+
+            .detail-value {
+                text-align: left;
+            }
+        }

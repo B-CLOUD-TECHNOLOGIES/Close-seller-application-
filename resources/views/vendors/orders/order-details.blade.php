@@ -98,7 +98,7 @@
             </div>
             <div class="total-amount">
                 <div class="label">Total Amount</div>
-                <div id="totalAmount" class="amount">₦{{ number_format($order->total_amount, 2) }}</div>
+                <div id="totalAmount" class="amount">₦{{ number_format($item->total_price, 2) }}</div>
             </div>
         </div>
     </div>
@@ -236,7 +236,7 @@
                 <h3>Congratulations!</h3>
                 <p>Order has been successfully completed and delivered</p>
             </div>
-            <a href="{{ route('vendor.products') }}" class="modal-btn success-btn">Back to Orders</a>
+            <a href="{{ route('vendor.orders.order-index') }}" class="modal-btn success-btn">Back to Orders</a>
         </div>
     </div>
 </main>
@@ -288,7 +288,7 @@
             // disable buttons to avoid double clicks
             document.querySelectorAll('.modal .modal-btn').forEach(b => b.disabled = true);
 
-            const res = await fetch("{{ route('vendor.order.update-status', ['id' => $order->id]) }}", {
+            const res = await fetch("{{ route('vendor.order.update-item-status', ['id' => $item->id]) }}", {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
