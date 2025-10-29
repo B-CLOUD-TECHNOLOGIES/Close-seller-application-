@@ -25,64 +25,77 @@ class CartController extends Controller
     //
     public function addToCart(Request $request)
     {
-        $request->validate([
-            'product_id' => 'required|exists:products,id',
-            'quantity' => 'required|integer|min:1',
-            'size_id' => 'nullable|exists:product_sizes,id',
-            'color_id' => 'nullable|exists:colors,id',
-        ]);
+        try {
+            // ✅ Check authentication FIRST - before validation or any middleware redirect
+            if (!Auth::guard('web')->check()) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Please login first to add items to your cart.'
+                ], 401);
+            }
 
-        // Check authentication
-        if (!Auth::guard('web')->check()) {
+            // Validate request data
+            $request->validate([
+                'product_id' => 'required|exists:products,id',
+                'quantity' => 'required|integer|min:1',
+                'size_id' => 'nullable|exists:product_sizes,id',
+                'color_id' => 'nullable|exists:colors,id',
+            ]);
+
+            $user_id = Auth::id();
+            $cart = Cart::firstOrCreate(['user_id' => $user_id]);
+
+            $product = products::findOrFail($request->product_id);
+            $totalPrice = $product->new_price ?? 0;
+
+            // Handle size if provided
+            $size = null;
+            if (!empty($request->size_id)) {
+                $size = productSizes::find($request->size_id);
+                $totalPrice += $size ? ($size->price ?? 0) : 0;
+            }
+
+            // Handle color if provided
+            $color = null;
+            if (!empty($request->color_id)) {
+                $color = Color::find($request->color_id);
+            }
+
+            // Add item to cart
+            $cartItem = $cart->addItem(
+                $request->product_id,
+                $request->quantity,
+                $totalPrice,
+                [
+                    'size_id' => $request->size_id,
+                    'size_name' => $size->name ?? null,
+                    'color_id' => $request->color_id,
+                    'color_name' => $color->color ?? null,
+                ]
+            );
+
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Product added to cart successfully.',
+                'data' => [
+                    'cart_item' => $cartItem,
+                    'cart_total' => $cart->items()->sum(DB::raw('quantity * price'))
+                ]
+            ], 200);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            // Handle validation errors
             return response()->json([
                 'status' => 'error',
-                'message' => 'Please login first to add items to your cart.'
-            ], 401);
+                'message' => 'Validation failed.',
+                'errors' => $e->errors()
+            ], 422);
+        } catch (\Exception $e) {
+            Log::error('Cart error: ' . $e->getMessage());
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Something went wrong: ' . $e->getMessage(),
+            ], 500);
         }
-
-        $user_id = Auth::id();
-        $cart = Cart::firstOrCreate(['user_id' => $user_id]);
-
-        // Get the product and base price
-        $product = products::findOrFail($request->product_id);
-        $totalPrice = $product->new_price ?? 0;
-
-        // Handle size pricing
-        $attributes = [];
-        if (!empty($request->size_id)) {
-            $size = productSizes::find($request->size_id);
-            $sizePrice = $size ? ($size->price ?? 0) : 0;
-            $totalPrice += $sizePrice;
-        }
-
-        // Handle color if provided
-        if (!empty($request->color_id)) {
-            $color = Color::find($request->color_id);
-        }
-
-        // Add or update item using your helper function
-
-        $cartItem = $cart->addItem(
-            $request->product_id,
-            $request->quantity,
-            $totalPrice,
-            [
-                'size_id' => $request->size_id,
-                'size_name' => $size->name ?? null,
-                'color_id' => $request->color_id,
-                'color_name' => $color->color ?? null,
-            ]
-        );
-
-
-        return response()->json([
-            'status' => 'success',
-            'message' => 'Product added to cart successfully.',
-            'data' => [
-                'cart_item' => $cartItem,
-                'cart_total' => $cart->items()->sum(DB::raw('quantity * price'))
-            ]
-        ]);
     }
 
 
@@ -531,46 +544,45 @@ class CartController extends Controller
     }
 
 
-public function securityVerify(Request $request)
-{
-    $request->validate([
-        "password" => "required",
-        "order_id" => "required",
-    ]);
-
-    $user = Auth::user();
-
-    // ✅ Verify password
-    if (!Hash::check($request->password, $user->password)) {
-        return back()->with([
-            'message' => 'Incorrect password. Please try again.',
-            'alert-type' => 'error'
+    public function securityVerify(Request $request)
+    {
+        $request->validate([
+            "password" => "required",
+            "order_id" => "required",
         ]);
+
+        $user = Auth::user();
+
+        // ✅ Verify password
+        if (!Hash::check($request->password, $user->password)) {
+            return back()->with([
+                'message' => 'Incorrect password. Please try again.',
+                'alert-type' => 'error'
+            ]);
+        }
+
+        $orderId = base64_decode($request->order_id);
+
+        $order = Orders::where('user_id', $user->id)->find($orderId);
+
+        if (!$order) {
+            return back()->with([
+                'message' => 'Invalid order or access denied.',
+                'alert-type' => 'error'
+            ]);
+        }
+
+        // Log::info('Order verified:', ['order' => $order]);
+
+        // ✅ Redirect based on payment method
+        if ($order->payment_method == 'paystack') {
+            return redirect()->route('paystack.initialize', ['order_id' => $request->order_id]);
+        } elseif ($order->payment_method == 'opay') {
+            // redirect to opay
+        } elseif ($order->payment_method == 'stripe') {
+            // redirect to stripe
+        } else {
+            // handle credit card or other methods
+        }
     }
-
-    $orderId = base64_decode($request->order_id);
-
-    $order = Orders::where('user_id', $user->id)->find($orderId);
-
-    if (!$order) {
-        return back()->with([
-            'message' => 'Invalid order or access denied.',
-            'alert-type' => 'error'
-        ]);
-    }
-
-    // Log::info('Order verified:', ['order' => $order]);
-
-    // ✅ Redirect based on payment method
-    if ($order->payment_method == 'paystack') {
-        return redirect()->route('paystack.initialize', ['order_id' => $request->order_id]);
-    } elseif ($order->payment_method == 'opay') {
-        // redirect to opay
-    } elseif ($order->payment_method == 'stripe') {
-        // redirect to stripe
-    } else {
-        // handle credit card or other methods
-    }
-}
-
 }

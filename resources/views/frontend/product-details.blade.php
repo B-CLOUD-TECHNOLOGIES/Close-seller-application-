@@ -342,12 +342,12 @@
 
                 <!-- Message Vendor -->
                 <!-- <div class="message-section">
-                                                                                <h6 class="fw-bold mb-3">Message Vendor</h6>
-                                                                                <form action="#">
-                                                                                    <textarea name="message" class="message-textarea" placeholder="Type your message..." required></textarea>
-                                                                                    <button type="submit" class="btn btn-outline-primary">Send Message</button>
-                                                                                </form>
-                                                                            </div> -->
+                                                                                            <h6 class="fw-bold mb-3">Message Vendor</h6>
+                                                                                            <form action="#">
+                                                                                                <textarea name="message" class="message-textarea" placeholder="Type your message..." required></textarea>
+                                                                                                <button type="submit" class="btn btn-outline-primary">Send Message</button>
+                                                                                            </form>
+                                                                                        </div> -->
 
                 <!-- Related Products -->
                 <div class="px-3 pt-4 mb-5 pb-4 bg-body">
@@ -456,19 +456,21 @@
                     },
                     success: function(response) {
                         toastr.success(response.message);
-                        updateCartCount(); // refresh count dynamically
+                        updateCartCount();
 
-                        // ✅ Update button state after adding to cart
                         let $button = $('.addProductToCart');
-                        // $button.attr('type', 'button');
-                        // $button.prop('disabled', true);
                         $button.find('.btn-text').text('Update Cart');
                     },
                     error: function(xhr) {
+                        // jQuery already parses JSON when dataType is 'json'
+                        let response = xhr.responseJSON;
+                        console.log('Status:', xhr.status);
+                        console.log('Response:', xhr.responseJSON);
+                        console.log('Raw:', xhr.responseText);
+
                         if (xhr.status === 401) {
-                            // Parse and show clean error message
-                            let res = JSON.parse(xhr.responseText);
-                            toastr.warning(res.message || 'Please log in first.');
+                            // Show the error message from server
+                            toastr.warning(response?.message || 'Please log in first.');
 
                             // Redirect to login after 2 seconds
                             setTimeout(() => {
@@ -476,8 +478,9 @@
                             }, 2000);
                         } else {
                             // For other types of errors
-                            console.error(xhr.responseText);
-                            toastr.error('Something went wrong, please try again.');
+                            console.error('Error:', xhr.responseText);
+                            let errorMsg = response?.message || 'Something went wrong, please try again.';
+                            toastr.error(errorMsg);
                         }
                     }
                 });
