@@ -156,7 +156,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                     <div class="order-item-status">
                         <p class="order-item-status-text status-${order.status_class}">${order.status}</p>
                         ${order.status !== 'Cancelled' ? 
-                            `<a class="order-item-status-btn" href="${'{{ url('/vendors/order') }}'}/${order.id}">View Details</a>` 
+                            `<a class="order-item-status-btn" href="${'{{ url('/users/orders/item') }}'}/${order.id}">View Details</a>` 
                             : ''
                         }
                     </div>

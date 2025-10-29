@@ -295,34 +295,35 @@ class VendorOrderController extends Controller
             $order->country ?? null,
         ])));
 
-    // Fetch tracking history (for timeline)
-    $tracking = OrderTracking::where('order_id', $order->id)
-        ->orderBy('created_at')
-        ->get();
+        // Fetch tracking history (for timeline)
+        $tracking = OrderTracking::where('order_id', $order->id)
+            ->where('product_id', $orderItem->product_id)
+            ->orderBy('created_at')
+            ->get();
 
-    // ✅ Get latest tracking status (if any)
-    $latestTracking = OrderTracking::where('order_id', $order->id)
-        ->latest('created_at')
-        ->first();
+        // ✅ Get latest tracking status (if any)
+        $latestTracking = OrderTracking::where('order_id', $order->id)
+            ->latest('created_at')
+            ->first();
 
-    // ✅ If tracking exists, override order->status
-    if ($latestTracking) {
-        $order->status = $latestTracking->status;
+        // ✅ If tracking exists, override order->status
+        if ($latestTracking) {
+            $order->status = $latestTracking->status;
+        }
+
+        return view('vendors.orders.order-details', [
+            'order' => $order,
+            'item' => $orderItem,
+            'tracking' => $tracking,
+            'fullAddress' => $fullAddress,
+        ]);
     }
 
-    return view('vendors.orders.order-details', [
-        'order' => $order,
-        'item' => $orderItem,
-        'tracking' => $tracking,
-        'fullAddress' => $fullAddress,
-    ]);
-}
-
-   public function updateStatus(Request $request, $id)
-{
-    $request->validate([
-        'status' => 'required|in:2,3', // 2=Dispatched, 3=Completed
-    ]);
+    public function updateStatus(Request $request, $id)
+    {
+        $request->validate([
+            'status' => 'required|in:2,3', // 2=Dispatched, 3=Completed
+        ]);
 
         $order = Orders::with(['items.product', 'user'])->findOrFail($id);
         $vendor = Auth::guard('vendor')->user();
@@ -360,7 +361,7 @@ class VendorOrderController extends Controller
                 $order->user->id,
                 'user',
                 $titleForUser,
-                "/orders/{$order->id}",
+                url('users/order/summary/' . $order->id),
                 $messageForUser
             );
         }
@@ -370,7 +371,7 @@ class VendorOrderController extends Controller
             $vendor->id,
             'vendor',
             $titleForVendor,
-            "/vendor/order/{$order->id}",
+            url("vendors/order-summary/{$order->id}"),
             $messageForVendor
         );
 

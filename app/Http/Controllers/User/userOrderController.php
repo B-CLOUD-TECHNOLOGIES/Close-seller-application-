@@ -5,6 +5,7 @@ namespace App\Http\Controllers\User;
 use App\Http\Controllers\Controller;
 use App\Models\OrderItem;
 use App\Models\Orders;
+use App\Models\OrderTracking;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -181,6 +182,52 @@ class userOrderController extends Controller
             'success' => true,
             'stats' => $stats,
             'orders' => $items,
+        ]);
+    }
+
+
+
+    public function userShowOrderItem($orderItemId)
+    {
+        $user = Auth::guard('web')->user(); // Logged-in user (customer)
+
+        // Fetch the order item with its order, product, and tracking info
+        $orderItem = OrderItem::with([
+            'order.orderTrackings' => fn($q) => $q->latest(),
+            'product.category'
+        ])
+            ->whereHas('order', fn($q) => $q->where('user_id', $user->id)) // Ensure the order belongs to the user
+            ->findOrFail($orderItemId);
+
+        $order = $orderItem->order;
+
+        // Combine address parts into a full readable address
+        $fullAddress = trim(implode(', ', array_filter([
+            $order->address,
+            $order->city ?? null,
+            $order->state ?? null,
+            $order->country ?? null,
+        ])));
+
+        // Fetch tracking history for this specific product in that order
+        $tracking = OrderTracking::where('order_id', $order->id)
+            ->where('product_id', $orderItem->product_id)
+            ->orderBy('created_at')
+            ->get();
+
+
+        // Get the latest tracking entry (for current status)
+        $latestTracking = $tracking->last();
+        if ($latestTracking) {
+            $order->status = $latestTracking->status;
+        }
+
+        // Return the view with data
+        return view('users.orders.order-item-details', [
+            'order' => $order,
+            'item' => $orderItem,
+            'tracking' => $tracking,
+            'fullAddress' => $fullAddress,
         ]);
     }
 }
