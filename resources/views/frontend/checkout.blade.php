@@ -23,8 +23,8 @@
             <form action="{{ route('place.order') }}" id="theForm" method="POST">
                 @csrf
 
-                <input type="text" name="subtotal" value="{{ $subtotal }}">
-                <input type="text" name="total" value="{{ $total }}">
+                <input type="hidden" name="subtotal" value="{{ $subtotal }}">
+                <input type="hidden" name="total" value="{{ $total }}">
                 <!-- Shipping Address -->
                 <div class="checkout-section mb-4">
                     <h6>Shipping Address</h6>
