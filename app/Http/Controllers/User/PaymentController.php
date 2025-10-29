@@ -35,12 +35,12 @@ class PaymentController extends Controller
         $user = $order->user;
 
         $productValue = $order->total_amount;
-        $payPctFee = $productValue * 0.015;
-        $payFixedFee = $productValue > 2500 ? 100 : 0;
-        $platformFee = $productValue * 0.015;
-
-        $amountToCharge = $productValue + $payPctFee + $payFixedFee + $platformFee;
+        $sessionTotal = $amountToCharge = session()->get('checkout_total');
+        $paystackandPlatformFee = session()->get('checkout_charge');
+        $payFixedFee = session()->get('checkout_extra');
+        $payPctFee = $platformFee = (int) ($paystackandPlatformFee / 2);
         $amountInKobo = (int) ($amountToCharge * 100);
+
 
         $hasAdminProducts = $order->items->contains(fn($item) => $item->product->product_owner === 'admin');
 
@@ -51,10 +51,11 @@ class PaymentController extends Controller
                 'paystack_percentage_fee' => $payPctFee,
                 'paystack_fixed_fee' => $payFixedFee,
                 'platform_fee' => $platformFee,
-                'total_fees' => $payPctFee + $payFixedFee + $platformFee,
+                'total_fees' => $sessionTotal,
             ],
             'has_admin_products' => $hasAdminProducts,
         ];
+
 
         $payload = [
             'amount'       => $amountInKobo,
@@ -103,183 +104,6 @@ class PaymentController extends Controller
             return back()->with('error', 'Payment initialization error.');
         }
     }
-
-
-
-
-
-    // public function handleCallback(Request $request)
-    // {
-    //     $reference = $request->query('reference');
-
-    //     if (!$reference) {
-    //         return back()->with('error', 'Missing payment reference.');
-    //     }
-
-    //     DB::beginTransaction();
-
-    //     try {
-    //         // Initialize Paystack client
-    //         $secretKey = config('paystack.secret_key');
-    //         $paystack  = Paystack::client($secretKey);
-
-    //         // Verify payment
-    //         $verify = $paystack->transaction()->verify($reference);
-
-    //         if (!$verify['status'] || $verify['data']['status'] !== 'success') {
-    //             throw new \Exception('Payment not successful.');
-    //         }
-
-    //         // Extract metadata and order
-    //         $metadata = $verify['data']['metadata'] ?? [];
-    //         $orderId  = $metadata['order_id'] ?? null;
-
-    //         if (!$orderId) {
-    //             throw new \Exception('Order ID missing in payment metadata.');
-    //         }
-
-    //         $order = Orders::findOrFail($orderId);
-
-    //         // Update order details
-    //         $order->update([
-    //             'is_payment'     => 1,
-    //             'status'         => 3,
-    //             'transaction_id' => $verify['data']['id'],
-    //             'payment_data'   => $metadata['fee_breakdown'] ?? null,
-    //         ]);
-
-    //         // Process each order item
-    //         foreach ($order->items as $item) {
-    //             OrderTracking::create([
-    //                 'order_id'   => $order->id,
-    //                 'product_id' => $item->product_id,
-    //                 'status'     => 1,
-    //             ]);
-
-    //             $product = products::find($item->product_id);
-    //             if (!$product) continue;
-
-    //             $grossAmount = $item->total_price * $item->quantity;
-    //             $platformFee = 10.00;
-    //             $netAmount   = $grossAmount - $platformFee;
-
-    //             if ($product->product_owner === 'admin') {
-    //                 // --- Admin-owned product (handled by Paystack split) ---
-    //                 VendorPayout::create([
-    //                     'vendor_id'          => 0,
-    //                     'order_id'           => $order->id,
-    //                     'product_id'         => $product->id,
-    //                     'gross_amount'       => $grossAmount,
-    //                     'fee_amount'         => 0,
-    //                     'amount'             => $grossAmount,
-    //                     'status'             => 'success',
-    //                     'transfer_reference' => $reference,
-    //                 ]);
-
-    //                 PlatformEarning::create([
-    //                     'order_id'       => $order->id,
-    //                     'amount'         => 0,
-    //                     'transaction_id' => $verify['data']['id'],
-    //                 ]);
-    //             } else {
-    //                 // --- Vendor-owned product (manual transfer) ---
-    //                 $bank = BankDetails::where('vendor_id', $product->vendor_id)->first();
-    //                 if (!$bank) {
-    //                     throw new \Exception("Bank details missing for vendor ID {$product->vendor_id}");
-    //                 }
-
-    //                 // Create recipient if missing
-    //                 if (empty($bank->recipient_code)) {
-    //                     $recipient = $paystack->transferrecipient()->create([
-    //                         'type'           => 'nuban',
-    //                         'name'           => $bank->acctName,
-    //                         'account_number' => $bank->acctNo,
-    //                         'bank_code'      => $bank->bankCode,
-    //                         'currency'       => 'NGN',
-    //                     ]);
-
-    //                     $bank->update(['recipient_code' => $recipient['data']['recipient_code']]);
-    //                 }
-
-    //                 // Initiate transfer
-    //                 $transfer = $paystack->transfer()->init([
-    //                     'source'     => 'balance',
-    //                     'amount'     => $netAmount * 100,
-    //                     'recipient'  => $bank->recipient_code,
-    //                     'reason'     => 'Vendor payment for Order #' . $order->order_no,
-    //                 ]);
-
-    //                 // Record vendor payout
-    //                 VendorPayout::create([
-    //                     'vendor_id'           => $product->vendor_id,
-    //                     'order_id'            => $order->id,
-    //                     'product_id'          => $product->id,
-    //                     'gross_amount'        => $grossAmount,
-    //                     'fee_amount'          => $platformFee,
-    //                     'amount'              => $netAmount,
-    //                     'paystack_transfer_id' => $transfer['data']['id'] ?? null,
-    //                     'transfer_reference'  => $transfer['data']['reference'] ?? null,
-    //                     'status'              => $transfer['data']['status'] ?? 'pending',
-    //                     'paystack_response'   => json_encode($transfer['data'] ?? []),
-    //                 ]);
-
-    //                 // Record platform earnings
-    //                 PlatformEarning::create([
-    //                     'order_id'       => $order->id,
-    //                     'amount'         => $platformFee,
-    //                     'transaction_id' => $verify['data']['id'],
-    //                 ]);
-    //             }
-    //         }
-
-    //         // --- Clear cart for the user ---
-    //         // Cart::where('user_id', $order->user_id)->delete();
-
-    //         // --- Send confirmation email ---
-    //         // --- Send confirmation email ---
-    //         try {
-    //             $getOrder = $order;
-    //             $orderItems = $order->items;
-    //             $createdAt = $order->created_at;
-
-    //             $subject = 'Order Confirmation - ' . config('app.name');
-    //             $body = 'Thank you for your purchase! Your order has been confirmed.';
-
-    //             Mail::to($order->email)->send(new orderMailer($subject, $body));
-
-    //             // Attach order details to the email
-    //             Mail::send('emails.orderMailer', compact('getOrder', 'orderItems', 'createdAt'), function ($message) use ($order, $subject) {
-    //                 $message->to($order->email)
-    //                     ->subject($subject);
-    //             });
-    //         } catch (\Throwable $mailError) {
-    //             Log::error('Order Confirmation Mail Error', [
-    //                 'order_id' => $order->id,
-    //                 'message'  => $mailError->getMessage(),
-    //             ]);
-    //         }
-
-
-    //         DB::commit();
-
-    //         $notification = [
-    //             "message" => "Payment Successful",
-    //             "alert-type" => "success",
-    //         ];
-
-    //         return redirect()->route('index')->with($notification);
-    //     } catch (\Throwable $e) {
-    //         DB::rollBack();
-
-    //         Log::error('Paystack Callback Error', [
-    //             'reference' => $reference,
-    //             'message'   => $e->getMessage(),
-    //             'trace'     => $e->getTraceAsString(),
-    //         ]);
-
-    //         return back()->with('error', 'Error verifying or processing payment.');
-    //     }
-    // }
 
 
 
@@ -512,6 +336,15 @@ class PaymentController extends Controller
             }
 
             DB::commit();
+
+            // ✅ Clear checkout session data
+            session()->forget([
+                'checkout_subtotal',
+                'checkout_charge',
+                'checkout_extra',
+                'checkout_total',
+            ]);
+
 
             $notification = [
                 "message" => "Payment Successful",
