@@ -127,26 +127,26 @@
                     const paymentBadge =
                         order.payment_status === 'paid' ?
                         `
-        <span class="payment-badge paid">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
-            xmlns="http://www.w3.org/2000/svg">
-            <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"
-              fill="currentColor"/>
-          </svg>
-          Paid
-        </span>` :
+                <span class="payment-badge paid">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+                    xmlns="http://www.w3.org/2000/svg">
+                    <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"
+                    fill="currentColor"/>
+                </svg>
+                Paid
+                </span>` :
                         `
-        <span class="payment-badge unpaid">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
-            xmlns="http://www.w3.org/2000/svg">
-            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10
-            10-4.48 10-10S17.52 2 12 2zm0 17.93C7.06
-            19.43 4 15.36 4 12c0-4.42 3.58-8 8-8s8
-            3.58 8 8c0 3.36-3.06 7.43-8 7.93zM11
-            6h2v6h-2zm0 8h2v2h-2z" fill="currentColor"/>
-          </svg>
-          Unpaid
-        </span>`;
+                <span class="payment-badge unpaid">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+                    xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10
+                    10-4.48 10-10S17.52 2 12 2zm0 17.93C7.06
+                    19.43 4 15.36 4 12c0-4.42 3.58-8 8-8s8
+                    3.58 8 8c0 3.36-3.06 7.43-8 7.93zM11
+                    6h2v6h-2zm0 8h2v2h-2z" fill="currentColor"/>
+                </svg>
+                Unpaid
+                </span>`;
 
                     card.innerHTML = `
       <div class="order-header">
@@ -164,8 +164,8 @@
             ${formattedDate}
           </div>
         </div>
-        <div class="order-status-badge status-${order.status.toLowerCase()}">
-          ${order.status.charAt(0).toUpperCase() + order.status.slice(1)}
+        <div class="order-status-badge status-${order.status.toLowerCase().replace(/\s+/g, '-')}">
+        ${order.status.charAt(0).toUpperCase() + order.status.slice(1)}
         </div>
       </div>
 

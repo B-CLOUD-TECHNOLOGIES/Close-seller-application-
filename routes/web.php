@@ -54,9 +54,13 @@ Route::controller(frontendController::class)->group(function () {
 });
 
 
+Route::controller(CartController::class)->group(function () {
+        Route::post('/add-to-cart', 'addToCart')->name('add.to.cart');
+});
+
+
 Route::middleware('auth')->group(function () {
     Route::controller(CartController::class)->group(function () {
-        Route::post('/add-to-cart', 'addToCart')->name('add.to.cart');
         Route::get('/update-cart-count', 'cartCountUpdate')->name('cart.count');
         Route::get('/view-cart', 'viewCart')->name('view.cart');
         Route::post('/remove-cart', 'removeItem')->name('cart.remove');
