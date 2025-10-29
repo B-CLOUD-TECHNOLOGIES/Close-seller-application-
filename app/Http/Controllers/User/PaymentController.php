@@ -160,7 +160,7 @@ class PaymentController extends Controller
                 $product = products::find($item->product_id);
                 if (!$product) continue;
 
-                $grossAmount = $item->total_price * $item->quantity;
+                $grossAmount = $item->price * $item->quantity;
                 $platformFee = 10.00;
                 $netAmount   = $grossAmount - $platformFee;
 
