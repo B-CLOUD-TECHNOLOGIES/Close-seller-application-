@@ -25,6 +25,7 @@ use App\Http\Controllers\Vendor\VendorPasswordController;
 use App\Http\Controllers\Vendor\VendorProductController;
 use App\Http\Controllers\Vendor\VendorReviewController;
 use App\Http\Controllers\VendorBankController;
+use App\Http\Controllers\Vendor\VendorTransactionController;
 use Illuminate\Support\Facades\Route;
 
 
@@ -265,6 +266,11 @@ Route::middleware('vendor')->prefix('vendors')->group(function () {
         Route::get('/fetch-order-items/{orderId}', 'fetchOrderItems')->name('vendor.fetch.order-items');
         Route::get('/order/{id}',  'show')->name('vendor.order.show');
          Route::post('/order/{id}/update-status', 'updateStatus')->name('vendor.order.update-status');
+    });
+
+    Route::controller(VendorTransactionController::class)->group(function () {
+        Route::get('/transactions',  'showTransactions')->name('vendor.transactions');
+       Route::get('/fetch-transactions',  'index')->name('vendor.fetch.transactions');
     });
 });
 

@@ -93,7 +93,7 @@
                 </a>
 
                 <!-- Transactions -->
-                <a href="../../../transactions/index.php" class="menu-item">
+                <a href="{{ route('vendor.transactions') }}" class="menu-item">
                     <div class="menu-content">
                         <div class="menu-icon">
                             <svg width="20" height="20" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"
