@@ -20,12 +20,14 @@ use App\Http\Controllers\Vendor\FaqController;
 use App\Http\Controllers\Vendor\HelpController;
 use App\Http\Controllers\Vendor\NotificationController;
 use App\Http\Controllers\Vendor\vendorController;
+use App\Http\Controllers\Vendor\VendorDashboardController;
 use App\Http\Controllers\Vendor\VendorOrderController;
 use App\Http\Controllers\Vendor\VendorPasswordController;
 use App\Http\Controllers\Vendor\VendorProductController;
 use App\Http\Controllers\Vendor\VendorReviewController;
 use App\Http\Controllers\VendorBankController;
 use App\Http\Controllers\Vendor\VendorTransactionController;
+
 use Illuminate\Support\Facades\Route;
 
 
@@ -280,6 +282,11 @@ Route::middleware('vendor')->prefix('vendors')->group(function () {
         Route::get('/transactions',  'showTransactions')->name('vendor.transactions');
        Route::get('/fetch-transactions',  'index')->name('vendor.fetch.transactions');
        Route::get('/transactions/{orderId}', 'showTransactionDetails')->name('vendor.transaction.details');
+    });
+     Route::controller(VendorDashboardController::class)->group(function () {
+        Route::get('/index',  'index')->name('vendor.index');
+       Route::get('/dashboard/data', 'fetchDashboardData')->name('vendor.index.data');
+      
     });
 });
 

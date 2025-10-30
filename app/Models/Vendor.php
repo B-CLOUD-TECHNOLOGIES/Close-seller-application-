@@ -31,4 +31,9 @@ class Vendor extends Authenticatable
     {
         return $this->hasOne(BankDetails::class, 'vendor_id');
     }
+
+    public function products()
+{
+    return $this->hasMany(Products::class, 'vendor_id', 'id');
+}
 }

@@ -3,7 +3,7 @@
         <div class="container-fluid">
             <div class="row">
                 <div class="col">
-                    <a href="index.html" class="nav-item d-block">
+                    <a href="{{ route('vendor.index') }}" class="nav-item d-block">
                         <div class="nav-icon">
                             <i class="fas fa-home"></i>
                         </div>
