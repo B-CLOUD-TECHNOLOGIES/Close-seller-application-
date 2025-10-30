@@ -58,6 +58,11 @@ class products extends Model
         return $this->hasOne(productImages::class, 'product_id')->orderBy('order_by', 'ASC');
     }
 
+    public function orderItems()
+    {
+        return $this->hasMany(OrderItem::class, 'product_id');
+    }
+
 
 
 }
