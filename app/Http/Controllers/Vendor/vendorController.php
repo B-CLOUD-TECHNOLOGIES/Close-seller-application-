@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Vendor;
 use App\Http\Controllers\Controller;
 use App\Models\Vendor;
 use App\Models\VendorVerification;
-use App\Models\Notification;
+use App\Models\notification;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rules;
 use Illuminate\Support\Facades\Auth;
@@ -224,7 +224,7 @@ public function VendorUpdateBusinessInfo(Request $request)
     }
 
     // Count unread notifications for this vendor
-    $unreadNotifications = Notification::where('user_id', $vendor->id)
+    $unreadNotifications = notification::where('user_id', $vendor->id)
                             ->where('user_type', 'vendor')
                             ->where('is_read', false)
                             ->count();
