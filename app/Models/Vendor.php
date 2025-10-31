@@ -34,6 +34,6 @@ class Vendor extends Authenticatable
 
     public function products()
 {
-    return $this->hasMany(Products::class, 'vendor_id', 'id');
+    return $this->hasMany(products::class, 'vendor_id', 'id');
 }
 }

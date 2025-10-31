@@ -18,7 +18,7 @@ class categories extends Model
     // } 
 
     public function getProductCount() {
-    return $this->hasMany(Products::class, 'category_id', 'id');
+    return $this->hasMany(products::class, 'category_id', 'id');
 }
 
 }
