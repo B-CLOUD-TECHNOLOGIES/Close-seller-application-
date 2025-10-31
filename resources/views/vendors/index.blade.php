@@ -13,7 +13,7 @@
                         stroke-linecap="round" stroke-linejoin="round" />
                 </svg>
             </button>
-            <a href="{{ route('vendor.personal.data') }}">
+            <a href="{{ route('vendor.personal.data') }}" style="text-decoration: none;">
                 <div class="profile">
                     
                     <img 
