@@ -20,7 +20,7 @@ class productColors extends Model
 
     public function getProductColor()
     {
-        return $this->belongsTo(Color::class, 'color_id', 'id');
+        return $this->belongsTo(color::class, 'color_id', 'id');
     }
 
     static public function getSingle($id)
