@@ -3,8 +3,9 @@
 namespace App\Http\Controllers\Vendor;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
 use App\Models\Feedback;
+use App\Models\Tickets;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class HelpController extends Controller
@@ -46,7 +47,7 @@ class HelpController extends Controller
         Feedback::create([
             'user_id' => $vendor->id, // for logged-in vendors
             'topic' => $request->topic,
-            'type' => 'feedback', // optional, could be “suggestion” etc.
+            'type' => 'Vendor', // optional, could be “suggestion” etc.
             'description' => $request->description,
         ]);
 
@@ -62,10 +63,10 @@ class HelpController extends Controller
 
         $vendor = auth('vendor')->user();
 
-        Feedback::create([
+        Tickets::create([
             'user_id' => $vendor->id, // for logged-in vendors
             'topic' => $request->issue,
-            'type' => 'report', // optional, could be “suggestion” etc.
+            'type' => 'Vendor', // optional, could be “suggestion” etc.
             'description' => $request->description,
         ]);
 

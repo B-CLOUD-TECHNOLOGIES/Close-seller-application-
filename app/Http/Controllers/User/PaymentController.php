@@ -35,10 +35,15 @@ class PaymentController extends Controller
         $user = $order->user;
 
         $productValue = $order->total_amount;
-        $sessionTotal = $amountToCharge = session()->get('checkout_total');
-        $paystackandPlatformFee = session()->get('checkout_charge');
-        $payFixedFee = session()->get('checkout_extra');
-        $payPctFee = $platformFee = (int) ($paystackandPlatformFee / 2);
+        $percentageCharge = session()->get('checkout_percentage_charge'); // pure 3%
+        $extra = session()->get('checkout_extra'); // ₦100
+        $totalCharge = session()->get('checkout_charge'); // total charge (3% + ₦100)
+        $amountToCharge = session()->get('checkout_total');
+
+        // Split only the percentage fee
+        $payPctFee = $platformFee = round($percentageCharge / 2, 2);
+        $payFixedFee = $extra;
+
         $amountInKobo = (int) ($amountToCharge * 100);
 
 
@@ -51,7 +56,7 @@ class PaymentController extends Controller
                 'paystack_percentage_fee' => $payPctFee,
                 'paystack_fixed_fee' => $payFixedFee,
                 'platform_fee' => $platformFee,
-                'total_fees' => $sessionTotal,
+                'total_fees' => $amountToCharge,
             ],
             'has_admin_products' => $hasAdminProducts,
         ];
