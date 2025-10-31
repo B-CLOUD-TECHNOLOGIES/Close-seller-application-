@@ -130,7 +130,9 @@ class VendorTransactionController extends Controller
     /**
      * Helper to map numeric status to readable text.
      */
-   private function mapStatus($status)
+
+    private function mapStatus($status)
+
 {
     switch ($status) {
         case 0:
