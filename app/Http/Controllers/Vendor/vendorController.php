@@ -372,7 +372,7 @@ public function VendorDocStore(Request $request)
                 'alert-type' => 'success'
             ];
 
-            return redirect()->route('vendor.dashboard')->with($notification);
+            return redirect()->route('vendor.index')->with($notification);
         }
 
         return back()->withErrors([
