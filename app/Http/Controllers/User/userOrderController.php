@@ -9,6 +9,7 @@ use App\Models\OrderTracking;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
 class userOrderController extends Controller
@@ -20,89 +21,185 @@ class userOrderController extends Controller
     }
 
 
-public function userFetchOrders()
-{
-    $user = Auth::user();
+    // public function userFetchOrders()
+    // {
+    //     $user = Auth::user();
 
-    $orders = Orders::with([
-        'items.product.mainImage',
-        'items.product.category',
-        'orderTrackings' => fn($q) => $q->latest(),
-    ])
-    ->where('user_id', $user->id)
-    ->latest()
-    ->get()
-    ->map(function ($order) {
-        // 🔹 Collect all tracking statuses for this order
-        $statuses = $order->orderTrackings->pluck('status')->unique()->toArray();
+    //     $orders = Orders::with([
+    //         'items.product.mainImage',
+    //         'items.product.category',
+    //         'orderTrackings' => fn($q) => $q->latest(),
+    //     ])
+    //         ->where('user_id', $user->id)
+    //         ->latest()
+    //         ->get()
+    //         ->map(function ($order) {
+    //             // 🔹 Collect all tracking statuses for this order
+    //             $statuses = array_values($order->orderTrackings->pluck('status')->unique()->toArray());
 
-        // 🔹 Determine order-level status
-        if (empty($statuses)) {
-            $trackingStatus = null;
-        } elseif (in_array(0, $statuses, true)) {
-            $trackingStatus = 0; // If any product was cancelled
-        } elseif (count(array_unique($statuses)) === 1 && $statuses[0] == 3) {
-            $trackingStatus = 3; // All products completed
-        } elseif (in_array(2, $statuses, true) || in_array(1, $statuses, true)) {
-            $trackingStatus = 2; // Still in progress or dispatched
-        } else {
-            $trackingStatus = 1; // Default to processing
-        }
+    //             if (empty($statuses)) {
+    //                 $trackingStatus = null;
+    //             } elseif (in_array(0, $statuses, true)) {
+    //                 $trackingStatus = 0;
+    //             } elseif (count($statuses) === 1 && $statuses[0] == 3) {
+    //                 $trackingStatus = 3;
+    //             } elseif (in_array(2, $statuses, true) || in_array(1, $statuses, true)) {
+    //                 $trackingStatus = 2;
+    //             } else {
+    //                 $trackingStatus = 1;
+    //             }
 
-        // 🔹 Convert numeric tracking to text
-        $statusText = match ((string)$trackingStatus) {
-            '0' => 'Cancelled',
-            '1' => 'Processing',
-            '2' => 'In Progress',
-            '3' => 'Completed',
-            default => 'Pending',
-        };
 
-        // 🔹 Assign class
-        $statusClass = match ($statusText) {
-            'Cancelled' => 'status-cancelled',
-            'Processing' => 'status-processing',
-            'In Progress' => 'status-in-progress',
-            'Completed' => 'status-completed',
-            default => 'status-pending',
-        };
+    //             // 🔹 Convert numeric tracking to text
+    //             $statusText = match ((string)$trackingStatus) {
+    //                 '0' => 'Cancelled',
+    //                 '1' => 'Processing',
+    //                 '2' => 'In Progress',
+    //                 '3' => 'Completed',
+    //                 default => 'Pending',
+    //             };
 
-        // 🔹 Other order info
-        $totalItems = $order->items->sum('quantity');
-        $paymentStatus = $order->is_payment ? 'paid' : 'unpaid';
+    //             // 🔹 Assign class
+    //             $statusClass = match ($statusText) {
+    //                 'Cancelled' => 'status-cancelled',
+    //                 'Processing' => 'status-processing',
+    //                 'In Progress' => 'status-in-progress',
+    //                 'Completed' => 'status-completed',
+    //                 default => 'status-pending',
+    //             };
 
-        return [
-            'id' => $order->id,
-            'order_no' => $order->order_no ?? 'N/A',
-            'buyer' => $order->user->name ?? $order->name ?? 'Anonymous',
-            'status' => $statusText,
-            'status_class' => $statusClass,
-            'total_amount' => $order->total_amount,
-            'total_items' => $totalItems,
-            'payment_status' => $paymentStatus,
-            'shipping_fee' => $order->shipping_amount ?? 0,
-            'created_at' => $order->created_at->toDateString(),
-        ];
-    });
+    //             // 🔹 Other order info
+    //             $totalItems = $order->items->sum('quantity');
+    //             $paymentStatus = $order->is_payment ? 'paid' : 'unpaid';
 
-    // ✅ Stats
-    $total = $orders->count();
-    $completed = $orders->where('status', 'Completed')->count();
-    $inProgress = $orders->where('status', 'In Progress')->count();
-    $processing = $orders->where('status', 'Processing')->count();
-    $cancelled = $orders->where('status', 'Cancelled')->count();
+    //             return [
+    //                 'id' => $order->id,
+    //                 'order_no' => $order->order_no ?? 'N/A',
+    //                 'buyer' => $order->user->name ?? $order->name ?? 'Anonymous',
+    //                 'status' => $statusText,
+    //                 'status_class' => $statusClass,
+    //                 'total_amount' => $order->total_amount,
+    //                 'total_items' => $totalItems,
+    //                 'payment_status' => $paymentStatus,
+    //                 'shipping_fee' => $order->shipping_amount ?? 0,
+    //                 'created_at' => $order->created_at->toDateString(),
+    //             ];
+    //         });
 
-    return response()->json([
-        'stats' => [
-            'total' => $total,
-            'completed' => $completed,
-            'inprogress' => $inProgress,
-            'processing' => $processing,
-            'cancelled' => $cancelled,
-        ],
-        'orders' => $orders,
-    ]);
-}
+    //     // ✅ Stats
+    //     $total = $orders->count();
+    //     $completed = $orders->where('status', 'Completed')->count();
+    //     $inProgress = $orders->where('status', 'In Progress')->count();
+    //     $processing = $orders->where('status', 'Processing')->count();
+    //     $cancelled = $orders->where('status', 'Cancelled')->count();
+
+    //     return response()->json([
+    //         'stats' => [
+    //             'total' => $total,
+    //             'completed' => $completed,
+    //             'inprogress' => $inProgress,
+    //             'processing' => $processing,
+    //             'cancelled' => $cancelled,
+    //         ],
+    //         'orders' => $orders,
+    //     ]);
+    // }
+
+
+    public function userFetchOrders()
+    {
+        $user = Auth::user();
+
+        $orders = Orders::with([
+            'items.product.mainImage',
+            'items.product.category',
+            'orderTrackings' => fn($q) => $q->latest(),
+        ])
+            ->where('user_id', $user->id)
+            ->latest()
+            ->get()
+            ->map(function ($order) {
+                // =======================================
+                // 🧠 Determine Order Status from Items
+                // =======================================
+
+                // Get the latest tracking status per product in the order
+                $latestStatuses = $order->orderTrackings()
+                    ->select('product_id', DB::raw('MAX(id) as latest_id'))
+                    ->groupBy('product_id')
+                    ->pluck('latest_id')
+                    ->toArray();
+
+                $statuses = OrderTracking::whereIn('id', $latestStatuses)
+                    ->pluck('status');
+
+                // 🧩 Determine overall order status
+                if ($order->status == 0) {
+                    $statusText = 'Cancelled';
+                } elseif ($statuses->isEmpty()) {
+                    $statusText = 'Pending';
+                } elseif ($statuses->every(fn($s) => $s == 3)) {
+                    $statusText = 'Completed';
+                } elseif ($statuses->contains(2)) {
+                    $statusText = 'In Progress';
+                } elseif ($statuses->contains(1)) {
+                    $statusText = 'Processing';
+                } else {
+                    $statusText = 'Pending';
+                }
+
+                // =======================================
+                // 🎨 Assign CSS class based on status
+                // =======================================
+                $statusClass = match ($statusText) {
+                    'Cancelled' => 'status-cancelled',
+                    'Processing' => 'status-processing',
+                    'In Progress' => 'status-in-progress',
+                    'Completed' => 'status-completed',
+                    default => 'status-pending',
+                };
+
+                // =======================================
+                // 💰 Compute totals and metadata
+                // =======================================
+                $totalItems = $order->items->sum('quantity');
+                $paymentStatus = $order->is_payment ? 'paid' : 'unpaid';
+
+                return [
+                    'id' => $order->id,
+                    'order_no' => $order->order_no ?? 'N/A',
+                    'buyer' => $order->user->name ?? $order->name ?? 'Anonymous',
+                    'status' => $statusText,
+                    'status_class' => $statusClass,
+                    'total_amount' => $order->total_amount,
+                    'total_items' => $totalItems,
+                    'payment_status' => $paymentStatus,
+                    'shipping_fee' => $order->shipping_amount ?? 0,
+                    'created_at' => $order->created_at->toDateString(),
+                ];
+            });
+
+        // =======================================
+        // 📊 Compute Stats
+        // =======================================
+        $total = $orders->count();
+        $completed = $orders->where('status', 'Completed')->count();
+        $inProgress = $orders->where('status', 'In Progress')->count();
+        $processing = $orders->where('status', 'Processing')->count();
+        $cancelled = $orders->where('status', 'Cancelled')->count();
+
+        return response()->json([
+            'stats' => [
+                'total' => $total,
+                'completed' => $completed,
+                'inprogress' => $inProgress,
+                'processing' => $processing,
+                'cancelled' => $cancelled,
+            ],
+            'orders' => $orders,
+        ]);
+    }
+
 
 
     public function userOrderSummary($orderId)
