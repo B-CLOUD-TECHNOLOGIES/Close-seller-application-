@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Auth;
 use App\Models\Orders;
 use App\Models\OrderItem;
 use App\Models\products;
-use App\Models\Notification;
+use App\Models\notification;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 
@@ -117,7 +117,7 @@ class VendorDashboardController extends Controller
     ->count();
 
    // 📩 Messages (notifications)
-    $unreadMessages = Notification::where('user_id', $vendor->id)
+    $unreadMessages = notification::where('user_id', $vendor->id)
         ->where('user_type', 'vendor')
         ->where('is_read', 0)
         ->count();
