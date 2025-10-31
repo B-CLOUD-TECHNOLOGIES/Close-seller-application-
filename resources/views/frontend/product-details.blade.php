@@ -3,6 +3,22 @@
     @section('main')
         <link rel="stylesheet" href="{{ asset('users/assets/css/home.css') }}">
         <link rel="stylesheet" href="{{ asset('users/assets/css/product-details.css') }}">
+        <style>
+            /* small spacing */
+            .rating-stars i {
+                margin-right: 4px;
+                font-size: 1rem;
+                vertical-align: middle;
+            }
+
+            .rating-number {
+                font-weight: 700;
+                display: inline-block;
+                margin-right: 10px;
+            }
+        </style>
+
+
 
         <!-- Loading Placeholder -->
         {{-- <div id="loading-placeholder">
@@ -108,7 +124,7 @@
         </div> --}}
 
         @php
-            $productid = $product->id;
+            $productidFetch = $productid = $product->id;
             $inWishlist = Auth::check() ? \App\Models\productWishlist::isInWishlist($productid, Auth::id()) : false;
             $stock_quantity = $product->stock_quantity;
         @endphp
@@ -208,7 +224,25 @@
                             <div class="vendor-rating">
                                 <span class="material-symbols-outlined text-warning me-1"
                                     style="font-size: 16px;">star</span>
-                                <span>4.5 (24 reviews)</span>
+                                @php
+                                    // ensure numeric
+                                    $avg = is_numeric($averageRating) ? (float) $averageRating : 0.0;
+                                    // round to one decimal for display, but use .5 threshold for half star
+                                    $displayAvg = number_format($avg, 1);
+                                    $fullStars = floor($avg);
+                                    $fraction = $avg - $fullStars;
+                                    // treat >=0.75 as a full star, >=0.25 as half, else none (you can tweak thresholds)
+                                    if ($fraction >= 0.75) {
+                                        $fullStars += 1;
+                                        $halfStar = 0;
+                                    } elseif ($fraction >= 0.25) {
+                                        $halfStar = 1;
+                                    } else {
+                                        $halfStar = 0;
+                                    }
+                                    $emptyStars = 5 - ($fullStars + $halfStar);
+                                @endphp
+                                <span>{{ $displayAvg }} ( {{ $reviewsCount }} {{ $reviewsCount > 1 ? "Reviews" : "Review" }})</span>
                             </div>
                         </div>
                     </div>
@@ -285,56 +319,71 @@
                 <!-- Reviews & Ratings -->
                 <div class="reviews-section">
                     <h6 class="fw-bold mb-3">Reviews & Ratings</h6>
+
                     <div class="rating-summary">
-                        <div class="rating-number">4.5</div>
+                        <div class="rating-number">{{ $displayAvg }}</div>
+
                         <div>
-                            <div class="rating-stars">
-                                <span class="material-symbols-outlined">star</span>
-                                <span class="material-symbols-outlined">star</span>
-                                <span class="material-symbols-outlined">star</span>
-                                <span class="material-symbols-outlined">star_half</span>
-                                <span class="material-symbols-outlined text-muted">star</span>
+                            <div class="rating-stars" aria-hidden="true">
+                                {{-- Full (solid) stars --}}
+                                @for ($i = 0; $i < $fullStars; $i++)
+                                    <i class="fas fa-star" style="color: #f6c84c;"></i>
+                                @endfor
+
+                                {{-- Half star --}}
+                                @if ($halfStar)
+                                    {{-- fa-star-half-alt works across versions; fa-star-half-stroke is newer --}}
+                                    <i class="fas fa-star-half-alt" style="color: #f6c84c;"></i>
+                                @endif
+
+                                {{-- Empty (regular/outline) stars --}}
+                                @for ($i = 0; $i < $emptyStars; $i++)
+                                    <i class="far fa-star text-muted"></i>
+                                @endfor
                             </div>
-                            <small class="text-muted">(24 reviews)</small>
+
+                            <small class="text-muted">({{ $reviewsCount ?? 0 }} reviews)</small>
                         </div>
                     </div>
 
+
+
+                    @php
+                        // Get rating distribution
+                        $ratingDistribution = [
+                            5 => 0,
+                            4 => 0,
+                            3 => 0,
+                            2 => 0,
+                            1 => 0,
+                        ];
+
+                        // Count reviews for each rating
+                        foreach ($getReviewProduct as $review) {
+                            $rating = (int) $review->rating;
+                            if (isset($ratingDistribution[$rating])) {
+                                $ratingDistribution[$rating]++;
+                            }
+                        }
+
+                        // Calculate percentages
+                        $totalReviews = $reviewsCount ?? 0;
+                    @endphp
+
                     <div class="rating-breakdown">
-                        <div class="rating-row">
-                            <span class="small text-muted">5</span>
-                            <div class="rating-bar">
-                                <div class="rating-fill" style="width: 70%;"></div>
+                        @foreach ([5, 4, 3, 2, 1] as $star)
+                            @php
+                                $count = $ratingDistribution[$star];
+                                $percentage = $totalReviews > 0 ? round(($count / $totalReviews) * 100) : 0;
+                            @endphp
+                            <div class="rating-row">
+                                <span class="small text-muted">{{ $star }}</span>
+                                <div class="rating-bar">
+                                    <div class="rating-fill" style="width: {{ $percentage }}%;"></div>
+                                </div>
+                                <span class="small text-muted">{{ $percentage }}%</span>
                             </div>
-                            <span class="small text-muted">70%</span>
-                        </div>
-                        <div class="rating-row">
-                            <span class="small text-muted">4</span>
-                            <div class="rating-bar">
-                                <div class="rating-fill" style="width: 20%;"></div>
-                            </div>
-                            <span class="small text-muted">20%</span>
-                        </div>
-                        <div class="rating-row">
-                            <span class="small text-muted">3</span>
-                            <div class="rating-bar">
-                                <div class="rating-fill" style="width: 5%;"></div>
-                            </div>
-                            <span class="small text-muted">5%</span>
-                        </div>
-                        <div class="rating-row">
-                            <span class="small text-muted">2</span>
-                            <div class="rating-bar">
-                                <div class="rating-fill" style="width: 3%;"></div>
-                            </div>
-                            <span class="small text-muted">3%</span>
-                        </div>
-                        <div class="rating-row">
-                            <span class="small text-muted">1</span>
-                            <div class="rating-bar">
-                                <div class="rating-fill" style="width: 2%;"></div>
-                            </div>
-                            <span class="small text-muted">2%</span>
-                        </div>
+                        @endforeach
                     </div>
 
                     <div id="reviews-container"></div>
@@ -342,12 +391,12 @@
 
                 <!-- Message Vendor -->
                 <!-- <div class="message-section">
-                                                                                            <h6 class="fw-bold mb-3">Message Vendor</h6>
-                                                                                            <form action="#">
-                                                                                                <textarea name="message" class="message-textarea" placeholder="Type your message..." required></textarea>
-                                                                                                <button type="submit" class="btn btn-outline-primary">Send Message</button>
-                                                                                            </form>
-                                                                                        </div> -->
+                                                                                                                                            <h6 class="fw-bold mb-3">Message Vendor</h6>
+                                                                                                                                            <form action="#">
+                                                                                                                                                <textarea name="message" class="message-textarea" placeholder="Type your message..." required></textarea>
+                                                                                                                                                <button type="submit" class="btn btn-outline-primary">Send Message</button>
+                                                                                                                                            </form>
+                                                                                                                                        </div> -->
 
                 <!-- Related Products -->
                 <div class="px-3 pt-4 mb-5 pb-4 bg-body">
@@ -782,16 +831,18 @@
             }
 
 
-            function fetchAndDisplayReviews() {
-                const productId = new URLSearchParams(window.location.search).get('product_id');
+            function fetchAndDisplayReviews(showAll = false) {
+                const productId = "{{ $productidFetch }}";
 
                 if (!productId) {
                     console.error('Product ID is missing.');
                     return;
                 }
 
+                const baseUrl = `/get/reviews/${productId}`;
+
                 $.ajax({
-                    url: `../../reviews/get_reviews.php?product_id=${productId}`,
+                    url: baseUrl,
                     method: 'GET',
                     dataType: 'json',
                     success: function(reviews) {
@@ -800,34 +851,35 @@
                         const reviewsContainer = $('#reviews-container');
                         reviewsContainer.empty();
 
-                        if (reviews.length === 0) {
+                        if (!reviews || reviews.length === 0) {
                             reviewsContainer.html(
-                                '<p class="text-muted text-center py-3">No reviews available yet.</p>');
+                                '<p class="text-muted text-center py-3">No reviews available yet.</p>'
+                            );
                             return;
                         }
 
-                        // Show only first 3 reviews initially
-                        const reviewsToShow = reviews.slice(0, 3);
+                        // ✅ Show only one review by default
+                        const reviewsToShow = showAll ? reviews : reviews.slice(0, 5);
 
                         reviewsToShow.forEach(review => {
                             const reviewDiv = `
-                    <div class="review-item">
-                        <div class="review-header">
+                    <div class="review-item border-bottom py-2">
+                        <div class="review-header d-flex justify-content-between">
                             <div class="reviewer-info">
-                                <div class="reviewer-name">${review.reviewer_name || 'Anonymous'}</div>
+                                <strong>${review.reviewer_name || 'Anonymous'}</strong>
                                 <div class="review-rating">
                                     ${generateStarRating(review.rating)}
                                 </div>
                             </div>
-                            <div class="review-date">
+                            <div class="review-date text-muted">
                                 ${new Date(review.review_date).toLocaleDateString('en-US', {
-                            year: 'numeric',
-                            month: '2-digit',
-                            day: '2-digit'
-                        })}
+                                    year: 'numeric',
+                                    month: '2-digit',
+                                    day: '2-digit'
+                                })}
                             </div>
                         </div>
-                        <div class="review-content">
+                        <div class="review-content mt-2">
                             ${review.review_text || 'No review text provided.'}
                         </div>
                     </div>
@@ -835,27 +887,34 @@
                             reviewsContainer.append(reviewDiv);
                         });
 
-                        // Show "View All Reviews" button if there are more than 3 reviews
-                        if (reviews.length > 3) {
+                        // ✅ Show button only if more than 5 review exists
+                        if (!showAll && reviews.length > 5) {
                             const viewAllBtn = `
-                    <button class="view-all-reviews mt-3" onclick="showAllReviews(${productId})">
-                        View All ${reviews.length} Reviews
-                    </button>
+                    <div class="text-center mt-3">
+                        <button class="btn btn-outline-primary view-all-reviews" onclick="showAllReviews(${productId})">
+                            View All ${reviews.length} Reviews
+                        </button>
+                    </div>
                 `;
                             reviewsContainer.append(viewAllBtn);
                         }
                     },
                     error: function(xhr, status, error) {
                         console.error('Error fetching reviews:', error);
+                        console.log('Response:', xhr.responseText);
                         $('#reviews-container').html(
-                            '<p class="text-danger text-center py-3">Error loading reviews.</p>');
+                            '<p class="text-danger text-center py-3">Error loading reviews.</p>'
+                        );
                     }
                 });
             }
 
+            // Function called when the button is clicked
             function showAllReviews(productId) {
-                window.location.href = `../../show-reviews.php?product_id=${productId}`;
+                fetchAndDisplayReviews(true);
             }
+
+
 
             // Initialize reviews when document is ready
             $(document).ready(function() {

@@ -8,69 +8,69 @@ use App\Models\VendorPayout;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 
 class UserTransactionController extends Controller
 {
     //
-        public function showTransactions()
+    public function userTransactions()
     {
-        return view('vendors.transaction.index');
+        return view("users.transactions.index");
     }
+
 
     public function showTransactionDetails($orderId)
-{
-    try {
-        $vendor = Auth::guard('vendor')->user();
-
-        if (!$vendor) {
-            return redirect()->route('vendor.transactions')->with('error', 'Unauthorized access.');
-        }
-
-        // Fetch payouts for the vendor and order ID
-        $payouts = VendorPayout::where('vendor_id', $vendor->id)
-            ->where('order_id', $orderId)
-            ->get();
-
-        if ($payouts->isEmpty()) {
-            return redirect()->route('vendor.transactions')->with('error', 'Transaction not found.');
-        }
-
-        // Sum totals
-        $grossAmount = $payouts->sum('gross_amount');
-        $feeAmount   = $payouts->sum('fee_amount');
-        $netAmount   = $payouts->sum('amount');
-
-        // Get transaction info from first payout
-        $firstPayout = $payouts->first();
-
-        // Decode Paystack response JSON
-        $response = json_decode($firstPayout->paystack_response, true);
-        $recipient = $response['recipient_details'] ?? [];
-        $createdAt = $response['createdAt'] ?? $firstPayout->created_at;
-
-        return view('vendors.transaction.transaction-details', [
-            'orderId'        => $orderId,
-            'grossAmount'    => $grossAmount,
-            'feeAmount'      => $feeAmount,
-            'netAmount'      => $netAmount,
-            'status'         => ucfirst($firstPayout->status),
-            'reference'      => $firstPayout->transfer_reference,
-            'transactionId'  => $firstPayout->paystack_transfer_id,
-            'recipientName'  => $recipient['account_name'] ?? 'N/A',
-            'bankName'       => $recipient['bank_name'] ?? 'N/A',
-            'accountNumber'  => $recipient['account_number'] ?? 'N/A',
-            'createdAt'      => Carbon::parse($createdAt)->format('M jS, Y h:i A'),
-        ]);
-    } catch (\Exception $e) {
-        return redirect()->route('vendor.transactions')->with('error', 'Error loading transaction: ' . $e->getMessage());
-    }
-}
-    public function index(Request $request)
     {
         try {
-            $vendor = Auth::guard('vendor')->user();
+            Log::info("Order_ID: " . $orderId);
+            $user = Auth::guard('web')->user();
 
-            if (!$vendor) {
+            if (!$user) {
+                return redirect()->route('user.transactions')->with('error', 'Unauthorized access.');
+            }
+
+            // Fetch payouts for the user
+            $payouts = Orders::where('user_id', $user->id)
+                ->where('id', $orderId)
+                ->first();
+
+            if (!$payouts) {
+                return redirect()->route('user.transactions')->with('error', 'Transaction not found.');
+            }
+
+
+
+            Log::info("Payout Details: " . $payouts);
+
+            $payastack_percent_fee = $payouts->payment_data['paystack_percentage_fee'];
+            $platform_fee = $payouts->payment_data['platform_fee'];
+            $paystack_fixed_fee = $payouts->payment_data['paystack_fixed_fee'];
+            $total_fees = $payouts->payment_data['total_fees'];
+            $netAmount = $payouts->payment_data['product_value'];
+            $charges = (int) $platform_fee + (int) $payastack_percent_fee + (int) $paystack_fixed_fee;
+
+
+            return view("users.transactions.transaction-details", [
+                'order' => $payouts,
+                "charges" => $charges,
+                "total" => $total_fees,
+                "netAmount" => $netAmount,
+                'createdAt'      => Carbon::parse($payouts->created_at)->format('M jS, Y h:i A'),
+            ]);
+        } catch (\Exception $e) {
+            return redirect()->route('user.transactions')->with('error', 'Error loading transaction: ' . $e->getMessage());
+        }
+    }
+
+
+
+
+    public function userFetchTransactions(Request $request)
+    {
+        try {
+            $user = Auth::guard('web')->user();
+
+            if (!$user) {
                 return response()->json([
                     'success' => false,
                     'message' => 'Unauthorized access.'
@@ -79,7 +79,7 @@ class UserTransactionController extends Controller
 
             $query = Orders::query()
                 ->where('is_delete', false)
-                ->where('user_id', $vendor->id) // assuming vendor owns the order
+                ->where('user_id', $user->id) // assuming vendor owns the order
                 ->orderBy('created_at', 'desc');
 
             // Filter by date range (optional)
@@ -100,7 +100,7 @@ class UserTransactionController extends Controller
                     'transactionId' => $order->transaction_id,
                     'orderNo'       => $order->order_no,
                     'orderId'       => $order->id,
-                    'amount'        => (float) $order->total_amount,
+                    'amount'        =>  number_format($order->payment_data["total_fees"], 2),
                     'date'          => $order->created_at->format('Y-m-d'),
                     'status'        => $this->mapStatus($order->status),
                     'isPayment'     => (bool) $order->is_payment,
@@ -133,6 +133,4 @@ class UserTransactionController extends Controller
             default => 'Unknown',
         };
     }
-
-    
 }

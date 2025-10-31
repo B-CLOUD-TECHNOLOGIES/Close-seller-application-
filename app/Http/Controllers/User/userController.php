@@ -3,15 +3,68 @@
 namespace App\Http\Controllers\User;
 
 use App\Http\Controllers\Controller;
+use App\Models\notification;
 use App\Models\products;
 use App\Models\productWishlist;
 use App\Models\User;
+use GuzzleHttp\Promise\Create;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 
 class userController extends Controller
 {
+
+    public function userUpdatePassword(Request $request)
+    {
+        $request->validate([
+            'old_password' => 'required|string',
+            'new_password' => 'required|string|min:8|confirmed',
+        ]);
+
+        $user_id = Auth::guard('web')->id();
+        $user = User::find($user_id);
+
+        if (!$user) {
+            return response()->json([
+                'status' => false,
+                'message' => 'User not found or not authenticated.',
+            ], 404);
+        }
+
+        if (!Hash::check($request->old_password, $user->password)) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Old password is incorrect.',
+            ]);
+        }
+
+        $user->password = Hash::make($request->new_password);
+        $user->save();
+
+        // ✅ Create notification using the helper
+        notification::insertRecord(
+            $user->id,
+            'user',
+            'Password Changed',
+            '',
+            'Your account password was successfully changed on ' . now()->format('M d, Y H:i A'),
+            false
+        );
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Password changed successfully!',
+        ]);
+    }
+
+    public function userChangePassword()
+    {
+
+        return view("users.profile.change-password");
+    }
+
     public function userUpdateProfile(Request $request)
     {
         // ✅ Validate input

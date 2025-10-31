@@ -44,7 +44,8 @@
                 <i class="fas fa-chevron-right arrow"></i>
             </a>
 
-            <a href="#" class="list-group-item d-flex align-items-center justify-content-between mb-3 menu-item">
+
+            <a href="{{ route("user.transactions") }}" class="list-group-item d-flex align-items-center justify-content-between mb-3 menu-item">
                 <div class="d-flex align-items-center">
                     <div class="icon-box"><i class="fas fa-receipt"></i></div>
                     <div><span class="menu-title">Transactions</span><br><small class="menu-sub">See all
@@ -60,7 +61,7 @@
                 </div><i class="fas fa-chevron-right arrow"></i>
             </a>
 
-            <a href="#" class="list-group-item d-flex align-items-center justify-content-between mb-3 menu-item">
+            <a href="{{ route('user.reviews') }}" class="list-group-item d-flex align-items-center justify-content-between mb-3 menu-item">
                 <div class="d-flex align-items-center">
                     <div class="icon-box"><i class="fas fa-star"></i></div>
                     <div><span class="menu-title">My Reviews</span><br><small class="menu-sub">View your reviews</small>
@@ -68,29 +69,29 @@
                 </div><i class="fas fa-chevron-right arrow"></i>
             </a>
 
-            <a href="#" class="list-group-item d-flex align-items-center justify-content-between mb-3 menu-item">
+            {{-- <a href="#" class="list-group-item d-flex align-items-center justify-content-between mb-3 menu-item">
                 <div class="d-flex align-items-center">
                     <div class="icon-box"><i class="fas fa-sliders-h"></i></div>
                     <div><span class="menu-title">Preferences</span><br><small class="menu-sub">Notification
                             settings</small></div>
                 </div><i class="fas fa-chevron-right arrow"></i>
-            </a>
+            </a> --}}
 
-            <a href="#" class="list-group-item d-flex align-items-center justify-content-between mb-3 menu-item">
+            <a href="{{ route('user.change.password') }}" class="list-group-item d-flex align-items-center justify-content-between mb-3 menu-item">
                 <div class="d-flex align-items-center">
                     <div class="icon-box"><i class="fas fa-lock"></i></div>
                     <div><span class="menu-title">Security</span><br><small class="menu-sub">Change password</small></div>
                 </div><i class="fas fa-chevron-right arrow"></i>
             </a>
 
-            <a href="#" class="list-group-item d-flex align-items-center justify-content-between mb-3 menu-item">
+            <a href="{{ route("user.faqs") }}" class="list-group-item d-flex align-items-center justify-content-between mb-3 menu-item">
                 <div class="d-flex align-items-center">
                     <div class="icon-box"><i class="fas fa-question-circle"></i></div>
                     <div><span class="menu-title">FAQs</span><br><small class="menu-sub">Common questions</small></div>
                 </div><i class="fas fa-chevron-right arrow"></i>
             </a>
 
-            <a href="#" class="list-group-item d-flex align-items-center justify-content-between mb-3 menu-item">
+            <a href="{{ route('user.customer.support') }}" class="list-group-item d-flex align-items-center justify-content-between mb-3 menu-item">
                 <div class="d-flex align-items-center">
                     <div class="icon-box"><i class="fas fa-headset"></i></div>
                     <div><span class="menu-title">Help & Support</span><br><small class="menu-sub">Customer support</small>

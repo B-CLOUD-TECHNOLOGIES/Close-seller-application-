@@ -6,6 +6,9 @@ use App\Http\Controllers\User\CartController;
 use App\Http\Controllers\User\PaymentController;
 use App\Http\Controllers\User\userController;
 use App\Http\Controllers\User\userOrderController;
+use App\Http\Controllers\User\UserTransactionController;
+use App\Http\Controllers\User\UserHelpController;
+use App\Http\Controllers\User\UserReviewController;
 
 
 
@@ -52,11 +55,13 @@ Route::controller(frontendController::class)->group(function () {
     Route::get('/notifications', 'AuthNotification')->name('notifications');
     Route::get('/notifications/details/{id}', 'notificationDetails')->name('notifications.details');
     Route::post('/add-to-wishlist', 'addToWishList')->name('add.to.wishlist');
+    Route::get('/get/reviews/{product_id}', 'fetchReview')->name('fetch.product.reviews');
+    Route::get('/get/all/reviews/{productId}', 'FetchALLProductReviews')->name('fetch.all.product.reviews');
 });
 
 
 Route::controller(CartController::class)->group(function () {
-        Route::post('/add-to-cart', 'addToCart')->name('add.to.cart');
+    Route::post('/add-to-cart', 'addToCart')->name('add.to.cart');
 });
 
 
@@ -81,7 +86,6 @@ Route::controller(PaymentController::class)->group(function () {
     Route::post('/paystack/webhook',  'handleWebhook')->name('paystack.webhook');
     Route::get('/payment/success', 'paymentSuccess')->name('payment.success');
     Route::get('/payment/failed', 'paymentFailed')->name('payment.failed');
-
 });
 
 
@@ -138,6 +142,8 @@ Route::middleware('auth')->prefix('users')->group(function () {
         Route::get('/wishlist/status', 'WuishListStatus')->name('wishlist.status');
         Route::get('/edit/profile', 'editUserProfile')->name('edit.user.profile');
         Route::post('/update/profile', 'userUpdateProfile')->name('user.update.profile');
+        Route::get('/change/password', 'userChangePassword')->name('user.change.password');
+        Route::post('/update/password', 'userUpdatePassword')->name('user.update.password');
     });
 
     Route::controller(userOrderController::class)->group(function () {
@@ -148,8 +154,30 @@ Route::middleware('auth')->prefix('users')->group(function () {
         Route::get('/orders/item/{orderId}', 'userShowOrderItem')->name('user.single.order-items');
     });
 
+    Route::controller(UserTransactionController::class)->group(function () {
+        Route::get('/transactions', 'userTransactions')->name('user.transactions');
+        Route::get('/fetch-transactions',  'userFetchTransactions')->name('user.fetch.transactions');
+        Route::get('/transactions/{orderId}', 'showTransactionDetails')->name('user.transaction.details');
+    });
 
 
+    Route::controller(UserHelpController::class)->group(function () {
+        Route::get('/get-help',  'getHelp')->name('user.gethelp');
+        Route::get('/customer-support',  'customerSupport')->name('user.customer.support');
+        Route::get('/send-feedback',  'sendFeedback')->name('user.sendFeedback');
+        Route::get('/report',  'sendReport')->name('user.sendReport');
+        Route::post('/send-feedback',  'storeFeedback')->name('user.send.feedback');
+        Route::post('/send-report',  'storeReport')->name('user.send.report');
+        Route::get('/faqs',  'Faqs')->name('user.faqs');
+        Route::get('/faqs/{id}',  'show')->name('vendor.faqs.show');
+    });
+
+    Route::controller(UserReviewController::class)->group(function () {
+        Route::get('/reviews',  'userReviews')->name('user.reviews');
+        Route::get('/fetch/reviews',  'userFetchReviews')->name('user.fetch.reviews');
+        Route::post('/submit/review',  'SubmitReviews')->name('user.fetch.reviews');
+
+    });
 });
 
 
@@ -266,20 +294,20 @@ Route::middleware('vendor')->prefix('vendors')->group(function () {
         Route::get('/fetch-reviews',  'fetchReviews')->name('vendor.reviews.fetch');
     });
 
-     Route::controller(VendorOrderController::class)->group(function () {
+    Route::controller(VendorOrderController::class)->group(function () {
         Route::get('/orders',  'index')->name('vendor.orders');
         Route::get('/order-index',  'orderIndex')->name('vendor.orders.order-index');
         Route::get('/fetch-orders',  'fetchOrders')->name('vendor.fetch.orders');
         Route::get('/order-summary/{orderId}', 'orderSummary')->name('vendor.order.summary');
         Route::get('/fetch-order-items/{orderId}', 'fetchOrderItems')->name('vendor.fetch.order-items');
         Route::get('/order/{id}',  'show')->name('vendor.order.show');
-         Route::post('/order/{id}/update-status', 'updateItemStatus')->name('vendor.order.update-item-status');
+        Route::post('/order/{id}/update-status', 'updateItemStatus')->name('vendor.order.update-item-status');
     });
 
     Route::controller(VendorTransactionController::class)->group(function () {
         Route::get('/transactions',  'showTransactions')->name('vendor.transactions');
-       Route::get('/fetch-transactions',  'index')->name('vendor.fetch.transactions');
-       Route::get('/transactions/{orderId}', 'showTransactionDetails')->name('vendor.transaction.details');
+        Route::get('/fetch-transactions',  'index')->name('vendor.fetch.transactions');
+        Route::get('/transactions/{orderId}', 'showTransactionDetails')->name('vendor.transaction.details');
     });
 });
 
@@ -335,10 +363,6 @@ Route::middleware('admin')->prefix('admin')->group(function () {
         Route::get('/dashboard', 'adminDashboard')->name('admin.dashboard');
         Route::get('/login', 'adminLogin')->name('admin.login');
     });
-
-
-
-
 });
 
 

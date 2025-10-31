@@ -8,6 +8,7 @@ use App\Models\categories;
 use App\Models\notification;
 use App\Models\productColors;
 use App\Models\productImages;
+use App\Models\productReviews;
 use App\Models\products;
 use App\Models\productSizes;
 use App\Models\productWhishlist;
@@ -75,6 +76,10 @@ class frontendController extends Controller
             );
             return redirect()->route('index')->with($notification);
         }
+
+        $data['averageRating'] = productReviews::getRatingAVGLimit($product->id);
+        $data['reviewsCount'] = productReviews::getReviewProduct($product->id)->count();
+        $data['getReviewProduct'] = productReviews::getReviewProduct($product->id);
 
 
         // get all the product Images
@@ -261,4 +266,63 @@ class frontendController extends Controller
 
         return response()->json($json);
     }
+
+public function fetchReview($product_id)
+{
+    Log::info("Product ID: " .$product_id);
+    if (!$product_id) {
+        return response()->json([
+            'status' => 'error',
+            'message' => 'Product ID is required',
+        ], 400);
+    }
+
+    // Use the method that already joins the user table
+    $reviews = productReviews::getReviewProduct($product_id);
+
+    Log::info("message: ".$reviews);
+
+    // Format data for frontend
+    $formattedReviews = $reviews->map(function ($review) {
+        return [
+            'reviewer_name' => $review->username ?? 'Anonymous',
+            'profile_image' => $review->profile_image ?? null,
+            'rating' => $review->rating,
+            'review_text' => $review->review,
+            'review_date' => $review->created_at ? $review->created_at->toDateString() : null,
+        ];
+    });
+
+    return response()->json($formattedReviews);
+}
+
+public function FetchALLProductReviews($product_id)
+{
+    Log::info("Product ID: " .$product_id);
+    if (!$product_id) {
+        return response()->json([
+            'status' => 'error',
+            'message' => 'Product ID is required',
+        ], 400);
+    }
+
+    // Use the method that already joins the user table
+    $reviews = productReviews::getReviewProduct($product_id);
+
+    Log::info("message: ".$reviews);
+
+    // Format data for frontend
+    $formattedReviews = $reviews->map(function ($review) {
+        return [
+            'reviewer_name' => $review->username ?? 'Anonymous',
+            'profile_image' => $review->profile_image ?? null,
+            'rating' => $review->rating,
+            'review_text' => $review->review,
+            'review_date' => $review->created_at ? $review->created_at->toDateString() : null,
+        ];
+    });
+
+    return response()->json($formattedReviews);
+}
+
 }

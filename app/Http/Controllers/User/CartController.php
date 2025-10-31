@@ -317,29 +317,29 @@ class CartController extends Controller
             $subtotal += $unitPrice * $item->quantity;
         }
 
-        // ✅ Calculate 3% charge
-        $charge = $subtotal * (3 / 100);
-        $extra = 0;
+        // ✅ Calculate 3% Paystack/Platform fee
+        $percentageCharge = $subtotal * (3 / 100);
 
         // Cap at ₦3500
-        if ($charge >= 3500) {
-            $charge = 3500;
+        if ($percentageCharge > 3500) {
+            $percentageCharge = 3500;
         }
 
-        // Add ₦100 if subtotal > ₦2500
-        if ($subtotal > 2500) {
-            $charge += 100;
-            $extra = 100;
-        }
+        // ✅ Calculate ₦100 extra (applied separately)
+        $extra = ($subtotal > 2500) ? 100 : 0;
+
+        // ✅ Combine for final charge (what the customer pays)
+        $totalCharge = $percentageCharge + $extra;
 
         // ✅ Calculate final total
-        $total = $subtotal + $charge;
+        $total = $subtotal + $totalCharge;
 
-        // ✅ Store session data (for verification/payment)
+        // ✅ Store session data separately
         session([
             'checkout_subtotal' => $subtotal,
-            'checkout_charge' => $charge,
-            'checkout_extra' => $extra,
+            'checkout_percentage_charge' => $percentageCharge, // only 3%
+            'checkout_extra' => $extra, // ₦100 only
+            'checkout_charge' => $totalCharge, // 3% + ₦100 (what customer sees)
             'checkout_total' => $total,
         ]);
 
@@ -348,7 +348,7 @@ class CartController extends Controller
         return view('frontend.checkout', [
             'cart' => $cart,
             'subtotal' => $subtotal,
-            'charge' => $charge,
+            'charge' => $percentageCharge,
             'extra' => $extra,
             'total' => $total,
             'states' => $states,
