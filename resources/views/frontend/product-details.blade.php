@@ -242,7 +242,7 @@
                                     }
                                     $emptyStars = 5 - ($fullStars + $halfStar);
                                 @endphp
-                                <span>{{ $displayAvg }} ( {{ $reviewsCount }} {{ $reviewsCount > 1 ? "Reviews" : "Review" }})</span>
+                                <span>{{ $displayAvg }} ({{ $reviewsCount ?? "0 Review" }} {{ $reviewsCount > 1 ? "Reviews" : "Review" }})</span>
                             </div>
                         </div>
                     </div>
@@ -342,7 +342,7 @@
                                 @endfor
                             </div>
 
-                            <small class="text-muted">({{ $reviewsCount ?? 0 }} reviews)</small>
+                            <small class="text-muted">({{ $reviewsCount ?? "0 Review" }} {{ $reviewsCount > 1 ? "Reviews" : "Review" }})</small>
                         </div>
                     </div>
 
