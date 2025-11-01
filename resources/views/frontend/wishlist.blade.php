@@ -230,7 +230,7 @@
                                                 class="d-flex justify-content-between flex-wrap align-items-center mb-1 small">
                                                 <div class="product-rating">
                                                     <i class="fa fa-star text-warning" aria-hidden="true"></i>
-                                                    <span class="rating-text">4.6</span>
+                                                    <span class="rating-text">{{ number_format($product->reviews_avg_rating, 1) ?? '0.0' }}</span>
                                                 </div>
 
                                                 <div class="product-location text-end">

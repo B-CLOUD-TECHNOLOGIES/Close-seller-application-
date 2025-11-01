@@ -50,16 +50,18 @@ class frontendController extends Controller
         // all added to the frontend master page
 
         $data['categories'] = categories::inRandomOrder()->where('status', 1)->where('isdelete', 0)->get();
-        $data['adminProducts'] = products::where('product_owner', 'Admin')
+        $data['adminProducts'] = products::withAvg('reviews', 'rating')
+            ->where('product_owner', 'Admin')
             ->where('status', 1)
             ->where('isdelete', 0)
             ->get();
-        $data['products'] = products::where('product_owner', 'Vendor')
+
+        $data['products'] = products::withAvg('reviews', 'rating')
+            ->where('product_owner', 'Vendor')
             ->where('status', 1)
             ->where('isdelete', 0)
             ->orderBy('updated_at', 'DESC')
             ->get();
-
 
         return view("frontend.index", $data);
     }
@@ -67,9 +69,9 @@ class frontendController extends Controller
 
     public function ProductDetails($productid, $productName, $catid, $catName)
     {
-        $product = $data['product'] = products::where('id', $productid)->where('status', 1)->where('isdelete', 0)->first();
+        $product = $data['singleProduct'] = products::where('id', $productid)->where('status', 1)->where('isdelete', 0)->first();
 
-        if (!$data['product']) {
+        if (!$data['singleProduct']) {
             $notification = array(
                 'message' => 'Product not found',
                 'alert-type' => 'error'
@@ -108,7 +110,8 @@ class frontendController extends Controller
         $data['productColors'] = productColors::where('product_id', $productid)->get();
 
 
-        $data['relatedProducts'] = products::where('id', '!=', $productid)
+        $data['relatedProducts'] = products::withAvg('reviews', 'rating')
+            ->where('id', '!=', $productid)
             ->where('status', 1)
             ->where('isdelete', 0)
             ->inRandomOrder()
@@ -139,14 +142,16 @@ class frontendController extends Controller
             return redirect()->route('index')->with($notification);
         }
 
-        $data['products'] = products::where('category_id', $catid)
+        $data['products'] = products::withAvg('reviews', 'rating')
+            ->where('category_id', $catid)
             ->where('status', 1)
             ->where('isdelete', 0)
             ->orderBy('updated_at', 'DESC')
             ->get();
 
 
-        $data['otherProducts'] = products::where('category_id', '!=', $catid)
+        $data['otherProducts'] = products::withAvg('reviews', 'rating')
+            ->where('category_id', '!=', $catid)
             ->where('status', 1)
             ->where('isdelete', 0)
             ->inRandomOrder()
@@ -170,7 +175,8 @@ class frontendController extends Controller
     public function productSearch(Request $request)
     {
         $query = $request->input('search');
-        $products = $data['products'] = products::where('status', 1)
+        $products = $data['products'] = products::withAvg('reviews', 'rating')
+            ->where('status', 1)
             ->where(function ($q) use ($query) {
                 $q->where('product_name', 'LIKE', "%{$query}%")
                     ->orWhere('location', 'LIKE', "%{$query}%")
@@ -187,7 +193,8 @@ class frontendController extends Controller
         //  related products not under the search query
         $search = $query; // assuming $query holds the search keyword
 
-        $data['otherProducts'] = products::where('status', 1)
+        $data['otherProducts'] = products::withAvg('reviews', 'rating')
+            ->where('status', 1)
             ->where('isdelete', 0)
             ->where(function ($q) use ($search) {
                 $q->where('product_name', 'NOT LIKE', "%{$search}%")
@@ -267,62 +274,61 @@ class frontendController extends Controller
         return response()->json($json);
     }
 
-public function fetchReview($product_id)
-{
-    Log::info("Product ID: " .$product_id);
-    if (!$product_id) {
-        return response()->json([
-            'status' => 'error',
-            'message' => 'Product ID is required',
-        ], 400);
+    public function fetchReview($product_id)
+    {
+        Log::info("Product ID: " . $product_id);
+        if (!$product_id) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Product ID is required',
+            ], 400);
+        }
+
+        // Use the method that already joins the user table
+        $reviews = productReviews::getReviewProduct($product_id);
+
+        Log::info("message: " . $reviews);
+
+        // Format data for frontend
+        $formattedReviews = $reviews->map(function ($review) {
+            return [
+                'reviewer_name' => $review->username ?? 'Anonymous',
+                'profile_image' => $review->profile_image ?? null,
+                'rating' => $review->rating,
+                'review_text' => $review->review,
+                'review_date' => $review->created_at ? $review->created_at->toDateString() : null,
+            ];
+        });
+
+        return response()->json($formattedReviews);
     }
 
-    // Use the method that already joins the user table
-    $reviews = productReviews::getReviewProduct($product_id);
+    public function FetchALLProductReviews($product_id)
+    {
+        Log::info("Product ID: " . $product_id);
+        if (!$product_id) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Product ID is required',
+            ], 400);
+        }
 
-    Log::info("message: ".$reviews);
+        // Use the method that already joins the user table
+        $reviews = productReviews::getReviewProduct($product_id);
 
-    // Format data for frontend
-    $formattedReviews = $reviews->map(function ($review) {
-        return [
-            'reviewer_name' => $review->username ?? 'Anonymous',
-            'profile_image' => $review->profile_image ?? null,
-            'rating' => $review->rating,
-            'review_text' => $review->review,
-            'review_date' => $review->created_at ? $review->created_at->toDateString() : null,
-        ];
-    });
+        Log::info("message: " . $reviews);
 
-    return response()->json($formattedReviews);
-}
+        // Format data for frontend
+        $formattedReviews = $reviews->map(function ($review) {
+            return [
+                'reviewer_name' => $review->username ?? 'Anonymous',
+                'profile_image' => $review->profile_image ?? null,
+                'rating' => $review->rating,
+                'review_text' => $review->review,
+                'review_date' => $review->created_at ? $review->created_at->toDateString() : null,
+            ];
+        });
 
-public function FetchALLProductReviews($product_id)
-{
-    Log::info("Product ID: " .$product_id);
-    if (!$product_id) {
-        return response()->json([
-            'status' => 'error',
-            'message' => 'Product ID is required',
-        ], 400);
+        return response()->json($formattedReviews);
     }
-
-    // Use the method that already joins the user table
-    $reviews = productReviews::getReviewProduct($product_id);
-
-    Log::info("message: ".$reviews);
-
-    // Format data for frontend
-    $formattedReviews = $reviews->map(function ($review) {
-        return [
-            'reviewer_name' => $review->username ?? 'Anonymous',
-            'profile_image' => $review->profile_image ?? null,
-            'rating' => $review->rating,
-            'review_text' => $review->review,
-            'review_date' => $review->created_at ? $review->created_at->toDateString() : null,
-        ];
-    });
-
-    return response()->json($formattedReviews);
-}
-
 }

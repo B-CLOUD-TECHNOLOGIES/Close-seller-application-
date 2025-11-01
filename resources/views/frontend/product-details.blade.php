@@ -124,9 +124,9 @@
         </div> --}}
 
         @php
-            $productidFetch = $productid = $product->id;
+            $productidFetch = $productid = $singleProduct->id;
             $inWishlist = Auth::check() ? \App\Models\productWishlist::isInWishlist($productid, Auth::id()) : false;
-            $stock_quantity = $product->stock_quantity;
+            $stock_quantity = $singleProduct->stock_quantity;
         @endphp
         <!-- Main Content -->
         <div id="main-content">
@@ -182,23 +182,23 @@
 
                 <!-- Product Info -->
                 <div class="product-info">
-                    <h1 class="product-title">{{ $product->product_name }}</h1>
+                    <h1 class="product-title">{{ $singleProduct->product_name }}</h1>
                     <div class="d-flex align-items-center">
-                        <span class="product-price">₦{{ number_format($product->new_price) }}</span>
-                        @if ($product->old_price)
-                            <span class="old-price">₦{{ $product->old_price }}</span>
+                        <span class="product-price">₦{{ number_format($singleProduct->new_price) }}</span>
+                        @if ($singleProduct->old_price)
+                            <span class="old-price">₦{{ $singleProduct->old_price }}</span>
                         @endif
                     </div>
                     <div class="product-locations">
                         <span class="material-symbols-outlined me-2" style="font-size: 16px;">location_on</span>
-                        <span>{{ $product->location }}{{ !empty($product->city) ? ', ' . $product->city : '' }}</span>
+                        <span>{{ $singleProduct->location }}{{ !empty($singleProduct->city) ? ', ' . $singleProduct->city : '' }}</span>
                     </div>
-                    <p class="stock-status {{ $product->stock_quantity <= 0 ? 'out-of-stock' : 'in-stock' }} ">
-                        {{ $product->stock_quantity <= 0
+                    <p class="stock-status {{ $singleProduct->stock_quantity <= 0 ? 'out-of-stock' : 'in-stock' }} ">
+                        {{ $singleProduct->stock_quantity <= 0
                             ? 'Out of Stock'
-                            : ($product->stock_quantity == 1
+                            : ($singleProduct->stock_quantity == 1
                                 ? '1 item left'
-                                : $product->stock_quantity . ' items left') }}
+                                : $singleProduct->stock_quantity . ' items left') }}
                     </p>
                 </div>
 
@@ -242,7 +242,7 @@
                                     }
                                     $emptyStars = 5 - ($fullStars + $halfStar);
                                 @endphp
-                                <span>{{ $displayAvg }} ( {{ $reviewsCount }} {{ $reviewsCount > 1 ? "Reviews" : "Review" }})</span>
+                                <span>{{ $displayAvg }} ({{ $reviewsCount ?? "0 Review" }} {{ $reviewsCount > 1 ? "Reviews" : "Review" }})</span>
                             </div>
                         </div>
                     </div>
@@ -253,7 +253,7 @@
                     <form id="theForm" method="POST">
                         @csrf
 
-                        <input type="hidden" value="{{ $product->id }}" name="product_id">
+                        <input type="hidden" value="{{ $singleProduct->id }}" name="product_id">
 
                         @if ($productSizes->count() >= 1)
                             <div class="selection-group">
@@ -271,12 +271,12 @@
                         @endif
 
 
-                        @if ($product->getColor->count() >= 1)
+                        @if ($singleProduct->getColor->count() >= 1)
                             <div class="selection-group">
                                 <label class="form-label">Color</label>
                                 <select name="color_id" id="color_id" class="form-select" {{ 'required' }}>
                                     <option value="" selected disabled>Select Color</option>
-                                    @foreach ($product->getColor as $color)
+                                    @foreach ($singleProduct->getColor as $color)
                                         <option value="{{ $color->getProductColor->id }}">
                                             {{ $color->getProductColor->color }} </option>
                                     @endforeach
@@ -294,7 +294,7 @@
                                     <span class="material-symbols-outlined" style="font-size: 18px;">remove</span>
                                 </button>
                                 <input type="number" name="quantity" id="quantity" class="quantity-input" value="1"
-                                    min="1" max="{{ $product->stock_quantity }}" readonly>
+                                    min="1" max="{{ $singleProduct->stock_quantity }}" readonly>
                                 <button type="button" class="quantity-btn plus">
                                     <span class="material-symbols-outlined" style="font-size: 18px;">add</span>
                                 </button>
@@ -311,7 +311,7 @@
                     </div>
                     <div class="collapsible-content active">
                         <p class="text-muted mb-0">
-                            {{ $product->description }}
+                            {{ $singleProduct->description }}
                         </p>
                     </div>
                 </div>
@@ -342,7 +342,7 @@
                                 @endfor
                             </div>
 
-                            <small class="text-muted">({{ $reviewsCount ?? 0 }} reviews)</small>
+                            <small class="text-muted">({{ $reviewsCount ?? "0 Review" }} {{ $reviewsCount > 1 ? "Reviews" : "Review" }})</small>
                         </div>
                     </div>
 

@@ -100,7 +100,7 @@ class UserTransactionController extends Controller
                     'transactionId' => $order->transaction_id,
                     'orderNo'       => $order->order_no,
                     'orderId'       => $order->id,
-                    'amount'        =>  number_format($order->payment_data["total_fees"], 2),
+                    'amount' => round((float) $order->payment_data["total_fees"], 2),
                     'date'          => $order->created_at->format('Y-m-d'),
                     'status'        => $this->mapStatus($order->status),
                     'isPayment'     => (bool) $order->is_payment,
@@ -123,14 +123,21 @@ class UserTransactionController extends Controller
     /**
      * Helper to map numeric status to readable text.
      */
+
     private function mapStatus($status)
+
     {
-        return match ($status) {
-            0 => 'Canceled',
-            1 => 'Processing',
-            2 => 'In Progress',
-            3 => 'Completed',
-            default => 'Unknown',
-        };
+        switch ($status) {
+            case 0:
+                return 'Canceled';
+            case 1:
+                return 'Processing';
+            case 2:
+                return 'In Progress';
+            case 3:
+                return 'Completed';
+            default:
+                return 'Unknown';
+        }
     }
 }
