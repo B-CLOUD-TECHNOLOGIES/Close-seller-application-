@@ -85,7 +85,7 @@
         reviewsList.innerHTML = '';
         const filtered = filter === 'all'
         ? reviews
-        : reviews.filter(r => r.stars === parseInt(filter));
+        : reviews.filter(r => parseInt(r.stars) === parseInt(filter));
 
         if (filtered.length === 0) {
         reviewsList.innerHTML = `

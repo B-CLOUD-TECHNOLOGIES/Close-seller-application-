@@ -30,7 +30,7 @@ class VendorReviewController extends Controller
         ->map(function ($review) {
             return [
                 'id' => $review->id,
-                'product' => $review->product->product_name ?? 'Unknown Product',
+                'product' => $review->product->product_name ?? 'Unknown Product', 
                 'customer' => $review->user->username ?? 'Anonymous',
                 'date' => $review->created_at->format('M j, Y'),
                 'stars' => $review->rating,
