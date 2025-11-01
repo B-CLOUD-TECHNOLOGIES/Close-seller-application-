@@ -28,15 +28,8 @@
     display: flex;
     justify-content: space-around;
     align-items: center;
-    
-    /* === CHANGED: Replaced box-shadow with drop-shadow filter === */
-    /* This makes the shadow follow the new curved cutout */
     box-shadow: none; 
     filter: drop-shadow(0 -4px 10px rgba(0, 0, 0, 0.08));
-    
-
-    /* === ADDED: Clip the pseudo-element that creates the notch === */
-    /* overflow: hidden; */
 }
 
 .nav-item {
@@ -60,12 +53,12 @@
     margin-bottom: 4px;
 }
 
-.bottom-nav .nav-label { /* Corrected selector */
+.bottom-nav .nav-label {
     font-size: 11px;
     font-weight: 500;
 }
 
-.bottom-nav .nav-badge { /* Corrected selector */
+.bottom-nav .nav-badge {
     position: absolute;
     top: -2px;
     right: 20px;
@@ -77,7 +70,7 @@
     font-weight: 600;
 }
 
-.bottom-nav .notification-dot { /* Corrected selector */
+.bottom-nav .notification-dot {
     position: absolute;
     top: 8px;
     right: 8px;
@@ -89,36 +82,26 @@
 }
 
 /* --- Special Add Button Styling --- */
-
-.bottom-nav .nav-item.add-btn { /* Corrected selector */
+.bottom-nav .nav-item.add-btn {
     position: relative;
-    top: -30px; /* Float it higher */
+    top: -30px;
     z-index: 1;
 }
 
-/* === ADDED: The pseudo-element that creates the curved notch === */
 .bottom-nav .nav-item.add-btn::before {
     content: "";
     position: absolute;
-    /* Position the shape relative to the button */
     top: 25px; 
     left: 50%;
     transform: translateX(-50%);
-    
-    /* Make the shape slightly larger than the button */
     width: 30px;  
     height: 30px;
     border-radius: 50%;
-    
-    /* Use a huge box-shadow with the nav's background color to create the solid shape */
     box-shadow: 0 0 0 40px var(--background);
-    
-    /* Put it behind the button's icon */
     z-index: -1;
 }
 
-
-.bottom-nav .nav-item.add-btn .nav-icon { /* Corrected selector */
+.bottom-nav .nav-item.add-btn .nav-icon {
     background: linear-gradient(135deg, var(--purple) 0%, var(--orange) 100%);
     color: white;
     width: 60px;
@@ -131,33 +114,59 @@
     box-shadow: 0 4px 20px rgba(112, 29, 157, 0.3);
     font-size: 26px;
     transition: all 0.3s ease;
-    
-    /* === REMOVED: The border is no longer needed for the effect === */
-    /* border: 4px solid var(--background); */
 }
 
-.bottom-nav .nav-item.add-btn:hover .nav-icon { /* Corrected selector */
+.bottom-nav .nav-item.add-btn:hover .nav-icon {
     transform: scale(1.1) rotate(90deg);
     box-shadow: 0 6px 25px rgba(112, 29, 157, 0.4);
 }
 
-.bottom-nav .nav-item.add-btn .nav-label { /* Corrected selector */
+.bottom-nav .nav-item.add-btn .nav-label {
     font-weight: 600;
     color: var(--purple);
     font-size: 10px;
 }
 
-.bottom-nav .nav-item.add-btn:hover { /* Corrected selector */
+.bottom-nav .nav-item.add-btn:hover {
     color: var(--purple);
 }
 
 /* Adjust spacing for 5 columns */
 .bottom-nav .row {
     align-items: flex-end;
+    flex-wrap: nowrap;
+    /* === ADDED: Remove Bootstrap's default margin === */
+    margin: 0;
 }
 
 .bottom-nav .col {
-    flex: 1;
-    max-width: 20%;
+    flex: 1 1 0;
+    max-width: none;
     text-align: center;
+    min-width: 0;
+    /* === ADDED: Remove Bootstrap's default padding === */
+    padding: 0;
+}
+
+/* === Media query for smaller screens === */
+@media (max-width: 380px) {
+    .nav-icon {
+        font-size: 18px;
+    }
+    
+    .bottom-nav .nav-item.add-btn .nav-icon {
+        width: 55px;
+        height: 55px;
+        font-size: 24px;
+    }
+    
+    .bottom-nav .nav-item.add-btn::before {
+        width: 28px;
+        height: 28px;
+        box-shadow: 0 0 0 38px var(--background);
+    }
+    
+    .bottom-nav .nav-label {
+        font-size: 10px;
+    }
 }
