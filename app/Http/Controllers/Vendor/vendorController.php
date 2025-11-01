@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Vendor;
 
 use App\Http\Controllers\Controller;
 use App\Models\Vendor;
-use App\Models\VendorVerification;
+use App\Models\vendorVerification;
 use App\Models\notification;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rules;
@@ -41,7 +41,7 @@ class vendorController extends Controller
     public function VendorBusinessInfo()
     {
         $vendor = auth('vendor')->user();
-        $businessInfo = VendorVerification::where('vendor_id', $vendor->id)->first();
+        $businessInfo = vendorVerification::where('vendor_id', $vendor->id)->first();
 
         return view('vendors.settings.business-information', compact('vendor', 'businessInfo'));
     }
@@ -180,7 +180,7 @@ public function VendorUpdateBusinessInfo(Request $request)
         ]);
 
         // ✅ Find or create vendor verification record
-        $verification = VendorVerification::firstOrNew(['vendor_id' => $vendor->id]);
+        $verification = vendorVerification::firstOrNew(['vendor_id' => $vendor->id]);
 
         // ✅ Update fields
         $verification->name        = $request->businessName;
@@ -273,7 +273,7 @@ public function VendorDocStore(Request $request)
     }
 
     // Save or update vendor verification record
-    $verification = VendorVerification::firstOrNew(['vendor_id' => $vendor->id]);
+    $verification = vendorVerification::firstOrNew(['vendor_id' => $vendor->id]);
 
     $verification->question = $request->question;
     $verification->video_url = $request->video_url;

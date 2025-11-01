@@ -16,7 +16,7 @@
    <a href="#" class="mark-link">Mark all as read</a>
 </div>
 
-<section class="product_messages spTX" id="notification-list">
+<section class="product_messages spTX mb-5 pb-5" id="notification-list">
    @if ($notifications->isEmpty())
       <div class="empty-state">
          <div class="empty-state-icon">
@@ -59,6 +59,7 @@
       @endforeach
    @endif
 </section>
+@include('vendors.body.footer')
 
 {{-- <div id="bottombar-placeholder"></div> --}}
 

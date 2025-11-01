@@ -392,7 +392,7 @@
     <div class="container-2">
         <!-- Header with gradient -->
         <div class="header-gradient">
-            <a href="#" class="back-btn" onclick="history.back()">
+            <a href="{{route ('vendor.dashoard')}}" class="back-btn" >
                 <i class="fas fa-arrow-left"></i>
             </a>
             <div class="header-content">
