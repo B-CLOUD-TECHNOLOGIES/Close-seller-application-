@@ -177,7 +177,7 @@ Route::middleware('auth')->prefix('users')->group(function () {
     Route::controller(UserReviewController::class)->group(function () {
         Route::get('/reviews',  'userReviews')->name('user.reviews');
         Route::get('/fetch/reviews',  'userFetchReviews')->name('user.fetch.reviews');
-        // Route::post('/submit/review',  'SubmitReviews')->name('user.fetch.reviews');
+        Route::post('/submit/review',  'SubmitReviews')->name('user.submit.reviews');
 
     });
 });
