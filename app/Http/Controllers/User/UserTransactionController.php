@@ -123,14 +123,21 @@ class UserTransactionController extends Controller
     /**
      * Helper to map numeric status to readable text.
      */
+
     private function mapStatus($status)
+
     {
-        return match ($status) {
-            0 => 'Canceled',
-            1 => 'Processing',
-            2 => 'In Progress',
-            3 => 'Completed',
-            default => 'Unknown',
-        };
+        switch ($status) {
+            case 0:
+                return 'Canceled';
+            case 1:
+                return 'Processing';
+            case 2:
+                return 'In Progress';
+            case 3:
+                return 'Completed';
+            default:
+                return 'Unknown';
+        }
     }
 }
