@@ -58,7 +58,8 @@ class productWishlist extends Model
 
     public static function getUserProductWishlist()
 {
-    return self::where('user_id', Auth::id())
+    return self::withAvg('reviews', 'rating')
+        ->where('user_id', Auth::id())
         ->with('product') // eager-load the related products
         ->get()
         ->pluck('product'); // return only the product collection

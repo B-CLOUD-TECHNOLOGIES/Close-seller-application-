@@ -16,7 +16,8 @@ class products extends Model
         'tags' => 'array',
     ];
 
-    public function getCategory(){
+    public function getCategory()
+    {
         return $this->belongsTo(categories::class, 'category_id', 'id');
     }
 
@@ -65,8 +66,7 @@ class products extends Model
 
 
     public function reviews()
-{
-    return $this->hasMany(productReviews::class, 'product_id');
-}
-
+    {
+        return $this->hasMany(productReviews::class, 'product_id');
+    }
 }

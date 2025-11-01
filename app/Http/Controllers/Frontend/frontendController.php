@@ -69,9 +69,9 @@ class frontendController extends Controller
 
     public function ProductDetails($productid, $productName, $catid, $catName)
     {
-        $product = $data['product'] = products::where('id', $productid)->where('status', 1)->where('isdelete', 0)->first();
+        $product = $data['singleProduct'] = products::where('id', $productid)->where('status', 1)->where('isdelete', 0)->first();
 
-        if (!$data['product']) {
+        if (!$data['singleProduct']) {
             $notification = array(
                 'message' => 'Product not found',
                 'alert-type' => 'error'
@@ -110,7 +110,8 @@ class frontendController extends Controller
         $data['productColors'] = productColors::where('product_id', $productid)->get();
 
 
-        $data['relatedProducts'] = products::where('id', '!=', $productid)
+        $data['relatedProducts'] = products::withAvg('reviews', 'rating')
+            ->where('id', '!=', $productid)
             ->where('status', 1)
             ->where('isdelete', 0)
             ->inRandomOrder()
@@ -141,14 +142,16 @@ class frontendController extends Controller
             return redirect()->route('index')->with($notification);
         }
 
-        $data['products'] = products::where('category_id', $catid)
+        $data['products'] = products::withAvg('reviews', 'rating')
+            ->where('category_id', $catid)
             ->where('status', 1)
             ->where('isdelete', 0)
             ->orderBy('updated_at', 'DESC')
             ->get();
 
 
-        $data['otherProducts'] = products::where('category_id', '!=', $catid)
+        $data['otherProducts'] = products::withAvg('reviews', 'rating')
+            ->where('category_id', '!=', $catid)
             ->where('status', 1)
             ->where('isdelete', 0)
             ->inRandomOrder()
@@ -172,7 +175,8 @@ class frontendController extends Controller
     public function productSearch(Request $request)
     {
         $query = $request->input('search');
-        $products = $data['products'] = products::where('status', 1)
+        $products = $data['products'] = products::withAvg('reviews', 'rating')
+            ->where('status', 1)
             ->where(function ($q) use ($query) {
                 $q->where('product_name', 'LIKE', "%{$query}%")
                     ->orWhere('location', 'LIKE', "%{$query}%")
@@ -189,7 +193,8 @@ class frontendController extends Controller
         //  related products not under the search query
         $search = $query; // assuming $query holds the search keyword
 
-        $data['otherProducts'] = products::where('status', 1)
+        $data['otherProducts'] = products::withAvg('reviews', 'rating')
+            ->where('status', 1)
             ->where('isdelete', 0)
             ->where(function ($q) use ($search) {
                 $q->where('product_name', 'NOT LIKE', "%{$search}%")
