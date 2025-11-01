@@ -10,7 +10,7 @@
             <svg class="arrow-back" width="20" height="20" viewBox="0 0 24 24" fill="none"
                 xmlns="http://www.w3.org/2000/svg">
                 <path d="M20 11H7.83L13.42 5.41L12 4L4 12L12 20L13.41 18.59L7.83 13H20V11Z" fill="#460475" />
-            </svg>
+            </svg> 
         </a>
         <div class="search-bar"><span>Order Summary</span></div>
         <div style="width: 44px;"></div>

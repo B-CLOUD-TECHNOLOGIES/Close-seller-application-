@@ -94,7 +94,7 @@
             <i class="fas fa-flag"></i>
             Report Issue
         </button>
-        <button class="action-btn share-btn" id="shareReceiptBtn">
+        <button class="action-btn share-btn" id="shareReceiptBtn" style="display: block !important;">
             <i class="fas fa-share-alt"></i>
             Share Receipt
         </button>
@@ -114,9 +114,9 @@
             <button id="downloadPdfBtn" class="btn btn-outline-danger rounded-pill">
                 <i class="fas fa-file-pdf me-2"></i> Download as PDF
             </button>
-            <button id="shareImageBtn" class="btn btn-primary rounded-pill" style="background-color:#460475;">
+            {{-- <button id="shareImageBtn" class="btn btn-primary rounded-pill" style="background-color:#460475;">
                 <i class="fas fa-image me-2"></i> Share as Image
-            </button>
+            </button> --}}
             </div>
         </div>
         </div>
