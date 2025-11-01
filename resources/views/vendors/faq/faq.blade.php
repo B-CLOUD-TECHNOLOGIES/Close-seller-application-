@@ -4,7 +4,7 @@
 <link rel="stylesheet" href="{{ asset('vendors/assets/css/faq2.css') }}" />
 
 
- <main>
+ <main class="mb-5 pb-5">
     <section class="user-profile">
         <div class="header">
             <a href="#" onclick="window.history.back()">
@@ -26,7 +26,7 @@
             <input type="text" class="search-input" placeholder="Search frequently asked questions..." id="searchInput">
         </div>
 
-        <div class="faq-container">
+        <div class="faq-container mb-5">
             @foreach($faqs as $category => $items)
                 <div class="faq-list" data-category="{{ strtolower($category) }}">
                     <div class="faq-detail">

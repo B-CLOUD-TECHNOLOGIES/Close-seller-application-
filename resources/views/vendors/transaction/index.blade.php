@@ -52,7 +52,7 @@
   </div>
 
   <!-- Total Button -->
-  <div class="total-section">
+  <div class="total-section" style="margin-bottom: 100px;">
     <button id="calculateBtn" class="total-btn">
       Total: <span id="totalAmount">₦0.00</span>
     </button>

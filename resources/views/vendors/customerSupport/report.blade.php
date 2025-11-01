@@ -20,7 +20,7 @@
   </div>
 
   <form id="issueForm"  action="{{ route('vendor.send.report') }}" method="POST">
-    @csrf>
+    @csrf
     <div class="form-container">
       <div class="form-group">
         <label for="issue">Issue Type *</label>
@@ -177,7 +177,7 @@
 
         if (response.ok) {
             showToast('success', result.message || 'Report submitted successfully');
-            document.getElementById('topic').value = '';
+            document.getElementById('issue').value = '';
             document.getElementById('description').value = '';
             charCount.textContent = '0';
         } else {
