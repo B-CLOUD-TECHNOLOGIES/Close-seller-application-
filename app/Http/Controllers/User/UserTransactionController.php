@@ -100,7 +100,7 @@ class UserTransactionController extends Controller
                     'transactionId' => $order->transaction_id,
                     'orderNo'       => $order->order_no,
                     'orderId'       => $order->id,
-                    'amount'        =>  number_format($order->payment_data["total_fees"], 2),
+                    'amount' => round((float) $order->payment_data["total_fees"], 2),
                     'date'          => $order->created_at->format('Y-m-d'),
                     'status'        => $this->mapStatus($order->status),
                     'isPayment'     => (bool) $order->is_payment,
