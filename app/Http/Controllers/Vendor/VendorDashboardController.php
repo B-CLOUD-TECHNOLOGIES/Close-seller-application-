@@ -7,8 +7,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Orders;
 use App\Models\OrderItem;
-use App\Models\Products;
-use App\Models\Notification;
+use App\Models\products;
+use App\Models\notification;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 
@@ -79,7 +79,7 @@ class VendorDashboardController extends Controller
     ->take(5);
 
     // 🔹 Fetch vendor’s products with first image and monthly sales
-    $vendorProducts = Products::where('vendor_id', $vendor->id)
+    $vendorProducts = products::where('vendor_id', $vendor->id)
         ->latest()
         ->take(5)
         ->get()
@@ -111,13 +111,13 @@ class VendorDashboardController extends Controller
         ->whereIn('status', [1, 2]) // 1=Processing, 2=In progress
         ->count();
 
-    $totalProducts = Products::where('vendor_id', $vendor->id)
+    $totalProducts = products::where('vendor_id', $vendor->id)
     ->where('status', 1)       // Only active products
     ->where('isdelete', 0)     // Exclude deleted ones
     ->count();
 
    // 📩 Messages (notifications)
-    $unreadMessages = Notification::where('user_id', $vendor->id)
+    $unreadMessages = notification::where('user_id', $vendor->id)
         ->where('user_type', 'vendor')
         ->where('is_read', 0)
         ->count();

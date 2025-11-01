@@ -19,7 +19,7 @@ class OrderItem extends Model
 
     public function product()
     {
-        return $this->belongsTo(Products::class, 'product_id', 'id');
+        return $this->belongsTo(products::class, 'product_id', 'id');
     }
     public function tracking()
     {

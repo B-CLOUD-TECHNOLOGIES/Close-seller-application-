@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Vendor;
 
 use App\Http\Controllers\Controller;
 use App\Models\categories;
-use App\Models\Color;
+use App\Models\color;
 use App\Models\Location;
 use App\Models\productColors;
 use App\Models\productImages;
@@ -87,7 +87,7 @@ class VendorProductController extends Controller
         $data['units'] = Units::orderBy('unit', 'ASC')->get();
         $data['categories'] = categories::orderBy('category_name', 'ASC')->get();
         $data['locations'] = Location::orderBy('name', 'ASC')->get();
-        $data['colors'] = Color::orderBy('color', 'ASC')->get();
+        $data['colors'] = color::orderBy('color', 'ASC')->get();
 
         return view('vendors.products.edit-product', $data);
     }
